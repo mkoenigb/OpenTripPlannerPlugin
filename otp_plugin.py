@@ -813,8 +813,10 @@ class OpenTripPlannerPlugin:
                 Isochrones_Error = 'Error: response layer is not valid'
                 print(Isochrones_Error)
    
-                
-            print('Final Status: ' + str(Isochrones_Error))
+            if (Isochrones_Error != 'Success: No Error'):
+                print('Final Status: ' + str(Isochrones_Error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...')
+            else:
+                print('Final Status: ' + str(Isochrones_Error))
             
             #get features of file
             Isochrone_Features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
@@ -842,6 +844,8 @@ class OpenTripPlannerPlugin:
             progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
             self.dlg.Isochrones_ProgressBar.setValue(progressbar_percent)
             
+            print("")
+            print("-----")
             print("")
             
             # Just testing stuff...
@@ -871,6 +875,9 @@ class OpenTripPlannerPlugin:
         QgsProject.instance().addMapLayer(Isochrones_Memorylayer_VL)# Show in project
         self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", level=Qgis.Success, duration=3)        
         print("Isochrones job done!")
+        print("")
+        print("-----")
+        print("")
         
     def isochrones_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
         layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers
