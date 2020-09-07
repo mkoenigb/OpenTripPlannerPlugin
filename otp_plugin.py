@@ -521,7 +521,7 @@ class OpenTripPlannerPlugin:
         
         # Preparing Progressbar
         progressbar_featurecount = isochrones_selectedLayer.featureCount()
-        progressbar_percent = 0
+        progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
         progressbar_counter = 0
         self.dlg.Isochrones_ProgressBar.setValue(progressbar_percent)
         
@@ -756,6 +756,7 @@ class OpenTripPlannerPlugin:
             #Working example: https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=2019-11-01&time=08:00:00&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
             isochrone_url = isochrone_url #'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql'
             print("URL: " + str(isochrone_url))
+            
             #use lokal shp for testing to avoid bombing the server with requests :)
             #request and download file
             try:
@@ -776,12 +777,13 @@ class OpenTripPlannerPlugin:
             #load file
                         try:
                             isochrone_responseLayer = QgsVectorLayer(tmp_save_location + "null.shp", "null", "ogr") # load just downloaded file as vector layer
+                            isochrone_responseLayer.updateExtents()
                         except:
                             Isochrones_Error = 'Error: loading response failed'
                             print(Isochrones_Error)                           
                     except:
                         Isochrones_Error = 'Error: response file not valid'
-                        print(Isochrones_Error)                          
+                        print(Isochrones_Error)
                 except:
                     Isochrones_Error = 'Error: writing response to harddrive failed'
                     print(Isochrones_Error)            
@@ -789,13 +791,33 @@ class OpenTripPlannerPlugin:
                 Isochrones_Error = 'Error: request failed' 
                 print(Isochrones_Error)
 
-            #get features of file
-            if not isochrone_responseLayer.isValid():
+            # Create Dummylayer on Error
+            if (Isochrones_Error != 'Success: No Error'):
+                isochrone_responseLayer = QgsVectorLayer("MultiPolygon?crs=epsg:4326","Errorlayer","memory")
+                isochrone_responseLayer_pr = isochrone_responseLayer.dataProvider()
+                isochrone_responseLayer.startEditing()
+                error_feature = QgsFeature()
+                error_feature.setGeometry(QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))"))
+                #isochrone_responseLayer_pr.addAttributes([QgsField("time",QVariant.Int)]
+                for j in Interval_list:
+                    isochrone_responseLayer_pr.addFeatures([error_feature])
+                isochrone_responseLayer.commitChanges()
+                isochrone_responseLayer.updateExtents()
+                
+            # Check Validity of Responselayer
+            try:
+                if (not isochrone_responseLayer.isValid()) or (isochrone_responseLayer.extent().yMaximum() == 0.0) or (isochrone_responseLayer.extent().xMaximum() == 0.0) or (isochrone_responseLayer.extent().yMinimum() == 0.0) or (isochrone_responseLayer.extent().xMinimum() == 0.0):
+                    Isochrones_Error = 'Error: response layer is not valid'
+                    print(Isochrones_Error)
+            except:
                 Isochrones_Error = 'Error: response layer is not valid'
                 print(Isochrones_Error)
-            Isochrone_Features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
+   
+                
+            print('Final Status: ' + str(Isochrones_Error))
             
-            print(Isochrones_Error)
+            #get features of file
+            Isochrone_Features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
             
             #iterate trough isochrone
             isochrone_id_counter = isochrone_id_counter + 1
@@ -814,6 +836,7 @@ class OpenTripPlannerPlugin:
                         #nullgeom = QgsGeometry.fromWkt('') #causes issues with layer. Just stick to pseudopolygon
                         Isochrones_Memorylayer_PR.changeGeometryValues({ Isochrone_Feature.id() : nullgeom }) # set geometry of feature to null on error 
                 Isochrones_Memorylayer_VL.updateFields() # make sure to fetch changes from the provider
+                Isochrones_Memorylayer_VL.updateExtents()
             
             # Update Progressbar
             progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
@@ -843,6 +866,7 @@ class OpenTripPlannerPlugin:
         #END OF LOOP
         
         # Isochrones Memory VectorLayer
+        Isochrones_Memorylayer_VL.updateExtents()
         Isochrones_Memorylayer_VL.commitChanges() # Commit changes
         QgsProject.instance().addMapLayer(Isochrones_Memorylayer_VL)# Show in project
         self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", level=Qgis.Success, duration=3)        
