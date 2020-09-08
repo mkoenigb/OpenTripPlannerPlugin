@@ -479,16 +479,13 @@ class OpenTripPlannerPlugin:
             self.dlg.GeneralSettings_ServerStatusResult.setText("Error: " + str(httperror.code))
             self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: red; color: white ")
         
-    def Isochrones_RequestIsochrones(self, isochrones_selectedLayer, Isochrones_Inputlayer_Fieldnames):     
-        #isochrones_selectedLayer = iface.activeLayer() #Uses the currently selected layer in layerslist from qgis browser but we will use the one from isochrones_maplayerselection bzw. QgsMapLayerComboBox
-        
-        # clear vars and stuff
+    def Isochrones_RequestIsochrones(self, isochrones_selectedLayer, Isochrones_Inputlayer_Fieldnames):        
+        # clear and initialize vars and stuff
         isochrone_url = None
         Isochrones_Error = None
         r = None
         Inputlayer_outFeat = None
-        
-        # initialize vars and stuff
+        debug_info = None
         isochrone_uid_counter = 0
         isochrone_id_counter = 0
         
@@ -498,7 +495,7 @@ class OpenTripPlannerPlugin:
         # Preparing Features
         Inputlayer_Features = isochrones_selectedLayer.getFeatures()
         
-        # Create the Vectorlayer
+        # Create the Output-Vectorlayer
         Isochrones_Memorylayer_VL = QgsVectorLayer("MultiPolygon?crs=epsg:4326", "Isochrones", "memory") # Create temporary polygon layer (output file)
         Isochrones_Memorylayer_PR = Isochrones_Memorylayer_VL.dataProvider() # No idea what pr stands for, just copied this name from all the examples on the web... probably provider??
         Isochrones_Memorylayer_VL.startEditing() # Enter editing mode
@@ -521,7 +518,7 @@ class OpenTripPlannerPlugin:
         
         # Preparing Progressbar
         progressbar_featurecount = isochrones_selectedLayer.featureCount()
-        progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
+        progressbar_percent = 0.1 # Use 1 on start to show users that something is running if the first one takes a while
         progressbar_counter = 0
         self.dlg.Isochrones_ProgressBar.setValue(progressbar_percent)
         
@@ -552,7 +549,6 @@ class OpenTripPlannerPlugin:
             # Copy Attributes to outputlayer
             Inputlayer_outFeat.setAttributes(Inputlayer_Feature.attributes()) # set the attributes
             #print (Inputlayer_Attributes[0])
-            
             
             #Check where to gather attributes from: GUI or Layer? 
             #WalkSpeed
@@ -756,6 +752,7 @@ class OpenTripPlannerPlugin:
             #Working example: https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=2019-11-01&time=08:00:00&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
             isochrone_url = isochrone_url #'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql'
             print("URL: " + str(isochrone_url))
+            debug_info = "Feature ID: " + str(Inputlayer_Feature.id()) + ' of Layer: ' + str(isochrones_selectedLayer) + ' at: ' + str(y) + ',' + str(x) + ' with URL: ' + str(isochrone_url) + '\n'
             
             #use lokal shp for testing to avoid bombing the server with requests :)
             #request and download file
@@ -780,29 +777,18 @@ class OpenTripPlannerPlugin:
                             isochrone_responseLayer.updateExtents()
                         except:
                             Isochrones_Error = 'Error: loading response failed'
-                            print(Isochrones_Error)                           
+                            print(Isochrones_Error)
                     except:
                         Isochrones_Error = 'Error: response file not valid'
                         print(Isochrones_Error)
                 except:
                     Isochrones_Error = 'Error: writing response to harddrive failed'
-                    print(Isochrones_Error)            
+                    print(Isochrones_Error)
             except:
                 Isochrones_Error = 'Error: request failed' 
                 print(Isochrones_Error)
 
-            # Create Dummylayer on Error
-            if (Isochrones_Error != 'Success: No Error'):
-                isochrone_responseLayer = QgsVectorLayer("MultiPolygon?crs=epsg:4326","Errorlayer","memory")
-                isochrone_responseLayer_pr = isochrone_responseLayer.dataProvider()
-                isochrone_responseLayer.startEditing()
-                error_feature = QgsFeature()
-                error_feature.setGeometry(QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))"))
-                #isochrone_responseLayer_pr.addAttributes([QgsField("time",QVariant.Int)]
-                for j in Interval_list:
-                    isochrone_responseLayer_pr.addFeatures([error_feature])
-                isochrone_responseLayer.commitChanges()
-                isochrone_responseLayer.updateExtents()
+
                 
             # Check Validity of Responselayer
             try:
@@ -812,7 +798,22 @@ class OpenTripPlannerPlugin:
             except:
                 Isochrones_Error = 'Error: response layer is not valid'
                 print(Isochrones_Error)
-   
+            
+            # Create Dummylayer on Error to prevent errors in code or broken result layer
+            if Isochrones_Error != 'Success: No Error':
+                isochrone_responseLayer = QgsVectorLayer("MultiPolygon?crs=epsg:4326","Errorlayer","memory")
+                isochrone_responseLayer_pr = isochrone_responseLayer.dataProvider()
+                isochrone_responseLayer.startEditing()
+                error_feature = QgsFeature()
+                error_feature.setGeometry(QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))"))
+                isochrone_responseLayer_pr.addAttributes([QgsField("time",QVariant.Int)])
+                for j in Interval_list:
+                    isochrone_responseLayer_pr.addFeatures([error_feature])
+                isochrone_responseLayer.commitChanges()
+                isochrone_responseLayer.updateExtents()
+                Isochrones_Error = Isochrones_Error + ' - Dummyfeature created to prevent entire result from beeing broken'
+                
+            # Throw back final status on this one
             if (Isochrones_Error != 'Success: No Error'):
                 print('Final Status: ' + str(Isochrones_Error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...')
             else:
@@ -847,7 +848,11 @@ class OpenTripPlannerPlugin:
             print("")
             print("-----")
             print("")
-            
+            #if Isochrones_Error == 'Success: No Error':
+            #    QgsMessageLog.logMessage('OpenTripPlanner Plugin Info: \n' + str(debug_info) + '\n successful', level=Qgis.Info) 
+            #else:
+            #    QgsMessageLog.logMessage('OpenTripPlanner Plugin Info: \n' + str(debug_info) + '\n produced: ' + str(Isochrones_Error) + '\n Check Python console for more details when running next time', level=Qgis.Warning) 
+                
             # Just testing stuff...
             #print(self.dlg.Isochrones_WalkSpeed_Override.vectorLayer())
             #print(isochrone_url)
