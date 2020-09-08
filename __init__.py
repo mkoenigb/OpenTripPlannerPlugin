@@ -8,7 +8,7 @@
                              -------------------
         begin                : 2019-10-21
         copyright            : (C) 2019 by Mario Königbauer
-        email                : mkoenigb@t-online.de
+        email                : mkoenigb@gmx.de
         git sha              : $Format:%H$
  ***************************************************************************/
 
