@@ -9,3 +9,6 @@ Repository for OpenTripPlanner Plug-In for QGIS, which lets you access OTP funct
 # Details about OTP API
 - Details about Isochrone API can be found at http://dev.opentripplanner.org/apidoc/1.0.0/resource_LIsochrone.html
 - Details about Plan API can be found at http://dev.opentripplanner.org/apidoc/1.0.0/resource_PlannerResource.html
+
+© Mario Königbauer 2019 - Today
+GNU General Public License v3.0
