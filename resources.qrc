@@ -1,5 +1,0 @@
-<RCC>
-    <qresource prefix="/plugins/otp_plugin" >
-        <file>icon.png</file>
-    </qresource>
-</RCC>
