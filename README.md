@@ -13,6 +13,7 @@ Repository for OpenTripPlanner Plug-In for QGIS, which lets you access OTP funct
 # Examples
 Digitransit (https://digitransit.fi/en/) has a publicly accessible OTP-Server. You can find details on https://digitransit.fi/en/developers/services/6-data-containers/routing-data/#opentripplanner-router-zip-files
 
+![layerorder](https://github.com/mkoenigb/OpenTripPlannerPlugin/blob/master/example.jpg)
 
 # License
 OpenTripPlanner Plug-In for QGIS: © by Mario Königbauer 2019 - Today under GNU General Public License v3.0
