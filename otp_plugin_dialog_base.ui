@@ -947,9 +947,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
     <widget class="QPushButton" name="Isochrones_RestoreDefaultSettings">
      <property name="geometry">
       <rect>
-       <x>410</x>
-       <y>39</y>
-       <width>301</width>
+       <x>570</x>
+       <y>0</y>
+       <width>141</width>
        <height>21</height>
       </rect>
      </property>
@@ -964,8 +964,8 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>10</y>
-       <width>301</width>
+       <y>0</y>
+       <width>141</width>
        <height>21</height>
       </rect>
      </property>
@@ -981,6 +981,1013 @@ Do not use an option if it is not compatible with the selected Mode. For example
     <attribute name="title">
      <string>Create Routes</string>
     </attribute>
+    <widget class="QLabel" name="label_7">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>20</y>
+       <width>381</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Select Source Layer:</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="Routes_RestoreDefaultSettings">
+     <property name="geometry">
+      <rect>
+       <x>570</x>
+       <y>0</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Restores default settings for Isochrones choosen by author of the plugin andor developers of opentripplanner</string>
+     </property>
+     <property name="text">
+      <string>Restore Default Settings</string>
+     </property>
+    </widget>
+    <widget class="QgsMapLayerComboBox" name="Routes_SelectInputLayer_Source">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>40</y>
+       <width>381</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Select a Point Layer you wish to use for calculation. Can be in any CRS which can be transformed to WGS 84 by QGIS.</string>
+     </property>
+    </widget>
+    <widget class="Line" name="line_2">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>110</y>
+       <width>20</width>
+       <height>321</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="Routes_SaveSettings">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>0</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Saves your settings for isochrones</string>
+     </property>
+     <property name="text">
+      <string>Save Settings</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_8">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>60</y>
+       <width>381</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Select Target Layer:</string>
+     </property>
+    </widget>
+    <widget class="QgsMapLayerComboBox" name="Routes_SelectInputLayer_Target">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>381</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Select a Point Layer you wish to use for calculation. Can be in any CRS which can be transformed to WGS 84 by QGIS.</string>
+     </property>
+    </widget>
+    <widget class="QProgressBar" name="Routes_ProgressBar">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>490</y>
+       <width>701</width>
+       <height>23</height>
+      </rect>
+     </property>
+     <property name="locale">
+      <locale language="English" country="UnitedStates"/>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="textVisible">
+      <bool>true</bool>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="invertedAppearance">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="Routes_RequestRoutes">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>440</y>
+       <width>701</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Request isochrones and store as polygon layer.</string>
+     </property>
+     <property name="text">
+      <string>Request Routes</string>
+     </property>
+    </widget>
+    <widget class="QgsFieldComboBox" name="Routes_SelectInputField_Source">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>40</y>
+       <width>301</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_9">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>20</y>
+       <width>301</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Select Source Layer's Matching Field:</string>
+     </property>
+    </widget>
+    <widget class="QgsFieldComboBox" name="Routes_SelectInputField_Target">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>80</y>
+       <width>301</width>
+       <height>21</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_10">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>60</y>
+       <width>301</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Select Target Layer's Matching Field:</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="Routes_WalkSpeed">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>120</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Speed in km/h one walks on foot. OTP-Default: 3mph.</string>
+     </property>
+     <property name="decimals">
+      <number>6</number>
+     </property>
+     <property name="maximum">
+      <double>99999.999999000006937</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
+     </property>
+     <property name="value">
+      <double>4.828032000000000</double>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_Wheelchair_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>270</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_Time_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>210</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="Routes_WaitReluctance">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>300</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How much worse is waiting for a transit vehicle than being on a transit vehicle, as a multiplier. The default value treats wait and on-vehicle time as the same. It may be tempting to set this higher than walkReluctance (as studies often find this kind of preferences among riders) but the planner will take this literally and walk down a transit line to avoid waiting at a stop. This used to be set less than 1 (0.95) which would make waiting offboard preferable to waiting onboard in an interlined trip. That is also undesirable. If we only tried the shortest possible transfer at each stop to neighboring stop patterns, this problem could disappear.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="decimals">
+      <number>2</number>
+     </property>
+     <property name="maximum">
+      <double>100.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.050000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.950000000000000</double>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_MaxTransfers_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>330</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_MaxWalkDistance_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>360</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Maximum Walk Distance in Meters:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="Routes_MaxWalkDistance">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>360</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Maximum distance one can cover a distance on foot.</string>
+     </property>
+     <property name="maximum">
+      <number>99999999</number>
+     </property>
+     <property name="singleStep">
+      <number>10</number>
+     </property>
+     <property name="value">
+      <number>1000</number>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_ArriveBy">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>240</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;checked = yes --&amp;gt; &amp;amp;arriveBy=true --&amp;gt; specifies that the given time is when we plan to arrive rather than when we want to depart&lt;/p&gt;&lt;p&gt;unchecked = no --&amp;gt; &amp;amp;arriveBy=false --&amp;gt; specifies that the given time is when we plan to depart rather than when we want to arrive&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Yes</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_MaxWalkDistance_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>360</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="Routes_MaxOffroadDistance">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>390</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Distance in meters one can cover a distance off roads.</string>
+     </property>
+     <property name="maximum">
+      <number>99999999</number>
+     </property>
+     <property name="singleStep">
+      <number>10</number>
+     </property>
+     <property name="value">
+      <number>150</number>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_Wheelchair_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>270</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Only Wheelchair accessible routes:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_WaitReluctance_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>300</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_BikeSpeed_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>150</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Bike Speed in km/h:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="Routes_MaxTransfers">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>330</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Maximum number of transfers between means of transport.</string>
+     </property>
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="value">
+      <number>5</number>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_MaxTransfers_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>330</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Maximum Transfers:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_MaxOffroadDistance_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>390</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTimeEdit" name="Routes_Time">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>210</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Departure or arrival time in HH:mm:ss.</string>
+     </property>
+     <property name="dateTime">
+      <datetime>
+       <hour>14</hour>
+       <minute>0</minute>
+       <second>0</second>
+       <year>2000</year>
+       <month>1</month>
+       <day>1</day>
+      </datetime>
+     </property>
+     <property name="maximumTime">
+      <time>
+       <hour>23</hour>
+       <minute>59</minute>
+       <second>59</second>
+      </time>
+     </property>
+     <property name="displayFormat">
+      <string>HH:mm:ss</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_ArriveBy_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>240</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Arrive By:</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_BikeSpeed_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>150</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_WaitReluctance_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>300</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Wait Reluctance Factor:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_Date_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>180</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_WalkSpeed_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>120</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="accessibleName">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Walk Speed in km/h:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_Date_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>180</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Date:</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_MaxOffroadDistance_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>390</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Maximum Offroad Distance in Meters:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_Wheelchair">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>270</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;checked --&amp;gt; use only wheelchair accessible routes&lt;/p&gt;&lt;p&gt;unchecked --&amp;gt; use all routes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Yes</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QDateEdit" name="Routes_Date">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>180</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Departure or arrival date in yyyy-MM-dd.</string>
+     </property>
+     <property name="dateTime">
+      <datetime>
+       <hour>0</hour>
+       <minute>0</minute>
+       <second>0</second>
+       <year>2020</year>
+       <month>1</month>
+       <day>1</day>
+      </datetime>
+     </property>
+     <property name="currentSection">
+      <enum>QDateTimeEdit::YearSection</enum>
+     </property>
+     <property name="displayFormat">
+      <string>yyyy-MM-dd</string>
+     </property>
+     <property name="calendarPopup">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_ArriveBy_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>240</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_Time_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>210</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Time:</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="Routes_BikeSpeed">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>150</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Speed in km/h one rides the bike. OTP-Default: 11mph.</string>
+     </property>
+     <property name="decimals">
+      <number>6</number>
+     </property>
+     <property name="maximum">
+      <double>99999.999999000006937</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
+     </property>
+     <property name="value">
+      <double>17.699999999999999</double>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_WalkSpeed_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>120</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="Routes_TransportationMode">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>230</y>
+       <width>261</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter values which OTP can understand, separated by comma. Not all combinations do work. Look up in OTP API Docs if you are unsure. Possible values for example are:&lt;/p&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td width=&quot;194&quot;&gt;&lt;p&gt;WALK&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;CAR &lt;span style=&quot; font-style:italic;&quot;&gt;(can not be combined with WALK)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;BICYCLE&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;TRANSIT&lt;span style=&quot; font-style:italic;&quot;&gt; (Used for combination of all supported public transportation types)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;TRAM&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;BUS&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;RAIL&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;SUBWAY&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;GONDOLA&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;CABLE_CAR&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;FERRY&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;FUNICULAR&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;BICYCLE_RENT&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;BICYCLE_PARK&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;CAR_PARK&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;AIRPLANE&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;LEG_SWITCH&lt;/p&gt;&lt;p&gt;Default if nothing is specified: WALK,TRANSIT&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="tabStopWidth">
+      <number>80</number>
+     </property>
+     <property name="acceptRichText">
+      <bool>false</bool>
+     </property>
+     <property name="placeholderText">
+      <string>WALK,TRANSIT</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_18">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>210</y>
+       <width>291</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>(String values separated by comma):</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="Routes_AdditionalParameters">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>320</y>
+       <width>261</width>
+       <height>91</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start with leading &amp;quot;&amp;amp;&amp;quot;, followed by &amp;quot;parameter name&amp;quot;, followed by &amp;quot;=&amp;quot;, followed by &amp;quot;value&amp;quot;. Keep case sensitivity in mind! For example:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;amp;waitReluctance=10.5&lt;/span&gt;&lt;/p&gt;&lt;p&gt;or&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;amp;minTransferTime=50&amp;amp;bikeSpeed=12.5&amp;amp;bikeSwitchTime=5&amp;amp;bikeSwitchCost=3&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Look up in OTP API Docs if you don't know how to write it...&lt;/p&gt;&lt;p&gt;Default if nothing is specified: None&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="tabStopWidth">
+      <number>80</number>
+     </property>
+     <property name="acceptRichText">
+      <bool>false</bool>
+     </property>
+     <property name="placeholderText">
+      <string>Type in anything OTP can understand... like for example: &amp;minTransferTime=50&amp;bikeSwitchCost=3</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_2">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>190</y>
+       <width>201</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Transportation Mode</string>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_AdditionalParameters_Override">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>320</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_19">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>300</y>
+       <width>201</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Additional Parameters as String:</string>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_TransportationMode_Override">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>230</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="Routes_Iterinaries">
+     <property name="geometry">
+      <rect>
+       <x>580</x>
+       <y>120</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Maximum number of transfers between means of transport.</string>
+     </property>
+     <property name="minimum">
+      <number>1</number>
+     </property>
+     <property name="value">
+      <number>1</number>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_Iterinaries_Override">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>120</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_Iterinaries_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>120</y>
+       <width>131</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Iterinaries:</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="QComboBox" name="Routes_Optimize">
+     <property name="geometry">
+      <rect>
+       <x>580</x>
+       <y>150</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <item>
+      <property name="text">
+       <string>QUICK</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TRANSFERS</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>SAFE</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>FLAT</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>GREENWAYS</string>
+      </property>
+     </item>
+     <item>
+      <property name="text">
+       <string>TRIANGLE</string>
+      </property>
+     </item>
+    </widget>
+    <widget class="QCheckBox" name="Routes_Optimize_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>150</y>
+       <width>131</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Optimize:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="Routes_Optimize_Override">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>150</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_run_routematrix">
     <attribute name="title">
@@ -1128,6 +2135,11 @@ Do not use an option if it is not compatible with the selected Mode. For example
   </widget>
  </widget>
  <customwidgets>
+  <customwidget>
+   <class>QgsFieldComboBox</class>
+   <extends>QComboBox</extends>
+   <header>qgsfieldcombobox.h</header>
+  </customwidget>
   <customwidget>
    <class>QgsMapLayerComboBox</class>
    <extends>QComboBox</extends>
