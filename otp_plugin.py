@@ -457,6 +457,46 @@ class OpenTripPlannerPlugin:
         if isinstance(self.Isochrones_AdditionalParameters, str): self.dlg.Isochrones_AdditionalParameters.setText(self.Isochrones_AdditionalParameters)
         
         self.iface.messageBar().pushMessage("Success", "Default settings restored!", level=Qgis.Success, duration=3)
+
+      
+    # Source: https://stackoverflow.com/a/33557535/8947209 (slightly modified)
+    def decode_polyline(polyline_str):
+        index, lat, lng = 0, 0, 0
+        #coordinates = []
+        pointlist = []
+        changes = {'latitude': 0, 'longitude': 0}
+    
+        # Coordinates have variable length when encoded, so just keep
+        # track of whether we've hit the end of the string. In each
+        # while loop iteration, a single coordinate is decoded.
+        while index < len(polyline_str):
+            # Gather lat/lon changes, store them in a dictionary to apply them later
+            for unit in ['latitude', 'longitude']: 
+                shift, result = 0, 0
+
+                while True:
+                    byte = ord(polyline_str[index]) - 63
+                    index+=1
+                    result |= (byte & 0x1f) << shift
+                    shift += 5
+                    if not byte >= 0x20:
+                        break
+
+                if (result & 1):
+                    changes[unit] = ~(result >> 1)
+                else:
+                    changes[unit] = (result >> 1)
+
+            lat += changes['latitude']
+            lng += changes['longitude']
+            
+            qgspointgeom = QgsPoint(float(lng / 100000.0),float(lat / 100000.0))
+            pointlist.append(qgspointgeom)
+
+            #coordinates.append((lat / 100000.0, lng / 100000.0)) # original code, but we dont need a tuple of coords, only the qgspoints
+
+        return pointlist
+        
         
     def check_server_status(self):
         #foldername, _filter = QFileDialog.getExistingDirectory(self.dlg, "Open Directory","",ShowDirsOnly)
@@ -518,7 +558,7 @@ class OpenTripPlannerPlugin:
         
         # Preparing Progressbar
         progressbar_featurecount = isochrones_selectedLayer.featureCount()
-        progressbar_percent = 0.1 # Use 1 on start to show users that something is running if the first one takes a while
+        progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
         progressbar_counter = 0
         self.dlg.Isochrones_ProgressBar.setValue(progressbar_percent)
         
