@@ -530,13 +530,6 @@ class OpenTripPlannerPlugin:
         route_uid_counter = 0
         route_id_counter = 0
         
-        # Setting up Override Button context
-        ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.routes_selectedLayer_source)) #This context will be able to evaluate global, project, and layer variables
-        
-        # Preparing Features
-        routes_inputlayer_features_source = self.routes_selectedLayer_source.getFeatures()
-        routes_inputlayer_features_target = self.routes_selectedLayer_target.getFeatures()
-        
         # Getting fieldtypes and names of selected matchingfields
         sourceidfieldname = self.dlg.Routes_SelectInputField_Source.currentField()
         targetidfieldname = self.dlg.Routes_SelectInputField_Target.currentField()
@@ -600,57 +593,32 @@ class OpenTripPlannerPlugin:
             ]) # Add Error and URL Field to outputlayer        
         routes_memorylayer_pr.addAttributes(self.routes_selectedLayer_source.fields()) # Copy all fieldnames of inputlayer to outputlayer  
         inputlayer_numberOfFields = self.routes_selectedLayer_source.fields().count() # count number of fields in inputlayer
-        inputlayer_outFeat = QgsFeature() # set QgsFeature        
+        inputlayer_outFeat = QgsFeature() # set QgsFeature
+        routes_memorylayer_vl.updateFields()
+        routes_memorylayer_vl.commitChanges() # save empty layer with fields
+        routes_memorylayer_vl.startEditing() # start editing again
 
-        # Fieldindex to avoid a mess
-        route_uid_fieldindex = 0
-        route_id_fieldindex = 1
-        route_from_fieldindex = 2
-        route_to_fieldindex = 3
-        route_error_fieldindex = 4
-        route_errorid_fieldindex = 5
-        route_errordescription_fieldindex = 6
-        route_url_fieldindex = 7
-        route_from_lat_fieldindex = 8
-        route_from_lon_fieldindex = 9
-        route_from_stopid_fieldindex = 10
-        route_from_stopcode_fieldindex = 11
-        route_from_name_fieldindex = 12
-        route_from_starttime_fieldindex = 13       
-        route_to_lat_fieldindex = 14
-        route_to_lon_fieldindex = 15
-        route_to_stopid_fieldindex = 16
-        route_to_stopcode_fieldindex = 17
-        route_to_name_fieldindex = 18
-        route_to_endtime_fieldindex = 19
-        route_total_duration_fieldindex = 20
-        route_total_transittime_fieldindex = 21
-        route_total_waitingtime_fieldindex = 22
-        route_total_walktime_fieldindex = 23
-        route_total_walkdistance_fieldindex = 24
-        route_total_transfers_fieldindex = 25
-        route_leg_starttime_fieldindex = 26
-        route_leg_departuredelay_fieldindex = 27
-        route_leg_endtime_fieldindex = 28
-        route_leg_arrivaldelay_fieldindex = 29
-        route_leg_duration_fieldindex = 30
-        route_leg_distance_fieldindex = 31
-        route_leg_mode_fieldindex = 32
-        route_leg_from_lat_fieldindex = 33
-        route_leg_from_lon_fieldindex = 34
-        route_leg_from_stopid_fieldindex = 35
-        route_leg_from_stopcode_fieldindex = 36
-        route_leg_from_name_fieldindex = 37
-        route_leg_from_departure_fieldindex = 38
-        route_leg_to_lat_fieldindex = 39
-        route_leg_to_lon_fieldindex = 40
-        route_leg_to_stopid_fieldindex = 41
-        route_leg_to_stopcode_fieldindex = 42
-        route_leg_to_name_fieldindex = 43
-        route_leg_to_departure_fieldindex = 44
+        # Fieldindex as dictionary to avoid a mess
+        fieldindexcounter = 0 # start with index 0
+        fieldindexdict = {} # empty dictionary
+        for field in routes_memorylayer_vl.fields(): # iterate through field list we just created above
+            x = str(field.name()).lower() + '_fieldindex' # convert to lowercase, string and add _fieldindex
+            #exec("%s = %d" % (x,fieldindexcounter)) # doesnt work....
+            fieldindexdict[x] = fieldindexcounter # assign index as value to dictionary key
+            fieldindexcounter += 1
+            
+        #print(fieldindexdict['route_leg_to_name_fieldindex'])
+
         
         # General Settings
-        serverUrl = self.serverUrl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()     
+        serverUrl = self.serverUrl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()
+        
+        # Setting up Override Button context
+        ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.routes_selectedLayer_source)) #This context will be able to evaluate global, project, and layer variables
+        
+        # Preparing Features
+        routes_inputlayer_features_source = self.routes_selectedLayer_source.getFeatures()
+        routes_inputlayer_features_target = self.routes_selectedLayer_target.getFeatures()
         
         # Preparing Transformation to WGS 84
         sourceCrs1 = QgsCoordinateReferenceSystem(self.routes_selectedLayer_source.crs().authid()) # Read CRS of input layer
@@ -665,9 +633,13 @@ class OpenTripPlannerPlugin:
         progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
         progressbar_counter = 0
         self.dlg.Routes_ProgressBar.setValue(progressbar_percent)
+        
+        #sourceidattrindex = createAttributeIndex
+        #print(fieldindexdict['route_uid_fieldindex'])
 
         
         # Finalizing resultlayer
+        routes_memorylayer_vl.updateFields()
         routes_memorylayer_vl.updateExtents()
         routes_memorylayer_vl.commitChanges() # Commit changes
         QgsProject.instance().addMapLayer(routes_memorylayer_vl)# Show in project
@@ -1147,7 +1119,19 @@ class OpenTripPlannerPlugin:
         if self.routes_selectedLayer_target is not None: # prevents showing python error when no point-layer is available
             self.routes_inputlayer_target_fieldnames = [field.name() for field in self.routes_selectedLayer_target.fields()] # Receive Inputlayer_Fieldnames from selected layer
         self.routes_uidfield_source = self.dlg.Routes_SelectInputField_Source.setLayer(self.routes_selectedLayer_source) # Reference fieldselection to layer
-        self.routes_uidfield_target = self.dlg.Routes_SelectInputField_Target.setLayer(self.routes_selectedLayer_target) # Reference fieldselection to layer              
+        self.routes_uidfield_target = self.dlg.Routes_SelectInputField_Target.setLayer(self.routes_selectedLayer_target) # Reference fieldselection to layer
+        try: # setup default selected fields
+            if self.routes_selectedLayer_source.fields().indexFromName('id') == -1: # if no id field, use the first field
+                self.dlg.Routes_SelectInputField_Source.setCurrentIndex(0)
+            else: # if id field, use it as default
+                self.dlg.Routes_SelectInputField_Source.setField('id')
+            # same for targetlayer
+            if self.routes_selectedLayer_target.fields().indexFromName('id') == -1:
+                self.dlg.Routes_SelectInputField_Target.setCurrentIndex(0)
+            else:
+                self.dlg.Routes_SelectInputField_Target.setField('id')
+        except: # if layer has no field, throw error
+            self.iface.messageBar().pushMessage("Error", " Layer does not have any fields!", level=Qgis.Critical, duration=3)
 
         # Setting up QgsOverrideButtons (Reference: https://gis.stackexchange.com/a/350993/107424). Has to be done here, so they get updated when the layer selection has changed...
         # Use Sourcelayer as Master
