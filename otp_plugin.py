@@ -518,6 +518,164 @@ class OpenTripPlannerPlugin:
         except urllib.error.HTTPError as httperror:
             self.dlg.GeneralSettings_ServerStatusResult.setText("Error: " + str(httperror.code))
             self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: red; color: white ")
+
+    
+    def Routes_RequestRoutes(self):
+        # clear and initialize vars and stuff
+        route_url = None
+        route_error = None
+        r = None
+        inputlayer_outfeat = None
+        debug_info = None
+        route_uid_counter = 0
+        route_id_counter = 0
+        
+        # Setting up Override Button context
+        ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.routes_selectedLayer_source)) #This context will be able to evaluate global, project, and layer variables
+        
+        # Preparing Features
+        routes_inputlayer_features_source = self.routes_selectedLayer_source.getFeatures()
+        routes_inputlayer_features_target = self.routes_selectedLayer_target.getFeatures()
+        
+        # Getting fieldtypes and names of selected matchingfields
+        sourceidfieldname = self.dlg.Routes_SelectInputField_Source.currentField()
+        targetidfieldname = self.dlg.Routes_SelectInputField_Target.currentField()
+        for field in self.routes_selectedLayer_source.fields():
+            if field.name() == sourceidfieldname:
+                sourceidfieldtype = field.type()
+        for field in self.routes_selectedLayer_target.fields():
+            if field.name() == targetidfieldname:
+                targetidfieldtype = field.type()
+                
+        # Create the Output-Vectorlayer
+        routes_memorylayer_vl = QgsVectorLayer("LineString?crs=epsg:4326", "Routes", "memory") # Create temporary polygon layer (output file)
+        routes_memorylayer_pr = routes_memorylayer_vl.dataProvider() # No idea what pr stands for, just copied this name from all the examples on the web... probably provider??
+        routes_memorylayer_vl.startEditing() # Enter editing mode
+        routes_memorylayer_pr.addAttributes([
+            QgsField("Route_UID",QVariant.Int),
+            QgsField("Route_ID", QVariant.Int),
+            QgsField("Route_From", sourceidfieldtype), # !
+            QgsField("Route_To", targetidfieldtype), # !
+            QgsField("Route_Error", QVariant.String),
+            QgsField("Route_ErrorID", QVariant.Int),
+            QgsField("Route_ErrorDescription", QVariant.String),
+            QgsField("Route_URL", QVariant.String),
+            QgsField("Route_From_Lat", QVariant.Double, len=4, prec=8),
+            QgsField("Route_From_Lon", QVariant.Double, len=4, prec=8),
+            QgsField("Route_From_StopId", QVariant.String),
+            QgsField("Route_From_StopCode", QVariant.String),
+            QgsField("Route_From_Name", QVariant.String),
+            QgsField("Route_From_StartTime", QVariant.DateTime),            
+            QgsField("Route_To_Lat", QVariant.Double, len=4, prec=8),
+            QgsField("Route_To_Lon", QVariant.Double, len=4, prec=8),
+            QgsField("Route_To_StopId", QVariant.String),
+            QgsField("Route_To_StopCode", QVariant.String),
+            QgsField("Route_To_Name", QVariant.String),      
+            QgsField("Route_To_EndTime", QVariant.DateTime),
+            QgsField("Route_Total_Duration", QVariant.Int),
+            QgsField("Route_Total_TransitTime", QVariant.Int),
+            QgsField("Route_Total_WaitingTime", QVariant.Int),
+            QgsField("Route_Total_WalkTime", QVariant.Int),
+            QgsField("Route_Total_WalkDistance", QVariant.Double),
+            QgsField("Route_Total_Transfers", QVariant.Int),
+            QgsField("Route_Leg_StartTime", QVariant.DateTime),
+            QgsField("Route_Leg_DepartureDelay", QVariant.Int),
+            QgsField("Route_Leg_EndTime", QVariant.DateTime),
+            QgsField("Route_Leg_ArrivalDelay", QVariant.Int),
+            QgsField("Route_Leg_Duration", QVariant.Int),
+            QgsField("Route_Leg_Distance", QVariant.Double),
+            QgsField("Route_Leg_Mode", QVariant.String),
+            QgsField("Route_Leg_From_Lat", QVariant.Double, len=4, prec=8),
+            QgsField("Route_Leg_From_Lon", QVariant.Double, len=4, prec=8),
+            QgsField("Route_Leg_From_StopId", QVariant.String),
+            QgsField("Route_Leg_From_StopCode", QVariant.String),
+            QgsField("Route_Leg_From_Name", QVariant.String),
+            QgsField("Route_Leg_From_Departure", QVariant.DateTime),
+            QgsField("Route_Leg_To_Lat", QVariant.Double, len=4, prec=8),
+            QgsField("Route_Leg_To_Lon", QVariant.Double, len=4, prec=8),
+            QgsField("Route_Leg_To_StopId", QVariant.String),
+            QgsField("Route_Leg_To_StopCode", QVariant.String),
+            QgsField("Route_Leg_To_Name", QVariant.String),
+            QgsField("Route_Leg_To_Departure", QVariant.DateTime)            
+            ]) # Add Error and URL Field to outputlayer        
+        routes_memorylayer_pr.addAttributes(self.routes_selectedLayer_source.fields()) # Copy all fieldnames of inputlayer to outputlayer  
+        inputlayer_numberOfFields = self.routes_selectedLayer_source.fields().count() # count number of fields in inputlayer
+        inputlayer_outFeat = QgsFeature() # set QgsFeature        
+
+        # Fieldindex to avoid a mess
+        route_uid_fieldindex = 0
+        route_id_fieldindex = 1
+        route_from_fieldindex = 2
+        route_to_fieldindex = 3
+        route_error_fieldindex = 4
+        route_errorid_fieldindex = 5
+        route_errordescription_fieldindex = 6
+        route_url_fieldindex = 7
+        route_from_lat_fieldindex = 8
+        route_from_lon_fieldindex = 9
+        route_from_stopid_fieldindex = 10
+        route_from_stopcode_fieldindex = 11
+        route_from_name_fieldindex = 12
+        route_from_starttime_fieldindex = 13       
+        route_to_lat_fieldindex = 14
+        route_to_lon_fieldindex = 15
+        route_to_stopid_fieldindex = 16
+        route_to_stopcode_fieldindex = 17
+        route_to_name_fieldindex = 18
+        route_to_endtime_fieldindex = 19
+        route_total_duration_fieldindex = 20
+        route_total_transittime_fieldindex = 21
+        route_total_waitingtime_fieldindex = 22
+        route_total_walktime_fieldindex = 23
+        route_total_walkdistance_fieldindex = 24
+        route_total_transfers_fieldindex = 25
+        route_leg_starttime_fieldindex = 26
+        route_leg_departuredelay_fieldindex = 27
+        route_leg_endtime_fieldindex = 28
+        route_leg_arrivaldelay_fieldindex = 29
+        route_leg_duration_fieldindex = 30
+        route_leg_distance_fieldindex = 31
+        route_leg_mode_fieldindex = 32
+        route_leg_from_lat_fieldindex = 33
+        route_leg_from_lon_fieldindex = 34
+        route_leg_from_stopid_fieldindex = 35
+        route_leg_from_stopcode_fieldindex = 36
+        route_leg_from_name_fieldindex = 37
+        route_leg_from_departure_fieldindex = 38
+        route_leg_to_lat_fieldindex = 39
+        route_leg_to_lon_fieldindex = 40
+        route_leg_to_stopid_fieldindex = 41
+        route_leg_to_stopcode_fieldindex = 42
+        route_leg_to_name_fieldindex = 43
+        route_leg_to_departure_fieldindex = 44
+        
+        # General Settings
+        serverUrl = self.serverUrl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()     
+        
+        # Preparing Transformation to WGS 84
+        sourceCrs1 = QgsCoordinateReferenceSystem(self.routes_selectedLayer_source.crs().authid()) # Read CRS of input layer
+        sourceCrs2 = QgsCoordinateReferenceSystem(self.routes_selectedLayer_target.crs().authid()) # Read CRS of input layer
+        destCrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
+        tr1 = QgsCoordinateTransform(sourceCrs1, destCrs, QgsProject.instance()) # Setting up transformation
+        tr2 = QgsCoordinateTransform(sourceCrs2, destCrs, QgsProject.instance()) # Setting up transformation
+        
+        # Preparing Progressbar
+        progressbar_featurecount_routes_source = self.routes_selectedLayer_source.featureCount()
+        progressbar_featurecount_routes_target = self.routes_selectedLayer_target.featureCount()
+        progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
+        progressbar_counter = 0
+        self.dlg.Routes_ProgressBar.setValue(progressbar_percent)
+
+        
+        # Finalizing resultlayer
+        routes_memorylayer_vl.updateExtents()
+        routes_memorylayer_vl.commitChanges() # Commit changes
+        QgsProject.instance().addMapLayer(routes_memorylayer_vl)# Show in project
+        self.iface.messageBar().pushMessage("Done!", " Routes job finished", level=Qgis.Success, duration=3)        
+        print("Routes job done!")
+        print("")
+        print("-----")
+        print("")
         
     def Isochrones_RequestIsochrones(self, isochrones_selectedLayer, Isochrones_Inputlayer_Fieldnames):        
         # clear and initialize vars and stuff
@@ -975,7 +1133,67 @@ class OpenTripPlannerPlugin:
         #AdditionalParameters
         self.dlg.Isochrones_AdditionalParameters_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
         self.dlg.Isochrones_AdditionalParameters_Override.init(0, QgsProperty(), QgsPropertyDefinition("AdditionalParameters", "Additional Parameters as String", QgsPropertyDefinition.String), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
-                        
+
+        
+    def routes_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
+        layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers
+        self.dlg.Routes_SelectInputLayer_Source.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
+        self.routes_selectedLayer_source = self.dlg.Routes_SelectInputLayer_Source.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
+        self.dlg.Routes_SelectInputLayer_Target.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
+        self.routes_selectedLayer_target = self.dlg.Routes_SelectInputLayer_Target.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer         
+        #routes_selectedLayer_source = self.routes_selectedLayer_source # I could just replace all isochrones_selectedLayer variables by self.isochrones_selectedLayer which would actually make more sense, but got lost in search and replace ending up in a mess...
+        if self.routes_selectedLayer_source is not None: # prevents showing python error when no point-layer is available
+            self.routes_inputlayer_source_fieldnames = [field.name() for field in self.routes_selectedLayer_source.fields()] # Receive Inputlayer_Fieldnames from selected layer
+        if self.routes_selectedLayer_target is not None: # prevents showing python error when no point-layer is available
+            self.routes_inputlayer_target_fieldnames = [field.name() for field in self.routes_selectedLayer_target.fields()] # Receive Inputlayer_Fieldnames from selected layer
+        self.routes_uidfield_source = self.dlg.Routes_SelectInputField_Source.setLayer(self.routes_selectedLayer_source) # Reference fieldselection to layer
+        self.routes_uidfield_target = self.dlg.Routes_SelectInputField_Target.setLayer(self.routes_selectedLayer_target) # Reference fieldselection to layer              
+
+        # Setting up QgsOverrideButtons (Reference: https://gis.stackexchange.com/a/350993/107424). Has to be done here, so they get updated when the layer selection has changed...
+        # Use Sourcelayer as Master
+        #WalkSpeed
+        self.dlg.Routes_WalkSpeed_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_WalkSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("walkSpeed", "Walk Speed in km/h", QgsPropertyDefinition.DoublePositive), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #BikeSpeed
+        self.dlg.Routes_BikeSpeed_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_BikeSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("bikeSpeed", "Bike Speed in km/h", QgsPropertyDefinition.DoublePositive), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #Date
+        self.dlg.Routes_Date_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_Date_Override.init(0, QgsProperty(), QgsPropertyDefinition("Date", "Date in YYYY-MM-DD", QgsPropertyDefinition.String), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #Time
+        self.dlg.Routes_Time_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_Time_Override.init(0, QgsProperty(), QgsPropertyDefinition("Time", "Time in HH:MM:SS", QgsPropertyDefinition.String), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #ArriveBy
+        self.dlg.Routes_ArriveBy_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_ArriveBy_Override.init(0, QgsProperty(), QgsPropertyDefinition("ArriveBy", "ArriveBy as Boolean", QgsPropertyDefinition.Boolean), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #Wheelchair
+        self.dlg.Routes_Wheelchair_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_Wheelchair_Override.init(0, QgsProperty(), QgsPropertyDefinition("Wheelchair", "Wheelchair as Boolean", QgsPropertyDefinition.Boolean), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #WaitReluctance
+        self.dlg.Routes_WaitReluctance_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_WaitReluctance_Override.init(0, QgsProperty(), QgsPropertyDefinition("WaitReluctance", "Wait Reluctance Factor as Double", QgsPropertyDefinition.Double), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #MaxTransfers
+        self.dlg.Routes_MaxTransfers_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_MaxTransfers_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxTransfers", "Maximum Transfers as Integer", QgsPropertyDefinition.IntegerPositive), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #MaxWalkDistance
+        self.dlg.Routes_MaxWalkDistance_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_MaxWalkDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxWalkDistance", "Maximum Walk Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #MaxOffroadDistance
+        self.dlg.Routes_MaxOffroadDistance_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_MaxOffroadDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxOffroadDistance", "Maximum Offroad Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #Iterinaries
+        self.dlg.Routes_Iterinaries_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_Iterinaries_Override.init(0, QgsProperty(), QgsPropertyDefinition("numIterinaries", "Number of Iterinaries", QgsPropertyDefinition.IntegerPositiveGreaterZero), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #Optimize
+        self.dlg.Routes_Optimize_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_Optimize_Override.init(0, QgsProperty(), QgsPropertyDefinition("Optimize", "Optimizationmode as String", QgsPropertyDefinition.String), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #TransportationMode
+        self.dlg.Routes_TransportationMode_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_TransportationMode_Override.init(0, QgsProperty(), QgsPropertyDefinition("TransportationMode", "TransportationMode as String separated by Comma", QgsPropertyDefinition.String), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #AdditionalParameters
+        self.dlg.Routes_AdditionalParameters_Override.registerExpressionContextGenerator(self.routes_selectedLayer_source) # will allow the use of global, project, and layer variables.
+        self.dlg.Routes_AdditionalParameters_Override.init(0, QgsProperty(), QgsPropertyDefinition("AdditionalParameters", "Additional Parameters as String", QgsPropertyDefinition.String), self.routes_selectedLayer_source, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        
         
     def run(self):
         """Run method that performs all the real work"""
@@ -984,9 +1202,12 @@ class OpenTripPlannerPlugin:
         if self.first_start == True:
             self.first_start = False
             self.dlg = OpenTripPlannerPluginDialog()
-            self.isochrones_maplayerselection() # Calling maplayer selection on first startup to load layers into QgsMapLayerComboBox and initialize QgsOverrideButton stuff so selections can be done without actually using the QgsMapLayerComboBox (related to currentIndexChanged.connect(self.isochrones_maplayerselection) below) 
+            # Calling maplayer selection on first startup to load layers into QgsMapLayerComboBox and initialize QgsOverrideButton stuff so selections can be done without actually using the QgsMapLayerComboBox (related to currentIndexChanged.connect(self.isochrones_maplayerselection) below) 
+            self.routes_maplayerselection()
+            self.isochrones_maplayerselection() 
             # Execute Main-Functions on Click: Placing them here prevents them from beeing executed multiple times, see https://gis.stackexchange.com/a/137161/107424
             self.dlg.Isochrones_RequestIsochrones.clicked.connect(lambda: self.Isochrones_RequestIsochrones(self.isochrones_selectedLayer, self.Isochrones_Inputlayer_Fieldnames)) #Call Isochrones_RequestIsochrones function when clicking on RequestIsochrones button and handing over isochrones_selectedLayer. lambda function necessary to do this... (Reference: https://gis.stackexchange.com/a/351167/107424)
+            self.dlg.Routes_RequestRoutes.clicked.connect(lambda: self.Routes_RequestRoutes())
         
         # Setting GUI stuff for startup
         self.dlg.Isochrones_Date.setDateTime(QtCore.QDateTime.currentDateTime()) # Set Dateselection to today on restart or firststart
@@ -996,6 +1217,10 @@ class OpenTripPlannerPlugin:
             
         # Calling Functions to update layer stuff when layerselection has changed
         self.dlg.Isochrones_SelectInputLayer.currentIndexChanged.connect(self.isochrones_maplayerselection) # Call function isochrones_maplayerselection to update all selection related stuff when selection has been changed
+        self.dlg.Routes_SelectInputLayer_Source.currentIndexChanged.connect(self.routes_maplayerselection)
+        self.dlg.Routes_SelectInputLayer_Target.currentIndexChanged.connect(self.routes_maplayerselection)
+        self.dlg.Routes_SelectInputField_Source.currentIndexChanged.connect(self.routes_maplayerselection) # or "fieldChanged"?
+        self.dlg.Routes_SelectInputField_Target.currentIndexChanged.connect(self.routes_maplayerselection)
         
         # Calling Functions on button click
         self.dlg.GeneralSettings_CheckServerStatus.clicked.connect(self.check_server_status) #Open file dialog when hitting button
