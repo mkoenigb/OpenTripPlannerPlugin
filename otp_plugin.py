@@ -36,10 +36,11 @@ from .resources import *
 # Import the code for the dialog
 from .otp_plugin_dialog import OpenTripPlannerPluginDialog
 from osgeo import ogr
+from datetime import datetime
 import os.path
+import os
 import urllib.request
 import urllib
-import os
 import zipfile
 
 
@@ -530,9 +531,15 @@ class OpenTripPlannerPlugin:
         route_uid_counter = 0
         route_id_counter = 0
         
+        print("")
+        print("--- Routes job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---")
+        routes_starttime = datetime.now()
+        
         # Getting fieldtypes and names of selected matchingfields
         sourceidfieldname = self.dlg.Routes_SelectInputField_Source.currentField()
-        targetidfieldname = self.dlg.Routes_SelectInputField_Target.currentField()
+        sourceidfieldindex = self.routes_selectedLayer_source.fields().indexFromName(sourceidfieldname)
+        targetidfieldname = str(self.dlg.Routes_SelectInputField_Target.currentField())
+        targetidfieldindex = self.routes_selectedLayer_target.fields().indexFromName(targetidfieldname)
         for field in self.routes_selectedLayer_source.fields():
             if field.name() == sourceidfieldname:
                 sourceidfieldtype = field.type()
@@ -540,13 +547,15 @@ class OpenTripPlannerPlugin:
             if field.name() == targetidfieldname:
                 targetidfieldtype = field.type()
                 
+                
         # Create the Output-Vectorlayer
         routes_memorylayer_vl = QgsVectorLayer("LineString?crs=epsg:4326", "Routes", "memory") # Create temporary polygon layer (output file)
         routes_memorylayer_pr = routes_memorylayer_vl.dataProvider() # No idea what pr stands for, just copied this name from all the examples on the web... probably provider??
         routes_memorylayer_vl.startEditing() # Enter editing mode
         routes_memorylayer_pr.addAttributes([
-            QgsField("Route_UID",QVariant.Int),
-            QgsField("Route_ID", QVariant.Int),
+            QgsField("Route_LegID",QVariant.Int),
+            QgsField("Route_RouteID", QVariant.Int),
+            QgsField("Route_RelationID", QVariant.Int),
             QgsField("Route_From", sourceidfieldtype), # !
             QgsField("Route_To", targetidfieldtype), # !
             QgsField("Route_Error", QVariant.String),
@@ -589,10 +598,16 @@ class OpenTripPlannerPlugin:
             QgsField("Route_Leg_To_StopId", QVariant.String),
             QgsField("Route_Leg_To_StopCode", QVariant.String),
             QgsField("Route_Leg_To_Name", QVariant.String),
-            QgsField("Route_Leg_To_Departure", QVariant.DateTime)            
-            ]) # Add Error and URL Field to outputlayer        
-        routes_memorylayer_pr.addAttributes(self.routes_selectedLayer_source.fields()) # Copy all fieldnames of inputlayer to outputlayer  
-        inputlayer_numberOfFields = self.routes_selectedLayer_source.fields().count() # count number of fields in inputlayer
+            QgsField("Route_Leg_To_Departure", QVariant.DateTime)
+            ]) # Add fields to outputlayer
+        inputlayer_numberOfFields_routes_source = self.routes_selectedLayer_source.fields().count() # count number of fields in inputlayer
+        inputlayer_numberOfFields_routes_target = self.routes_selectedLayer_target.fields().count() # count number of fields in inputlayer            
+        #routes_memorylayer_pr.addAttributes(self.routes_selectedLayer_source.fields()) # Copy all fieldnames of inputlayer to outputlayer  
+        #routes_memorylayer_pr.addAttributes(self.routes_selectedLayer_target.fields()) # Copy all fieldnames of inputlayer to outputlayer 
+        for field in self.routes_selectedLayer_source.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
+            routes_memorylayer_pr.addAttributes([QgsField('Source_' + str(field.name()), field.type())]) # Old fieldname + Source_ as prefix. Keep original field type
+        for field in self.routes_selectedLayer_target.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
+            routes_memorylayer_pr.addAttributes([QgsField('Target_' + str(field.name()), field.type())]) # Old fieldname + Target_ as prefix. Keep original field type
         inputlayer_outFeat = QgsFeature() # set QgsFeature
         routes_memorylayer_vl.updateFields()
         routes_memorylayer_vl.commitChanges() # save empty layer with fields
@@ -606,9 +621,60 @@ class OpenTripPlannerPlugin:
             #exec("%s = %d" % (x,fieldindexcounter)) # doesnt work....
             fieldindexdict[x] = fieldindexcounter # assign index as value to dictionary key
             fieldindexcounter += 1
-            
-        #print(fieldindexdict['route_leg_to_name_fieldindex'])
-
+        
+        # To optimize speed of loop in case only routes for matching fields shall be created: Create a dictionary for both layers
+        # See: https://gis.stackexchange.com/questions/377807/using-an-attribute-index-to-find-matching-attributes-of-two-layers-faster and https://stackoverflow.com/a/64597197/8947209
+        dict_source = {}
+        dict_target = {}
+        for feat_source in self.routes_selectedLayer_source.getFeatures():
+            dict_source[feat_source.id()] = feat_source.attribute(sourceidfieldindex) # feature id is used as key and attribute as value
+        for feat_target in self.routes_selectedLayer_target.getFeatures():
+            dict_target[feat_target.id()] = feat_target.attribute(targetidfieldindex) # feature id is used as key and attribute as value
+        
+        # Create matching dictionary for performance optimization
+        # See: https://gis.stackexchange.com/questions/377807/using-an-attribute-index-to-find-matching-attributes-of-two-layers-faster and https://stackoverflow.com/a/64597197/8947209
+        dic2 = {}
+        dic3 = []
+        route_matches = {}
+        if self.dlg.Routes_OnlyMatching.isChecked() == True: # only routes from source points which match with target points ids
+            for i in dict_target.keys():
+                elem_target = dict_target[i]
+                if dic2.get(elem_target, None):
+                    dic2[elem_target].append(i)
+                else:
+                    dic2[elem_target] = [i]
+            for i in dict_source.keys():
+                elem_source = dict_source[i]
+                x = dic2.get(elem_source, None)
+                if x:
+                    route_matches[i] = x
+        else: # Route from all source points to all target points
+            for i in dict_target.keys():
+                elem_target = dict_target[i]
+                dic3.append(elem_target)
+            for i in dict_source.keys():
+                elem_source = dict_source[i]
+                route_matches[elem_source] = dic3
+        #print(route_matches)
+        #print(dict_source)
+        #print(dict_target)
+        
+        # Number of total routes to calculate
+        n_totalrelations = 0
+        for v in route_matches.values():
+            # checking whether the value is a list
+            if isinstance(v, list):
+                n_totalrelations += len(v)
+        #print(n_totalrelations)
+        if n_totalrelations == 0:
+            self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching fields", level=Qgis.Warning, duration=6)
+            print("Warning! No Routes to create. Probably due to no matching fields found or empty layer(s).")
+        
+        # Preparing Progressbar
+        progressbar_featurecount = n_totalrelations
+        progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
+        progressbar_counter = 0
+        self.dlg.Routes_ProgressBar.setValue(progressbar_percent)    
         
         # General Settings
         serverUrl = self.serverUrl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()
@@ -627,24 +693,55 @@ class OpenTripPlannerPlugin:
         tr1 = QgsCoordinateTransform(sourceCrs1, destCrs, QgsProject.instance()) # Setting up transformation
         tr2 = QgsCoordinateTransform(sourceCrs2, destCrs, QgsProject.instance()) # Setting up transformation
         
-        # Preparing Progressbar
-        progressbar_featurecount_routes_source = self.routes_selectedLayer_source.featureCount()
-        progressbar_featurecount_routes_target = self.routes_selectedLayer_target.featureCount()
-        progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
-        progressbar_counter = 0
-        self.dlg.Routes_ProgressBar.setValue(progressbar_percent)
+        # Counter
+        legid = 0
+        routeid = 0
+        relationid = 0
         
-        #sourceidattrindex = createAttributeIndex
-        #print(fieldindexdict['route_uid_fieldindex'])
+        # Request the routes
+        for source, target in route_matches.items(): # loop through key (source) and value (target) of matching dictionary
+            i = 0 # counter to access value in values            
+            for l in target: # loop through list of current value
+                progressbar_counter = progressbar_counter + 1
+                
+                source_fid = source # key of matching dict represents keys of dict_source and therefore featureids of sourcelayer
+                target_fid = target[i] # values of matching dict represent keys of dict_target and therefore featureids of targetlayer                
+                sourcelayer_feature = self.routes_selectedLayer_source.getFeature(source_fid)
+                targetlayer_feature = self.routes_selectedLayer_target.getFeature(target_fid)
+                
+                # Override Button
+                ctx.setFeature(sourcelayer_feature)
+                
+                source_feature_idvalue = self.routes_selectedLayer_source.getFeature(source_fid).attribute(sourceidfieldindex)
+                target_feature_idvalue = self.routes_selectedLayer_target.getFeature(target_fid).attribute(targetidfieldindex)
+                
+                relationid += 1 
+                
+                geom_source = self.routes_selectedLayer_source.getFeature(source_fid).geometry()
+                geom_target = self.routes_selectedLayer_target.getFeature(target_fid).geometry()
+                geom_source.transform(tr1) # Transform geometry to WGS 84
+                geom_target.transform(tr2) # Transform geometry to WGS 84
+                pointgeom_source = geom_source.asPoint() #Read Point geometry
+                pointgeom_target = geom_target.asPoint() #Read Point geometry
+                x_source = round(pointgeom_source.x(),8)
+                y_source = round(pointgeom_source.y(),8)
+                x_target = round(pointgeom_source.x(),8)
+                y_target = round(pointgeom_source.y(),8)
+                print("Relation #" + str(relationid) + " of " + str(n_totalrelations)  + " total relations.")
+                print("Relation from Source '" + str(source_feature_idvalue) + "' (" + str(y_source) + "," + str(x_source) + ") to Target '" + str(target_feature_idvalue) + "' (" + str(y_target) + "," + str(x_target) + ")")
+                
 
-        
+                i += 1
+                
         # Finalizing resultlayer
         routes_memorylayer_vl.updateFields()
         routes_memorylayer_vl.updateExtents()
         routes_memorylayer_vl.commitChanges() # Commit changes
         QgsProject.instance().addMapLayer(routes_memorylayer_vl)# Show in project
-        self.iface.messageBar().pushMessage("Done!", " Routes job finished", level=Qgis.Success, duration=3)        
-        print("Routes job done!")
+        self.iface.messageBar().pushMessage("Done!", " Routes job finished", level=Qgis.Success, duration=3) 
+        routes_endtime = datetime.now()
+        routes_runtime = routes_endtime - routes_starttime
+        print("--- Routes job done in " + str(routes_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---")
         print("")
         print("-----")
         print("")
@@ -658,6 +755,9 @@ class OpenTripPlannerPlugin:
         debug_info = None
         isochrone_uid_counter = 0
         isochrone_id_counter = 0
+        
+        print("--- Isochrones job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---")
+        isochrones_starttime = datetime.now()
         
         # Setting up Override Button context
         ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(isochrones_selectedLayer)) #This context will be able to evaluate global, project, and layer variables
@@ -1048,8 +1148,10 @@ class OpenTripPlannerPlugin:
         Isochrones_Memorylayer_VL.updateExtents()
         Isochrones_Memorylayer_VL.commitChanges() # Commit changes
         QgsProject.instance().addMapLayer(Isochrones_Memorylayer_VL)# Show in project
-        self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", level=Qgis.Success, duration=3)        
-        print("Isochrones job done!")
+        self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", level=Qgis.Success, duration=3)
+        isochrones_endtime = datetime.now()
+        isochrones_runtime = isochrones_endtime - isochrones_starttime
+        print("--- Isochrones job done in " + str(isochrones_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---")
         print("")
         print("-----")
         print("")
@@ -1121,15 +1223,17 @@ class OpenTripPlannerPlugin:
         self.routes_uidfield_source = self.dlg.Routes_SelectInputField_Source.setLayer(self.routes_selectedLayer_source) # Reference fieldselection to layer
         self.routes_uidfield_target = self.dlg.Routes_SelectInputField_Target.setLayer(self.routes_selectedLayer_target) # Reference fieldselection to layer
         try: # setup default selected fields
-            if self.routes_selectedLayer_source.fields().indexFromName('id') == -1: # if no id field, use the first field
-                self.dlg.Routes_SelectInputField_Source.setCurrentIndex(0)
-            else: # if id field, use it as default
-                self.dlg.Routes_SelectInputField_Source.setField('id')
-            # same for targetlayer
-            if self.routes_selectedLayer_target.fields().indexFromName('id') == -1:
-                self.dlg.Routes_SelectInputField_Target.setCurrentIndex(0)
-            else:
-                self.dlg.Routes_SelectInputField_Target.setField('id')
+            if self.dlg.Routes_SelectInputField_Source.currentField() == '': # Only default if no field is selected
+                if self.routes_selectedLayer_source.fields().indexFromName('id') == -1: # if no id field, use the first field
+                    self.dlg.Routes_SelectInputField_Source.setCurrentIndex(0)
+                else: # if id field, use it as default
+                    self.dlg.Routes_SelectInputField_Source.setField('id')
+                # same for targetlayer
+            if self.dlg.Routes_SelectInputField_Target.currentField() == '': # Only default if no field is selected
+                if self.routes_selectedLayer_target.fields().indexFromName('id') == -1:
+                    self.dlg.Routes_SelectInputField_Target.setCurrentIndex(0)
+                else:
+                    self.dlg.Routes_SelectInputField_Target.setField('id')
         except: # if layer has no field, throw error
             self.iface.messageBar().pushMessage("Error", " Layer does not have any fields!", level=Qgis.Critical, duration=3)
 

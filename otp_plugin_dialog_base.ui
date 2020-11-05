@@ -1129,7 +1129,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a field which matches the content of target layer. This will be used to connect start- and endpoints.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a field which matches the content of target layer. This will be used to connect start- and endpoints if option &amp;quot;create only routes for matching fields&amp;quot; is checked, otherwise this field will be only used as indicator/name for route startpoint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_9">
@@ -1142,7 +1142,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="text">
-      <string>Select Source Layer's Matching Field:</string>
+      <string>Select Source Layer's Matching or ID Field:</string>
      </property>
     </widget>
     <widget class="QgsFieldComboBox" name="Routes_SelectInputField_Target">
@@ -1155,7 +1155,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a field which matches the content of source layer. This will be used to connect start- and endpoints.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a field which matches the content of target layer. This will be used to connect start- and endpoints if option &amp;quot;create only routes for matching fields&amp;quot; is checked, otherwise this field will be only used as indicator/name for route endpoint.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="label_10">
@@ -1168,7 +1168,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="text">
-      <string>Select Target Layer's Matching Field:</string>
+      <string>Select Target Layer's Matching or ID Field:</string>
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="Routes_WalkSpeed">
@@ -1871,7 +1871,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>580</x>
-       <y>120</y>
+       <y>140</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1890,7 +1890,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>120</y>
+       <y>140</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1903,7 +1903,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>120</y>
+       <y>140</y>
        <width>131</width>
        <height>20</height>
       </rect>
@@ -1924,7 +1924,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>580</x>
-       <y>150</y>
+       <y>170</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1970,7 +1970,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>150</y>
+       <y>170</y>
        <width>131</width>
        <height>20</height>
       </rect>
@@ -1991,10 +1991,32 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>150</y>
+       <y>170</y>
        <width>30</width>
        <height>26</height>
       </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="Routes_OnlyMatching">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>110</y>
+       <width>301</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If checked:&lt;/span&gt;&lt;br/&gt;Create only routes from source points to target points, if the chosen field of both layers match.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If not checked:&lt;/span&gt;&lt;br/&gt;Create routes from all source points each to all target points each (nroutes = nsourcefeats * ntargetfeats)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Create only Routes for matching Fields</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
     </widget>
    </widget>
