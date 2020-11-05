@@ -712,8 +712,14 @@ class OpenTripPlannerPlugin:
                 # Override Button
                 ctx.setFeature(sourcelayer_feature)
                 
-                source_feature_idvalue = self.routes_selectedLayer_source.getFeature(source_fid).attribute(sourceidfieldindex)
-                target_feature_idvalue = self.routes_selectedLayer_target.getFeature(target_fid).attribute(targetidfieldindex)
+                if self.routes_selectedLayer_source.getFeature(source_fid).attribute(sourceidfieldindex) is None:
+                    source_feature_idvalue = None
+                else:
+                    source_feature_idvalue = self.routes_selectedLayer_source.getFeature(source_fid).attribute(sourceidfieldindex)
+                if self.routes_selectedLayer_target.getFeature(target_fid).attribute(targetidfieldindex) is None:
+                    target_feature_idvalue = None
+                else:
+                    target_feature_idvalue = self.routes_selectedLayer_target.getFeature(target_fid).attribute(targetidfieldindex)
                 
                 relationid += 1 
                 
