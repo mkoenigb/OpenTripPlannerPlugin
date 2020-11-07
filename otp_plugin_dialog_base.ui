@@ -413,7 +413,7 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter isochrone intervals in seconds (Integer) separated by comma --&amp;gt; String.&lt;/p&gt;&lt;p&gt;For example:&lt;br/&gt;60 or 60,180,300&lt;/p&gt;&lt;p&gt;Default if nothing is specified: 60,120,180,240,300&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter isochrone intervals in seconds (Integer) separated by comma --&amp;gt; String.&lt;/p&gt;&lt;p&gt;For example:&lt;br/&gt;60 or 60,180,300&lt;/p&gt;&lt;p&gt;Default if nothing is specified: 300,600,900&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="autoFormatting">
       <set>QTextEdit::AutoNone</set>
@@ -425,7 +425,7 @@
       <bool>false</bool>
      </property>
      <property name="placeholderText">
-      <string>60,120,180,240,300</string>
+      <string>300,600,900</string>
      </property>
     </widget>
     <widget class="QgsPropertyOverrideButton" name="Isochrones_Interval_Override">
@@ -2010,7 +2010,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If checked:&lt;/span&gt;&lt;br/&gt;Create only routes from source points to target points, if the chosen field of both layers match.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If not checked:&lt;/span&gt;&lt;br/&gt;Create routes from all source points each to all target points each (nroutes = nsourcefeats * ntargetfeats)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If checked:&lt;/span&gt;&lt;br/&gt;Create only routes from source points to target points, if the chosen field of both layers match.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If not checked:&lt;/span&gt;&lt;br/&gt;Create routes from all source points each to all target points each (nroutes = nsourcefeats * ntargetfeats)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;To create a matrix:&lt;/span&gt;&lt;br/&gt;Uncheck this box and select the same layer as Source and Target and the same field as matching field.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Create only Routes for matching Fields</string>
