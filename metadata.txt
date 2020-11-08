@@ -1,12 +1,12 @@
 [general]
 name=OpenTripPlanner Plugin
-qgisMinimumVersion=3.4
-description=This plugin makes OpenTripPlanner functionalities accessible in QGIS
-version=0.1
+qgisMinimumVersion=3.0
+description=This plugin makes OpenTripPlanner functionalities accessible from within QGIS
+version=0.2
 author=Mario Koenigbauer
 email=mkoenigb@gmx.de
 
-about=This Plugin makes OpenTripPlanner functionalities accessible in QGIS. Create Isochrones, Routes, Matrixes based on your local OTP instance and continue working on the results in QGIS.
+about=This Plugin makes OpenTripPlanner functionalities accessible from within QGIS. Create Isochrones, Routes and Route-Matrices based on your local or remote OTP instance and continue working on the results directly in QGIS.
 
 tracker=https://github.com/mkoenigb/OpenTripPlannerPlugin/issues
 repository=https://github.com/mkoenigb/OpenTripPlannerPlugin/
@@ -16,10 +16,11 @@ repository=https://github.com/mkoenigb/OpenTripPlannerPlugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-# changelog=
+changelog=0.2 Functionality for Routes added and minor optimizations
+    0.1 First experimental version, able to work with Isochrones
 
 # Tags are comma separated with spaces allowed
-tags=otp, opentripplanner
+tags=otp, opentripplanner, routing, routes, isochrones, transportation
 
 homepage=https://github.com/mkoenigb
 category=Plugins
