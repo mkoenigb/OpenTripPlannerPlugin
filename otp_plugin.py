@@ -708,7 +708,6 @@ class OpenTripPlannerPlugin:
         
         # Counter
         route_legid = 0
-        self.route_legid = 33
         route_routeid = 0
         route_relationid = 0
         route_from = ''
@@ -973,7 +972,7 @@ class OpenTripPlannerPlugin:
                                 )
                 
                 testurl = 'https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT'
-                route_url = testurl #route_url # for testing
+                route_url = route_url #route_url # for testing
                 print(route_url)
                 route_headers = {"accept":"application/json"} # this plugin only works for json responses
                 
