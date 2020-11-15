@@ -36,7 +36,7 @@ from .resources import *
 # Import the code for the dialog
 from .otp_plugin_dialog import OpenTripPlannerPluginDialog
 from osgeo import ogr
-from datetime import datetime
+from datetime import *
 import os.path
 import os
 import urllib.request
@@ -207,6 +207,278 @@ class OpenTripPlannerPlugin:
         if isinstance(self.serverUrl, str): self.dlg.GeneralSettings_ServerURL.setText(self.serverUrl) # set textbox text to variable from QgsSettings
         #self.iface.messageBar().pushMessage("Success", "Function read_general_variables running! Var: " + self.serverUrl, level=Qgis.Success, duration=3)
 
+    def store_route_variables(self):
+        s = QgsSettings()
+        
+        # Walk Speed
+        self.Routes_WalkSpeed_Use_setting = int(self.dlg.Routes_WalkSpeed_Use.isChecked())
+        s.setValue("otp_plugin/Routes_WalkSpeed_Use", self.Routes_WalkSpeed_Use_setting)
+        self.Routes_WalkSpeed_setting = float(self.dlg.Routes_WalkSpeed.value())
+        s.setValue("otp_plugin/Routes_WalkSpeed", self.Routes_WalkSpeed_setting)
+        
+        # Bike Speed
+        self.Routes_BikeSpeed_Use_setting = int(self.dlg.Routes_BikeSpeed_Use.isChecked())
+        s.setValue("otp_plugin/Routes_BikeSpeed_Use", self.Routes_BikeSpeed_Use_setting)
+        self.Routes_BikeSpeed_setting = float(self.dlg.Routes_BikeSpeed.value())
+        s.setValue("otp_plugin/Routes_BikeSpeed", self.Routes_BikeSpeed_setting)
+        
+        # Date
+        self.Routes_Date_Use_setting = int(self.dlg.Routes_Date_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Date_Use", self.Routes_Date_Use_setting)
+        self.Routes_Date_setting = self.dlg.Routes_Date.date()
+        s.setValue("otp_plugin/Routes_Date", self.Routes_Date_setting)
+        
+        # Time
+        self.Routes_Time_Use_setting = int(self.dlg.Routes_Time_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Time_Use", self.Routes_Time_Use_setting)
+        self.Routes_Time_setting = self.dlg.Routes_Time.time()
+        s.setValue("otp_plugin/Routes_Time", self.Routes_Time_setting)
+        
+        # ArriveBy
+        self.Routes_ArriveBy_Use_setting = int(self.dlg.Routes_ArriveBy_Use.isChecked())
+        s.setValue("otp_plugin/Routes_ArriveBy_Use", self.Routes_ArriveBy_Use_setting)
+        self.Routes_ArriveBy_setting = int(self.dlg.Routes_ArriveBy.isChecked())
+        s.setValue("otp_plugin/Routes_ArriveBy", self.Routes_ArriveBy_setting)
+        
+        # Wheelchair
+        self.Routes_Wheelchair_Use_setting = int(self.dlg.Routes_Wheelchair_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Wheelchair_Use", self.Routes_Wheelchair_Use_setting)
+        self.Routes_Wheelchair_setting = int(self.dlg.Routes_Wheelchair.isChecked())
+        s.setValue("otp_plugin/Routes_Wheelchair", self.Routes_Wheelchair_setting)
+        
+        # Wait Reluctance
+        self.Routes_WaitReluctance_Use_setting = int(self.dlg.Routes_WaitReluctance_Use.isChecked())
+        s.setValue("otp_plugin/Routes_WaitReluctance_Use", self.Routes_WaitReluctance_Use_setting)
+        self.Routes_WaitReluctance_setting = float(self.dlg.Routes_WaitReluctance.value())
+        s.setValue("otp_plugin/Routes_WaitReluctance", self.Routes_WaitReluctance_setting)
+        
+        # Max Transfers
+        self.Routes_MaxTransfers_Use_setting = int(self.dlg.Routes_MaxTransfers_Use.isChecked())
+        s.setValue("otp_plugin/Routes_MaxTransfers_Use", self.Routes_MaxTransfers_Use_setting)
+        self.Routes_MaxTransfers_setting = int(self.dlg.Routes_MaxTransfers.value())
+        s.setValue("otp_plugin/Routes_MaxTransfers", self.Routes_MaxTransfers_setting)
+        
+        # Max Walkdistance
+        self.Routes_MaxWalkDistance_Use_setting = int(self.dlg.Routes_MaxWalkDistance_Use.isChecked())
+        s.setValue("otp_plugin/Routes_MaxWalkDistance_Use", self.Routes_MaxWalkDistance_Use_setting)
+        self.Routes_MaxWalkDistance_setting = int(self.dlg.Routes_MaxWalkDistance.value())
+        s.setValue("otp_plugin/Routes_MaxWalkDistance", self.Routes_MaxWalkDistance_setting)
+        
+        # Max Offroaddistance
+        self.Routes_MaxOffroadDistance_Use_setting = int(self.dlg.Routes_MaxOffroadDistance_Use.isChecked())
+        s.setValue("otp_plugin/Routes_MaxOffroadDistance_Use", self.Routes_MaxOffroadDistance_Use_setting)
+        self.Routes_MaxOffroadDistance_setting = int(self.dlg.Routes_MaxOffroadDistance.value())
+        s.setValue("otp_plugin/Routes_MaxOffroadDistance", self.Routes_MaxOffroadDistance_setting)
+        
+        # Iterinaries
+        self.Routes_Iterinaries_Use_setting = int(self.dlg.Routes_Iterinaries_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Iterinaries_Use", self.Routes_Iterinaries_Use_setting)
+        self.Routes_Iterinaries_setting = int(self.dlg.Routes_Iterinaries.value())
+        s.setValue("otp_plugin/Routes_Iterinaries", self.Routes_Iterinaries_setting)        
+        
+        # Optimize
+        self.Routes_Optimize_Use_setting = int(self.dlg.Routes_Optimize_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Optimize_Use", self.Routes_Optimize_Use_setting)
+        self.Routes_Optimize_setting = str(self.dlg.Routes_Optimize.currentText())
+        s.setValue("otp_plugin/Routes_Optimize", self.Routes_Optimize_setting)
+
+        # Mode
+        self.Routes_TransportationMode_setting = self.dlg.Routes_TransportationMode.toPlainText()
+        s.setValue("otp_plugin/Routes_TransportationMode", self.Routes_TransportationMode_setting)
+        
+        # Additional Parameters
+        self.Routes_AdditionalParameters_setting = self.dlg.Routes_AdditionalParameters.toPlainText()
+        s.setValue("otp_plugin/Routes_AdditionalParameters", self.Routes_AdditionalParameters_setting)
+        
+        # Matrixmatching
+        self.Routes_OnlyMatching_setting = int(self.dlg.Routes_OnlyMatching.isChecked())
+        s.setValue("otp_plugin/Routes_OnlyMatching", self.Routes_OnlyMatching_setting)
+        
+        self.iface.messageBar().pushMessage("Success", "Route settings stored!", level=Qgis.Success, duration=3) 
+        
+    def read_route_variables(self):
+        s = QgsSettings()
+        
+        # Walk Speed
+        self.Routes_WalkSpeed_Use_setting = int(s.value("otp_plugin/Routes_WalkSpeed_Use", 0))
+        self.dlg.Routes_WalkSpeed_Use.setChecked(self.Routes_WalkSpeed_Use_setting)
+        self.Routes_WalkSpeed_setting = float(s.value("otp_plugin/Routes_WalkSpeed", 4.828032))
+        self.dlg.Routes_WalkSpeed.setValue(self.Routes_WalkSpeed_setting)
+        
+        # Bike Speed
+        self.Routes_BikeSpeed_Use_setting = int(s.value("otp_plugin/Routes_BikeSpeed_Use", 0))
+        self.dlg.Routes_BikeSpeed_Use.setChecked(self.Routes_BikeSpeed_Use_setting)
+        self.Routes_BikeSpeed_setting = float(s.value("otp_plugin/Routes_BikeSpeed", 17.7))
+        self.dlg.Routes_BikeSpeed.setValue(self.Routes_BikeSpeed_setting)
+        
+        # Date
+        self.Routes_Date_Use_setting = int(s.value("otp_plugin/Routes_Date_Use", 1))
+        self.dlg.Routes_Date_Use.setChecked(self.Routes_Date_Use_setting)
+        self.Routes_Date_setting = s.value("otp_plugin/Routes_Date", QtCore.QDateTime.currentDateTime())
+        # I guess nobody understands this date 'stuff'....
+        try:
+            self.dlg.Routes_Date.setDateTime(self.Routes_Date_setting) # Standard value
+        except:
+            self.dlg.Routes_Date.setDate(self.Routes_Date_setting) # Stored value
+        
+        # Time
+        self.Routes_Time_Use_setting = int(s.value("otp_plugin/Routes_Time_Use", 1))
+        self.dlg.Routes_Time_Use.setChecked(self.Routes_Time_Use_setting)
+        self.Routes_Time_setting = s.value("otp_plugin/Routes_Time", QTime.fromString('14:00:00'))
+        self.dlg.Routes_Time.setTime(self.Routes_Time_setting)
+        
+        # Arrive By
+        self.Routes_ArriveBy_Use_setting = int(s.value("otp_plugin/Routes_ArriveBy_Use", 0))
+        self.dlg.Routes_ArriveBy_Use.setChecked(self.Routes_ArriveBy_Use_setting)
+        self.Routes_ArriveBy_setting = int(s.value("otp_plugin/Routes_ArriveBy", 0))
+        self.dlg.Routes_ArriveBy.setChecked(self.Routes_ArriveBy_setting)
+        
+        # Wheelchair
+        self.Routes_Wheelchair_Use_setting = int(s.value("otp_plugin/Routes_Wheelchair_Use", 0))
+        self.dlg.Routes_Wheelchair_Use.setChecked(self.Routes_Wheelchair_Use_setting)
+        self.Routes_Wheelchair_setting = int(s.value("otp_plugin/Routes_Wheelchair", 0))
+        self.dlg.Routes_Wheelchair.setChecked(self.Routes_Wheelchair_setting)
+        
+        # Wait Reluctance
+        self.Routes_WaitReluctance_Use_setting = int(s.value("otp_plugin/Routes_WaitReluctance_Use", 0))
+        self.dlg.Routes_WaitReluctance_Use.setChecked(self.Routes_WaitReluctance_Use_setting)
+        self.Routes_WaitReluctance_setting = float(s.value("otp_plugin/Routes_WaitReluctance", 0.95))
+        self.dlg.Routes_WaitReluctance.setValue(self.Routes_WaitReluctance_setting)
+        
+        # Max Transfers
+        self.Routes_MaxTransfers_Use_setting = int(s.value("otp_plugin/Routes_MaxTransfers_Use", 0))
+        self.dlg.Routes_MaxTransfers_Use.setChecked(self.Routes_MaxTransfers_Use_setting)
+        self.Routes_MaxTransfers_setting = int(s.value("otp_plugin/Routes_MaxTransfers", 5))
+        self.dlg.Routes_MaxTransfers.setValue(self.Routes_MaxTransfers_setting)
+        
+        # Max WalkDistance
+        self.Routes_MaxWalkDistance_Use_setting = int(s.value("otp_plugin/Routes_MaxWalkDistance_Use", 0))
+        self.dlg.Routes_MaxWalkDistance_Use.setChecked(self.Routes_MaxWalkDistance_Use_setting)
+        self.Routes_MaxWalkDistance_setting = int(s.value("otp_plugin/Routes_MaxWalkDistance", 1000))
+        self.dlg.Routes_MaxWalkDistance.setValue(self.Routes_MaxWalkDistance_setting)
+        
+        # Max OffRoadDistance
+        self.Routes_MaxOffroadDistance_Use_setting = int(s.value("otp_plugin/Routes_MaxOffroadDistance_Use", 0))
+        self.dlg.Routes_MaxOffroadDistance_Use.setChecked(self.Routes_MaxOffroadDistance_Use_setting)
+        self.Routes_MaxOffroadDistance_setting = int(s.value("otp_plugin/Routes_MaxOffroadDistance", 150))
+        self.dlg.Routes_MaxOffroadDistance.setValue(self.Routes_MaxOffroadDistance_setting)
+        
+        # Iterinaries
+        self.Routes_Iterinaries_Use_setting = int(s.value("otp_plugin/Routes_Iterinaries_Use", 1))
+        self.dlg.Routes_Iterinaries_Use.setChecked(self.Routes_Iterinaries_Use_setting)
+        self.Routes_Iterinaries_setting = int(s.value("otp_plugin/Routes_Iterinaries", 1))
+        self.dlg.Routes_Iterinaries.setValue(self.Routes_Iterinaries_setting)        
+        
+        # Optimize
+        self.Routes_Optimize_Use_setting = int(s.value("otp_plugin/Routes_Optimize_Use", 0))
+        self.dlg.Routes_Optimize_Use.setChecked(self.Routes_Optimize_Use_setting)
+        self.Routes_Optimize_setting = str(s.value("otp_plugin/Routes_Optimize", 'QUICK'))
+        self.dlg.Routes_Optimize.setCurrentText(self.Routes_Optimize_setting)
+        
+        # Mode
+        self.Routes_TransportationMode = s.value("otp_plugin/Routes_TransportationMode", "WALK,TRANSIT")
+        if isinstance(self.Routes_TransportationMode, str): self.dlg.Routes_TransportationMode.setText(self.Routes_TransportationMode)
+        
+        # Additional Parameters
+        self.Routes_AdditionalParameters = s.value("otp_plugin/Routes_AdditionalParameters", "")
+        if isinstance(self.Routes_AdditionalParameters, str): self.dlg.Routes_AdditionalParameters.setText(self.Routes_AdditionalParameters)
+        
+        # Matrixmatching
+        self.Routes_OnlyMatching_setting = int(s.value("otp_plugin/Routes_OnlyMatching", 1))
+        self.dlg.Routes_OnlyMatching.setChecked(self.Routes_OnlyMatching_setting)
+        
+        #self.iface.messageBar().pushMessage("Success", "Function read_route_variables running!", level=Qgis.Success, duration=3)
+
+    def restore_route_variables(self):
+        s = QgsSettings()
+        #DefaultSettings
+        # Walk Speed
+        self.Routes_WalkSpeed_Use_setting = int(0)
+        self.dlg.Routes_WalkSpeed_Use.setChecked(self.Routes_WalkSpeed_Use_setting)
+        self.Routes_WalkSpeed_setting = float(4.828032)
+        self.dlg.Routes_WalkSpeed.setValue(self.Routes_WalkSpeed_setting)
+        
+        # Bike Speed
+        self.Routes_BikeSpeed_Use_setting = int(0)
+        self.dlg.Routes_BikeSpeed_Use.setChecked(self.Routes_BikeSpeed_Use_setting)
+        self.Routes_BikeSpeed_setting = float(17.7)
+        self.dlg.Routes_BikeSpeed.setValue(self.Routes_BikeSpeed_setting)
+        
+        # Date #####
+        self.Routes_Date_Use_setting = int(1)
+        self.dlg.Routes_Date_Use.setChecked(self.Routes_Date_Use_setting)
+        self.Routes_Date_setting = QDateTime(QtCore.QDateTime.currentDateTime())
+        self.dlg.Routes_Date.setDateTime(self.Routes_Date_setting)
+        
+        # Time
+        self.Routes_Time_Use_setting = int(1)
+        self.dlg.Routes_Time_Use.setChecked(self.Routes_Time_Use_setting)
+        self.Routes_Time_setting = QTime.fromString('14:00:00')
+        self.dlg.Routes_Time.setTime(self.Routes_Time_setting)
+        
+        # Arrive By
+        self.Routes_ArriveBy_Use_setting = int(0)
+        self.dlg.Routes_ArriveBy_Use.setChecked(self.Routes_ArriveBy_Use_setting)
+        self.Routes_ArriveBy_setting = int(0)
+        self.dlg.Routes_ArriveBy.setChecked(self.Routes_ArriveBy_setting)
+        
+        # Wheelchair
+        self.Routes_Wheelchair_Use_setting = int(0)
+        self.dlg.Routes_Wheelchair_Use.setChecked(self.Routes_Wheelchair_Use_setting)
+        self.Routes_Wheelchair_setting = int(0)
+        self.dlg.Routes_Wheelchair.setChecked(self.Routes_Wheelchair_setting)
+        
+        # Wait Reluctance
+        self.Routes_WaitReluctance_Use_setting = int(0)
+        self.dlg.Routes_WaitReluctance_Use.setChecked(self.Routes_WaitReluctance_Use_setting)
+        self.Routes_WaitReluctance_setting = float(0.95)
+        self.dlg.Routes_WaitReluctance.setValue(self.Routes_WaitReluctance_setting)
+        
+        # Max Transfers
+        self.Routes_MaxTransfers_Use_setting = int(0)
+        self.dlg.Routes_MaxTransfers_Use.setChecked(self.Routes_MaxTransfers_Use_setting)
+        self.Routes_MaxTransfers_setting = int(5)
+        self.dlg.Routes_MaxTransfers.setValue(self.Routes_MaxTransfers_setting)
+        
+        # Max WalkDistance
+        self.Routes_MaxWalkDistance_Use_setting = int(0)
+        self.dlg.Routes_MaxWalkDistance_Use.setChecked(self.Routes_MaxWalkDistance_Use_setting)
+        self.Routes_MaxWalkDistance_setting = int(1000)
+        self.dlg.Routes_MaxWalkDistance.setValue(self.Routes_MaxWalkDistance_setting)
+        
+        # Max OffRoadDistance
+        self.Routes_MaxOffroadDistance_Use_setting = int(0)
+        self.dlg.Routes_MaxOffroadDistance_Use.setChecked(self.Routes_MaxOffroadDistance_Use_setting)
+        self.Routes_MaxOffroadDistance_setting = int(150)
+        self.dlg.Routes_MaxOffroadDistance.setValue(self.Routes_MaxOffroadDistance_setting)
+        
+        # Iterinaries
+        self.Routes_Iterinaries_Use_setting = int(1)
+        self.dlg.Routes_Iterinaries_Use.setChecked(self.Routes_Iterinaries_Use_setting)
+        self.Routes_Iterinaries_setting = int(1)
+        self.dlg.Routes_Iterinaries.setValue(self.Routes_Iterinaries_setting)        
+        
+        # Optimize
+        self.Routes_Optimize_Use_setting = int(0)
+        self.dlg.Routes_Optimize_Use.setChecked(self.Routes_Optimize_Use_setting)
+        self.Routes_Optimize_setting = 'QUICK'
+        self.dlg.Routes_Optimize.setCurrentText(self.Routes_Optimize_setting)        
+        
+        # Mode
+        self.Routes_TransportationMode = ""
+        if isinstance(self.Routes_TransportationMode, str): self.dlg.Routes_TransportationMode.setText(self.Routes_TransportationMode)
+        
+        # Additional Parameters
+        self.Routes_AdditionalParameters = ""
+        if isinstance(self.Routes_AdditionalParameters, str): self.dlg.Routes_AdditionalParameters.setText(self.Routes_AdditionalParameters)
+        
+        # Matrixmatching
+        self.Routes_OnlyMatching_setting = int(1)
+        self.dlg.Routes_OnlyMatching.setChecked(self.Routes_OnlyMatching_setting)        
+        
+        self.iface.messageBar().pushMessage("Success", "Default route settings restored!", level=Qgis.Success, duration=3)
+        
+        
     def store_isochrone_variables(self):
         s = QgsSettings()
         
@@ -458,7 +730,7 @@ class OpenTripPlannerPlugin:
         self.Isochrones_AdditionalParameters = ""
         if isinstance(self.Isochrones_AdditionalParameters, str): self.dlg.Isochrones_AdditionalParameters.setText(self.Isochrones_AdditionalParameters)
         
-        self.iface.messageBar().pushMessage("Success", "Default settings restored!", level=Qgis.Success, duration=3)
+        self.iface.messageBar().pushMessage("Success", "Default isochrone settings restored!", level=Qgis.Success, duration=3)
 
       
     # Source: https://stackoverflow.com/a/33557535/8947209 (slightly modified)
@@ -611,25 +883,35 @@ class OpenTripPlannerPlugin:
         fieldindexcounter = 0 # start with index 0
         fieldindexdict = {} # empty dictionary
         for field in routes_memorylayer_vl.fields(): # iterate through field list we just created above
-            x = str(field.name()).lower() # convert to lowercase, string and add _fieldindex
-            #exec("%s = %d" % (x,fieldindexcounter)) # doesnt work....
-            fieldindexdict[fieldindexcounter] = x # assign index as value to dictionary key
+            x = str(field.name()).lower() # convert to lowercase, string
+            fieldindexdict[fieldindexcounter] = x # assign index as key and fieldname as value
+            if '_url' in x:
+                fieldindex_position_of_last_alwaysneededfield = fieldindexcounter
             fieldindexcounter += 1
-        
+        len_fieldindexdict = len(fieldindexdict)
+
         inputlayer_numberOfFields_routes_source = self.routes_selectedLayer_source.fields().count() # count number of fields in inputlayer
         inputlayer_numberOfFields_routes_target = self.routes_selectedLayer_target.fields().count() # count number of fields in inputlayer            
         #routes_memorylayer_pr.addAttributes(self.routes_selectedLayer_source.fields()) # Copy all fieldnames of inputlayer to outputlayer  
         #routes_memorylayer_pr.addAttributes(self.routes_selectedLayer_target.fields()) # Copy all fieldnames of inputlayer to outputlayer 
+        
+        fieldindexcounter_source = 0 + len_fieldindexdict
+        fieldindexdict_source = {}        
         for field in self.routes_selectedLayer_source.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
             routes_memorylayer_pr.addAttributes([QgsField('Source_' + str(field.name()), field.type())]) # Old fieldname + Source_ as prefix. Keep original field type
-            #x = 'source_' + str(field.name()).lower() # add to fieldindexdictionary
-            #fieldindexdict[fieldindexcounter] = x # add to fieldindexdictionary
-            #fieldindexcounter += 1 
+            x = 'source_' + str(field.name()).lower() # add to fieldindexdictionary
+            fieldindexdict_source[fieldindexcounter_source] = x # add to fieldindexdictionary
+            fieldindexcounter_source += 1 
+        len_fieldindexdict_source = len(fieldindexdict_source)
+
+        fieldindexcounter_target = 0 + len_fieldindexdict + len_fieldindexdict_source
+        fieldindexdict_target = {}
         for field in self.routes_selectedLayer_target.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
             routes_memorylayer_pr.addAttributes([QgsField('Target_' + str(field.name()), field.type())]) # Old fieldname + Target_ as prefix. Keep original field type       
-            #x = 'target_' + str(field.name()).lower() # add to fieldindexdictionary
-            #fieldindexdict[fieldindexcounter] = x # add to fieldindexdictionary
-            #fieldindexcounter += 1         
+            x = 'target_' + str(field.name()).lower() # add to fieldindexdictionary
+            fieldindexdict_target[fieldindexcounter_target] = x # add to fieldindexdictionary
+            fieldindexcounter_target += 1     
+        len_fieldindexdict_target = len(fieldindexdict_target)            
         #print(fieldindexdict)
         
         # To optimize speed of loop in case only routes for matching fields shall be created: Create a dictionary for both layers
@@ -712,7 +994,7 @@ class OpenTripPlannerPlugin:
         route_relationid = 0
         route_from = ''
         route_to = ''
-        notavailablestring = 'not available'
+        notavailablestring = None #'not available'
         notavailableint = None #0
         notavailableothers = None
         
@@ -972,7 +1254,7 @@ class OpenTripPlannerPlugin:
                                 )
                 
                 testurl = 'https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT'
-                route_url = route_url #route_url # for testing
+                route_url = route_url # for testing
                 print(route_url)
                 route_headers = {"accept":"application/json"} # this plugin only works for json responses
                 
@@ -1057,11 +1339,15 @@ class OpenTripPlannerPlugin:
                     for iter in route_data['plan']['itineraries']: 
                         route_routeid += 1
                         try:
-                            route_from_starttime = datetime.datetime.fromtimestamp(int(iter['startTime'])/1000)
+                            route_from_starttime = iter['startTime']
+                            route_from_starttime = datetime.fromtimestamp(int(route_from_starttime)/1000)
+                            route_from_starttime = QDateTime.fromString(str(route_from_starttime),'yyyy-MM-dd hh:mm:ss')
                         except:
                             route_from_starttime = notavailableothers
                         try:
-                            route_to_endtime = datetime.datetime.fromtimestamp(int(iter['endTime'])/1000)
+                            route_to_endtime = iter['endTime']
+                            route_to_endtime = datetime.fromtimestamp(int(route_to_endtime)/1000)
+                            route_to_endtime = QDateTime.fromString(str(route_to_endtime),'yyyy-MM-dd hh:mm:ss')                            
                         except:
                             route_to_endtime = notavailableothers
                         try:
@@ -1100,7 +1386,9 @@ class OpenTripPlannerPlugin:
                             feature = QgsFeature()
                             
                             try:
-                                route_leg_starttime = datetime.datetime.fromtimestamp(int(leg['startTime'])/1000)
+                                route_leg_starttime = leg['startTime']
+                                route_leg_starttime = datetime.fromtimestamp(int(route_leg_starttime)/1000)
+                                route_leg_starttime = QDateTime.fromString(str(route_leg_starttime),'yyyy-MM-dd hh:mm:ss')
                             except:
                                 route_leg_starttime = notavailableothers
                             try:
@@ -1108,7 +1396,9 @@ class OpenTripPlannerPlugin:
                             except:
                                 route_leg_departuredelay = notavailableint
                             try:
-                                route_leg_endtime = datetime.datetime.fromtimestamp(int(leg['endTime'])/1000)
+                                route_leg_endtime = leg['endTime']
+                                route_leg_endtime = datetime.fromtimestamp(int(route_leg_endtime)/1000)
+                                route_leg_endtime = QDateTime.fromString(str(route_leg_endtime),'yyyy-MM-dd hh:mm:ss')
                             except:
                                 route_leg_endtime = notavailableothers
                             try:
@@ -1121,10 +1411,10 @@ class OpenTripPlannerPlugin:
                                 route_leg_duration = notavailableint
                             try:
                                 route_leg_distance = leg['distance']
-                                route_total_distance += route_leg_distance
+                                route_total_distance = None # Field does not exist in response. To complicated to calculate as it would require to loop over entire result layer again. Maybe add in a later release...
                             except:
                                 route_leg_distance = notavailableint
-                                route_total_distance += route_leg_distance
+                                route_total_distance = None # Field does not exist in response.....
                             try:
                                 route_leg_mode = leg['mode']
                             except:
@@ -1148,7 +1438,9 @@ class OpenTripPlannerPlugin:
                             except:
                                 route_leg_from_name = notavailablestring
                             try:
-                                route_leg_from_departure = datetime.datetime.fromtimestamp(int(leg['from']['departure'])/1000)
+                                route_leg_from_departure = leg['from']['departure']
+                                route_leg_from_departure = datetime.fromtimestamp(int(route_leg_from_departure)/1000)
+                                route_leg_from_departure = QDateTime.fromString(str(route_leg_from_departure),'yyyy-MM-dd hh:mm:ss')
                             except:
                                 route_leg_from_departure = notavailableothers
                             try:
@@ -1170,7 +1462,9 @@ class OpenTripPlannerPlugin:
                             except:
                                 route_leg_to_name = notavailablestring
                             try:
-                                route_leg_to_arrival = datetime.datetime.fromtimestamp(int(leg['to']['arrival'])/1000)
+                                route_leg_to_arrival = leg['to']['arrival']
+                                route_leg_to_arrival = datetime.fromtimestamp(int(route_leg_to_arrival)/1000)
+                                route_leg_to_arrival = QDateTime.fromString(str(route_leg_to_arrival),'yyyy-MM-dd hh:mm:ss')
                             except:
                                 route_leg_to_arrival = notavailableothers
                             
@@ -1185,28 +1479,91 @@ class OpenTripPlannerPlugin:
                             
                             # Create the feature
                             routes_memorylayer_pr.addFeature(feature)
-                            #attrs_leg = { 1 : 22, 2 : 22, 3 : 22 , 4 : 22 } # set further generic attributes
-                            for key, value in fieldindexdict.items():
-                                print(key)
-                                print(value)
+                            # Adding the attributes to resultlayer
+                            for key, value in fieldindexdict.items(): # keys contain the fieldindex, values the variablename which is the same as the fieldname, just in lowercase
                                 fieldindex = key
-                                #fieldvalue = 22
-                                #fieldvalue = getattr(self, value, 'default')
-                                fieldvalue = locals()[value]
-                                #print(fieldvalue)
+                                #fieldvalue = getattr(self, value, 'default') # vars need to be named self.abc.. better use locals()
+                                fieldvalue = locals()[value] # variables are named exactly as the fieldnames, just lowercase, we adjusted that before
                                 attrs_leg = { fieldindex : fieldvalue }
                                 routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_leg }) # change attribute values of new layer to the just set ones  
-                            
-                            
+                            fieldindex_source = 0 # fieldindex in sourcelayer
+                            for key, value in fieldindexdict_source.items(): # loop through fields of sourcelayer
+                                fieldindex_new = key # fieldindex in resultlayer
+                                fieldvalue = self.routes_selectedLayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
+                                attrs_source = { fieldindex_new : fieldvalue } # prepare attributes
+                                routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_source }) # copy over value of sourcelayer to resultlayer
+                                fieldindex_source += 1 # go to next field of sourcelayer
+                            fieldindex_target = 0
+                            for key, value in fieldindexdict_target.items():
+                                fieldindex_new = key
+                                fieldvalue = self.routes_selectedLayer_target.getFeature(target_fid).attribute(fieldindex_target)
+                                attrs_target = { fieldindex_new : fieldvalue }
+                                routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_target })
+                                fieldindex_target += 1
                             # END OF LOOP legs
-                            
                         # END OF LOOP iterinaries
-                
-                # END OF if route_error_bool == False:
-                
+                    # END OF if route_error_bool == False
+                else: # Create error-dummyfeature if no route has been returned
+                    route_routeid += 1
+                    route_legid += 1
+                    feature = QgsFeature()
+                    route_error = 'Error: No Route'
+                    try:
+                        route_errorid = route_data['error']['id']
+                    except:
+                        route_errorid = notavailableint
+                    try:
+                        route_errordescription = route_data['error']['msg']
+                    except:
+                        route_errordescription = notavailablestring
+                    try:
+                        route_errormessage = route_data['error']['message']
+                    except:
+                        route_errormessage = notavailablestring
+                    try:
+                        route_errornopath = route_data['error']['noPath']
+                    except:
+                        route_errornopath = notavailablestring
+                    
+                    # Create dummy-geometry
+                    feature.setGeometry(QgsGeometry.fromPolyline(errorlinegeom))
+                    
+                    # Create the feature
+                    routes_memorylayer_pr.addFeature(feature)
+                    # Adding the attributes to resultlayer
+                    for key, value in fieldindexdict.items(): # keys contain the fieldindex, values the variablename which is the same as the fieldname, just in lowercase
+                        fieldindex = key
+                        #fieldvalue = getattr(self, value, 'default') # vars need to be named self.abc.. better use locals()
+                        try:
+                            fieldvalue = locals()[value] # variables are named exactly as the fieldnames, just lowercase, we adjusted that before
+                        except:
+                            fieldvalue = None # In case there is no value for it yet (happens if the first request returns an error). Otherwise we will get a key error
+                        if fieldindex <= fieldindex_position_of_last_alwaysneededfield: # Only fill the first fields on error
+                            attrs_leg = { fieldindex : fieldvalue }
+                        else: # Leave the others empty as there is no data available
+                            attrs_leg = { fieldindex : None }
+                        routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_leg }) # change attribute values of new layer to the just set ones  
+                    fieldindex_source = 0 # fieldindex in sourcelayer
+                    for key, value in fieldindexdict_source.items(): # loop through fields of sourcelayer
+                        fieldindex_new = key # fieldindex in resultlayer
+                        fieldvalue = self.routes_selectedLayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
+                        attrs_source = { fieldindex_new : fieldvalue } # prepare attributes
+                        routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_source }) # copy over value of sourcelayer to resultlayer
+                        fieldindex_source += 1 # go to next field of sourcelayer
+                    fieldindex_target = 0
+                    for key, value in fieldindexdict_target.items():
+                        fieldindex_new = key
+                        fieldvalue = self.routes_selectedLayer_target.getFeature(target_fid).attribute(fieldindex_target)
+                        attrs_target = { fieldindex_new : fieldvalue }
+                        routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_target })
+                        fieldindex_target += 1
+                    # END OF errorroutecreation
                 i += 1
+                # Update Progressbar
+                progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
+                self.dlg.Routes_ProgressBar.setValue(progressbar_percent)
                 # END OF LOOP through list of current value in matching dictionary
-                
+            
         # Finalizing resultlayer
         routes_memorylayer_vl.updateFields()
         routes_memorylayer_vl.updateExtents()
@@ -1798,10 +2155,13 @@ class OpenTripPlannerPlugin:
         self.dlg.GeneralSettings_Save.clicked.connect(self.store_general_variables) #Call store_general_variables function when clicking on save button
         self.dlg.Isochrones_SaveSettings.clicked.connect(self.store_isochrone_variables)
         self.dlg.Isochrones_RestoreDefaultSettings.clicked.connect(self.restore_isochrone_variables)
+        self.dlg.Routes_SaveSettings.clicked.connect(self.store_route_variables)
+        self.dlg.Routes_RestoreDefaultSettings.clicked.connect(self.restore_route_variables)
         
         # Functions to execute every time the plugin is opened
         self.read_general_variables() #Run Read-Stored-Variables-Function on every start
         self.read_isochrone_variables()
+        self.read_route_variables()
         
         # show the dialog
         self.dlg.show()
