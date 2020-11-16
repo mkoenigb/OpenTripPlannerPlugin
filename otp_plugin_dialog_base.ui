@@ -1004,7 +1004,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>Restores default settings for Isochrones choosen by author of the plugin andor developers of opentripplanner</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Restores default settings for routes choosen by author of the plugin andor developers of opentripplanner&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Restore Default Settings</string>
@@ -1020,7 +1020,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a Point Layer you wish to use as start points. Can be in any CRS which can be transformed to WGS 84 by QGIS. Attributes of this layer will be copied over to results layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a Point Layer you wish to use as start points. Can be in any CRS which can be transformed to WGS 84 by QGIS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="Line" name="line_2">
@@ -1075,7 +1075,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a Point Layer you wish to use as target points. Can be in any CRS which can be transformed to WGS 84 by QGIS. Attributes of this layer will&lt;span style=&quot; font-weight:600;&quot;&gt; NOT &lt;/span&gt;be copied over to results layer.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Select a Point Layer you wish to use as target points. Can be in any CRS which can be transformed to WGS 84 by QGIS.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QProgressBar" name="Routes_ProgressBar">
@@ -2032,7 +2032,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check here if you wish to use Source-Layer for DataDefinedOverride option. Uncheck this one if you wish to use TargetLayer for it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check here if you wish to use Source-Layer for DataDefinedOverride option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Use Source Layer for DataDefinedOverride</string>
@@ -2057,7 +2057,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check here if you wish to use Source-Layer for DataDefinedOverride option. Uncheck this one if you wish to use TargetLayer for it.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check here if you wish to use Target-Layer for DataDefinedOverride option.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Use Target Layer for DataDefinedOverride</string>
@@ -2067,6 +2067,19 @@ Do not use an option if it is not compatible with the selected Mode. For example
      </property>
      <property name="autoExclusive">
       <bool>true</bool>
+     </property>
+    </widget>
+    <widget class="Line" name="line_3">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>120</y>
+       <width>301</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </widget>

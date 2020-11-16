@@ -44,9 +44,9 @@ import urllib
 import zipfile
 import json
 
+MESSAGE_CATEGORY = 'OpenTripPlanner PlugIn'
 
-
-class OpenTripPlannerPlugin:
+class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
     """QGIS Plugin Implementation."""
 
     def __init__(self, iface):
@@ -57,6 +57,8 @@ class OpenTripPlannerPlugin:
             application at run time.
         :type iface: QgsInterface
         """
+        #super(OpenTripPlannerPlugin, self).__init__() # related to QgsTask Test - https://stackoverflow.com/a/12280579
+        
         # Save reference to the QGIS interface
         self.iface = iface
         # initialize plugin directory
@@ -215,6 +217,11 @@ class OpenTripPlannerPlugin:
         s.setValue("otp_plugin/Routes_WalkSpeed_Use", self.Routes_WalkSpeed_Use_setting)
         self.Routes_WalkSpeed_setting = float(self.dlg.Routes_WalkSpeed.value())
         s.setValue("otp_plugin/Routes_WalkSpeed", self.Routes_WalkSpeed_setting)
+        # Test for Override Buttons - doesnt work
+        #self.Routes_Routes_WalkSpeed_Override_Use_setting = int(self.dlg.Routes_WalkSpeed_Override.isActive())
+        #s.setValue("otp_plugin/Routes_WalkSpeed_Override_Use", self.Routes_WalkSpeed_Override_Use_setting)
+        #self.Routes_Routes_WalkSpeed_Override_setting = self.dlg.Routes_WalkSpeed_Override.toProperty()
+        #s.setValue("otp_plugin/Routes_WalkSpeed_Override", self.Routes_WalkSpeed_Override_setting)
         
         # Bike Speed
         self.Routes_BikeSpeed_Use_setting = int(self.dlg.Routes_BikeSpeed_Use.isChecked())
@@ -304,7 +311,12 @@ class OpenTripPlannerPlugin:
         self.dlg.Routes_WalkSpeed_Use.setChecked(self.Routes_WalkSpeed_Use_setting)
         self.Routes_WalkSpeed_setting = float(s.value("otp_plugin/Routes_WalkSpeed", 4.828032))
         self.dlg.Routes_WalkSpeed.setValue(self.Routes_WalkSpeed_setting)
-        
+        # Test for Override Buttons - doesnt work
+        #self.Routes_WalkSpeed_Override_Use_setting = int(s.value("otp_plugin/Routes_WalkSpeed_Override_Use", 1))
+        #self.dlg.Routes_WalkSpeed_Override.setActive(self.Routes_WalkSpeed_Override_Use_setting)
+        #self.Routes_WalkSpeed_Override_setting = s.value("otp_plugin/Routes_WalkSpeed_Override", 4.828032)
+        #self.dlg.Routes_WalkSpeed_Override.setExpressionString(self.Routes_WalkSpeed_Override_setting)
+              
         # Bike Speed
         self.Routes_BikeSpeed_Use_setting = int(s.value("otp_plugin/Routes_BikeSpeed_Use", 0))
         self.dlg.Routes_BikeSpeed_Use.setChecked(self.Routes_BikeSpeed_Use_setting)
@@ -804,8 +816,8 @@ class OpenTripPlannerPlugin:
         route_uid_counter = 0
         route_id_counter = 0
         
-        print("")
-        print("--- Routes job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---")
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY, Qgis.Info)
+        QgsMessageLog.logMessage("--- Routes job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---",MESSAGE_CATEGORY, Qgis.Info)
         routes_starttime = datetime.now()
         
         # Getting fieldtypes and names of selected matchingfields
@@ -825,7 +837,7 @@ class OpenTripPlannerPlugin:
         routes_memorylayer_vl = QgsVectorLayer("LineString?crs=epsg:4326", "Routes", "memory") # Create temporary polygon layer (output file)
         routes_memorylayer_pr = routes_memorylayer_vl.dataProvider() # No idea what pr stands for, just copied this name from all the examples on the web... probably provider??
         routes_memorylayer_vl.startEditing() # Enter editing mode
-        routes_memorylayer_pr.addAttributes([
+        routes_memorylayer_pr.addAttributes([ # Master for attributes and varnames
             QgsField("Route_LegID",QVariant.Int),
             QgsField("Route_RouteID", QVariant.Int),
             QgsField("Route_RelationID", QVariant.Int),
@@ -958,7 +970,7 @@ class OpenTripPlannerPlugin:
         #print(n_totalrelations)
         if n_totalrelations == 0:
             self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes", level=Qgis.Warning, duration=6)
-            print("Warning! No Routes to create. Probably due to no matching attributes found or empty layer(s).")
+            QgsMessageLog.logMessage("Warning! No Routes to create. Probably due to no matching attributes found or empty layer(s).",MESSAGE_CATEGORY,Qgis.Warning)
         
         # Preparing Progressbar
         progressbar_featurecount = n_totalrelations
@@ -1049,8 +1061,8 @@ class OpenTripPlannerPlugin:
                 y_source = round(pointgeom_source.y(),8)
                 x_target = round(pointgeom_target.x(),8)
                 y_target = round(pointgeom_target.y(),8)
-                print("Relation #" + str(route_relationid) + " of " + str(n_totalrelations)  + " total relations.")
-                print("Relation from Source '" + str(source_feature_idvalue) + "' (" + str(y_source) + "," + str(x_source) + ") to Target '" + str(target_feature_idvalue) + "' (" + str(y_target) + "," + str(x_target) + ")")
+                QgsMessageLog.logMessage("Relation #" + str(route_relationid) + " of " + str(n_totalrelations)  + " total relations.",MESSAGE_CATEGORY,Qgis.Info)
+                QgsMessageLog.logMessage("Relation from Source '" + str(source_feature_idvalue) + "' (" + str(y_source) + "," + str(x_source) + ") to Target '" + str(target_feature_idvalue) + "' (" + str(y_target) + "," + str(x_target) + ")",MESSAGE_CATEGORY,Qgis.Info)
                 
                 #Check where to gather attributes from: GUI or Layer? 
                 #WalkSpeed
@@ -1255,7 +1267,7 @@ class OpenTripPlannerPlugin:
                 
                 testurl = 'https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT'
                 route_url = route_url # for testing
-                print(route_url)
+                QgsMessageLog.logMessage(route_url,MESSAGE_CATEGORY,Qgis.Info)
                 route_headers = {"accept":"application/json"} # this plugin only works for json responses
                 
                 route_error = 'Success: No Error'
@@ -1572,10 +1584,10 @@ class OpenTripPlannerPlugin:
         self.iface.messageBar().pushMessage("Done!", " Routes job finished", level=Qgis.Success, duration=3) 
         routes_endtime = datetime.now()
         routes_runtime = routes_endtime - routes_starttime
-        print("--- Routes job done in " + str(routes_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---")
-        print("")
-        print("-----")
-        print("")
+        QgsMessageLog.logMessage("--- Routes job done in " + str(routes_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         
     def Isochrones_RequestIsochrones(self, isochrones_selectedLayer, Isochrones_Inputlayer_Fieldnames):        
         # clear and initialize vars and stuff
@@ -1587,7 +1599,7 @@ class OpenTripPlannerPlugin:
         isochrone_uid_counter = 0
         isochrone_id_counter = 0
         
-        print("--- Isochrones job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---")
+        QgsMessageLog.logMessage("--- Isochrones job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---",MESSAGE_CATEGORY,Qgis.Info)
         isochrones_starttime = datetime.now()
         
         # Setting up Override Button context
@@ -1630,7 +1642,7 @@ class OpenTripPlannerPlugin:
             progressbar_counter = progressbar_counter + 1
                 
             # retrieve every feature with its geometry and attributes
-            print("Feature ID: ", Inputlayer_Feature.id())
+            QgsMessageLog.logMessage("Feature ID: " + str(Inputlayer_Feature.id()),MESSAGE_CATEGORY,Qgis.Info)
             
             # Override Button Feature
             ctx.setFeature(Inputlayer_Feature) #Setting context to current feature
@@ -1641,7 +1653,7 @@ class OpenTripPlannerPlugin:
             pointgeom = geom.asPoint() #Read Point geometry
             x = round(pointgeom.x(),8) #Read X-Value
             y = round(pointgeom.y(),8) #Read Y-Value
-            print("PointX: ", x, " | PointY: ", y)
+            QgsMessageLog.logMessage("PointX: " + str(x) + " | PointY: " + str(y),MESSAGE_CATEGORY,Qgis.Info)
             
             # Feature Attributes
             Inputlayer_Attributes = Inputlayer_Feature.attributes() # fetch attributes
@@ -1852,7 +1864,7 @@ class OpenTripPlannerPlugin:
             #create url
             #Working example: https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=2019-11-01&time=08:00:00&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
             isochrone_url = isochrone_url #'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql'
-            print("URL: " + str(isochrone_url))
+            QgsMessageLog.logMessage(str(isochrone_url),MESSAGE_CATEGORY,Qgis.Info)
             debug_info = "Feature ID: " + str(Inputlayer_Feature.id()) + ' of Layer: ' + str(isochrones_selectedLayer) + ' at: ' + str(y) + ',' + str(x) + ' with URL: ' + str(isochrone_url) + '\n'
             
             #use lokal shp for testing to avoid bombing the server with requests :)
@@ -1878,16 +1890,16 @@ class OpenTripPlannerPlugin:
                             isochrone_responseLayer.updateExtents()
                         except:
                             Isochrones_Error = 'Error: loading response failed'
-                            print(Isochrones_Error)
+                            QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
                     except:
                         Isochrones_Error = 'Error: response file not valid'
-                        print(Isochrones_Error)
+                        QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
                 except:
                     Isochrones_Error = 'Error: writing response to harddrive failed'
-                    print(Isochrones_Error)
+                    QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
             except:
                 Isochrones_Error = 'Error: request failed' 
-                print(Isochrones_Error)
+                QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
 
 
                 
@@ -1895,10 +1907,10 @@ class OpenTripPlannerPlugin:
             try:
                 if (not isochrone_responseLayer.isValid()) or (isochrone_responseLayer.extent().yMaximum() == 0.0) or (isochrone_responseLayer.extent().xMaximum() == 0.0) or (isochrone_responseLayer.extent().yMinimum() == 0.0) or (isochrone_responseLayer.extent().xMinimum() == 0.0):
                     Isochrones_Error = 'Error: response layer is not valid'
-                    print(Isochrones_Error)
+                    QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
             except:
                 Isochrones_Error = 'Error: response layer is not valid'
-                print(Isochrones_Error)
+                QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
             
             # Create Dummylayer on Error to prevent errors in code or broken result layer
             if Isochrones_Error != 'Success: No Error':
@@ -1916,9 +1928,9 @@ class OpenTripPlannerPlugin:
                 
             # Throw back final status on this one
             if (Isochrones_Error != 'Success: No Error'):
-                print('Final Status: ' + str(Isochrones_Error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...')
+                QgsMessageLog.logMessage('Final Status: ' + str(Isochrones_Error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...',MESSAGE_CATEGORY,Qgis.Warning)
             else:
-                print('Final Status: ' + str(Isochrones_Error))
+                QgsMessageLog.logMessage('Final Status: ' + str(Isochrones_Error),MESSAGE_CATEGORY,Qgis.Warning)
             
             #get features of file
             Isochrone_Features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
@@ -1946,9 +1958,9 @@ class OpenTripPlannerPlugin:
             progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
             self.dlg.Isochrones_ProgressBar.setValue(progressbar_percent)
             
-            print("")
-            print("-----")
-            print("")
+            QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+            QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
+            QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
             #if Isochrones_Error == 'Success: No Error':
             #    QgsMessageLog.logMessage('OpenTripPlanner Plugin Info: \n' + str(debug_info) + '\n successful', level=Qgis.Info) 
             #else:
@@ -1982,10 +1994,10 @@ class OpenTripPlannerPlugin:
         self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", level=Qgis.Success, duration=3)
         isochrones_endtime = datetime.now()
         isochrones_runtime = isochrones_endtime - isochrones_starttime
-        print("--- Isochrones job done in " + str(isochrones_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---")
-        print("")
-        print("-----")
-        print("")
+        QgsMessageLog.logMessage("--- Isochrones job done in " + str(isochrones_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         
     def isochrones_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
         layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers
@@ -2137,7 +2149,9 @@ class OpenTripPlannerPlugin:
         
         # Setting GUI stuff for startup
         self.dlg.Isochrones_Date.setDateTime(QtCore.QDateTime.currentDateTime()) # Set Dateselection to today on restart or firststart
+        self.dlg.Routes_Date.setDateTime(QtCore.QDateTime.currentDateTime())
         self.dlg.Isochrones_ProgressBar.setValue(0) # Set Progressbar to 0 on restart or first start
+        self.dlg.Routes_ProgressBar.setValue(0)
         self.dlg.GeneralSettings_ServerStatusResult.setText("Unknown")
         self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: white; color: black ")
             
@@ -2172,7 +2186,8 @@ class OpenTripPlannerPlugin:
             # Do something useful here - delete the line containing pass and
             # substitute with your code.
             #Isochrones_RequestIsochrones()  
-            print("OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.")
-            self.iface.messageBar().pushMessage(
-            "Error", "OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.",
-            level=Qgis.Critical, duration=3) 
+            QgsMessageLog.logMessage("OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.",MESSAGE_CATEGORY,Qgis.Warning)
+            self.iface.messageBar().pushMessage("Error", "OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.",level=Qgis.Critical, duration=3)
+
+#t1 = OpenTripPlannerPlugin(iface)
+#QgsApplication.taskManager().addTask(t1)
