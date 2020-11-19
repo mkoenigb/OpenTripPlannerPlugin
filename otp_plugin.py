@@ -1589,7 +1589,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         
-    def Isochrones_RequestIsochrones(self, isochrones_selectedLayer, Isochrones_Inputlayer_Fieldnames):        
+    def Isochrones_RequestIsochrones(self):        
         # clear and initialize vars and stuff
         isochrone_url = None
         Isochrones_Error = None
@@ -1603,18 +1603,24 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         isochrones_starttime = datetime.now()
         
         # Setting up Override Button context
-        ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(isochrones_selectedLayer)) #This context will be able to evaluate global, project, and layer variables
+        ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.isochrones_selectedLayer)) #This context will be able to evaluate global, project, and layer variables
         
         # Preparing Features
-        Inputlayer_Features = isochrones_selectedLayer.getFeatures()
+        Inputlayer_Features = self.isochrones_selectedLayer.getFeatures()
         
         # Create the Output-Vectorlayer
         Isochrones_Memorylayer_VL = QgsVectorLayer("MultiPolygon?crs=epsg:4326", "Isochrones", "memory") # Create temporary polygon layer (output file)
         Isochrones_Memorylayer_PR = Isochrones_Memorylayer_VL.dataProvider() # No idea what pr stands for, just copied this name from all the examples on the web... probably provider??
         Isochrones_Memorylayer_VL.startEditing() # Enter editing mode
-        Isochrones_Memorylayer_PR.addAttributes([QgsField("Isochrone_Time",QVariant.Int),QgsField("Isochrone_UID", QVariant.Int),QgsField("Isochrone_ID", QVariant.Int),QgsField("Isochrone_Error", QVariant.String),QgsField("Isochrone_URL", QVariant.String)]) # Add Error and URL Field to outputlayer        
-        Isochrones_Memorylayer_PR.addAttributes(isochrones_selectedLayer.fields()) # Copy all fieldnames of inputlayer to outputlayer  
-        Inputlayer_NumberOfFields = isochrones_selectedLayer.fields().count() # count number of fields in inputlayer
+        Isochrones_Memorylayer_PR.addAttributes([
+                                          QgsField("Isochrone_Time",QVariant.Int),
+                                          QgsField("Isochrone_UID", QVariant.Int),
+                                          QgsField("Isochrone_ID", QVariant.Int),
+                                          QgsField("Isochrone_Error", QVariant.String),
+                                          QgsField("Isochrone_URL", QVariant.String)
+                                          ]) # Add Error and URL Field to outputlayer        
+        Isochrones_Memorylayer_PR.addAttributes(self.isochrones_selectedLayer.fields()) # Copy all fieldnames of inputlayer to outputlayer  
+        Inputlayer_NumberOfFields = self.isochrones_selectedLayer.fields().count() # count number of fields in inputlayer
         Inputlayer_outFeat = QgsFeature() # set QgsFeature
         
         # Savelocation
@@ -1625,12 +1631,12 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         ServerURL = self.serverUrl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()        
  
         # Preparing Transformation to WGS 84
-        sourceCrs = QgsCoordinateReferenceSystem(isochrones_selectedLayer.crs().authid()) # Read CRS of input layer
+        sourceCrs = QgsCoordinateReferenceSystem(self.isochrones_selectedLayer.crs().authid()) # Read CRS of input layer
         destCrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
         tr = QgsCoordinateTransform(sourceCrs, destCrs, QgsProject.instance()) # Setting up transformation
         
         # Preparing Progressbar
-        progressbar_featurecount = isochrones_selectedLayer.featureCount()
+        progressbar_featurecount = self.isochrones_selectedLayer.featureCount()
         progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
         progressbar_counter = 0
         self.dlg.Isochrones_ProgressBar.setValue(progressbar_percent)
@@ -1865,7 +1871,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
             #Working example: https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=2019-11-01&time=08:00:00&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
             isochrone_url = isochrone_url #'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql'
             QgsMessageLog.logMessage(str(isochrone_url),MESSAGE_CATEGORY,Qgis.Info)
-            debug_info = "Feature ID: " + str(Inputlayer_Feature.id()) + ' of Layer: ' + str(isochrones_selectedLayer) + ' at: ' + str(y) + ',' + str(x) + ' with URL: ' + str(isochrone_url) + '\n'
+            debug_info = "Feature ID: " + str(Inputlayer_Feature.id()) + ' of Layer: ' + str(self.isochrones_selectedLayer) + ' at: ' + str(y) + ',' + str(x) + ' with URL: ' + str(isochrone_url) + '\n'
             
             #use lokal shp for testing to avoid bombing the server with requests :)
             #request and download file
@@ -1961,29 +1967,6 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
             QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
             QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
             QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
-            #if Isochrones_Error == 'Success: No Error':
-            #    QgsMessageLog.logMessage('OpenTripPlanner Plugin Info: \n' + str(debug_info) + '\n successful', level=Qgis.Info) 
-            #else:
-            #    QgsMessageLog.logMessage('OpenTripPlanner Plugin Info: \n' + str(debug_info) + '\n produced: ' + str(Isochrones_Error) + '\n Check Python console for more details when running next time', level=Qgis.Warning) 
-                
-            # Just testing stuff...
-            #print(self.dlg.Isochrones_WalkSpeed_Override.vectorLayer())
-            #print(isochrone_url)
-            #self.iface.messageBar().pushMessage(
-            #"Success", "Function Isochrones_RequestIsochrones run! URL: " + isochrone_url + " - " + str(Isochrones_Inputlayer_Fieldnames) + str(isochrones_selectedLayer) + str(self.dlg.Isochrones_WalkSpeed_Override.vectorLayer()) + ' ' + str(Isochrones_Error),
-            #level=Qgis.Success, duration=3) 
-
-            # Retrieve HTTP meta-data
-            #print(r.status_code)
-            #print(r.headers['content-type'])
-            #print(r.encoding)
-            #requeststatuscode = str(r.status_code)
-            #requestheader = str(r.headers['content-type'])
-            #requestencoding = str(r.encoding)
-            #responseheader = str('response is not defined - does not work')       
-            #self.iface.messageBar().pushMessage(
-            #"Success", "HTTP GET Request via Python requests: " + "requeststatus: " + requeststatuscode + " requestheader: " + requestheader + " requestencoding: " + requestencoding + " responseheader: " + responseheader + " url: " + url,
-            #level=Qgis.Success, duration=3) 
             
         #END OF LOOP
         
@@ -2003,53 +1986,52 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers
         self.dlg.Isochrones_SelectInputLayer.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
         self.isochrones_selectedLayer = self.dlg.Isochrones_SelectInputLayer.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
-        isochrones_selectedLayer = self.isochrones_selectedLayer # I could just replace all isochrones_selectedLayer variables by self.isochrones_selectedLayer which would actually make more sense, but got lost in search and replace ending up in a mess...
-        if isochrones_selectedLayer is not None: # prevents showing python error when no point-layer is available
-            self.Isochrones_Inputlayer_Fieldnames = [field.name() for field in isochrones_selectedLayer.fields()] # Receive Isochrones_Inputlayer_Fieldnames from selected layer
+        if self.isochrones_selectedLayer is not None: # prevents showing python error when no point-layer is available
+            self.Isochrones_Inputlayer_Fieldnames = [field.name() for field in self.isochrones_selectedLayer.fields()] # Receive Isochrones_Inputlayer_Fieldnames from selected layer
         
         # Setting up QgsOverrideButtons (Reference: https://gis.stackexchange.com/a/350993/107424). Has to be done here, so they get updated when the layer selection has changed...
         #WalkSpeed
-        self.dlg.Isochrones_WalkSpeed_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_WalkSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("walkSpeed", "Walk Speed in km/h", QgsPropertyDefinition.DoublePositive), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_WalkSpeed_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_WalkSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("walkSpeed", "Walk Speed in km/h", QgsPropertyDefinition.DoublePositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #BikeSpeed
-        self.dlg.Isochrones_BikeSpeed_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_BikeSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("bikeSpeed", "Bike Speed in km/h", QgsPropertyDefinition.DoublePositive), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_BikeSpeed_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_BikeSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("bikeSpeed", "Bike Speed in km/h", QgsPropertyDefinition.DoublePositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #Date
-        self.dlg.Isochrones_Date_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_Date_Override.init(0, QgsProperty(), QgsPropertyDefinition("Date", "Date in YYYY-MM-DD", QgsPropertyDefinition.String), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_Date_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_Date_Override.init(0, QgsProperty(), QgsPropertyDefinition("Date", "Date in YYYY-MM-DD", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #Time
-        self.dlg.Isochrones_Time_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_Time_Override.init(0, QgsProperty(), QgsPropertyDefinition("Time", "Time in HH:MM:SS", QgsPropertyDefinition.String), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_Time_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_Time_Override.init(0, QgsProperty(), QgsPropertyDefinition("Time", "Time in HH:MM:SS", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #ArriveBy
-        self.dlg.Isochrones_ArriveBy_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_ArriveBy_Override.init(0, QgsProperty(), QgsPropertyDefinition("ArriveBy", "ArriveBy as Boolean", QgsPropertyDefinition.Boolean), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_ArriveBy_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_ArriveBy_Override.init(0, QgsProperty(), QgsPropertyDefinition("ArriveBy", "ArriveBy as Boolean", QgsPropertyDefinition.Boolean), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #Wheelchair
-        self.dlg.Isochrones_Wheelchair_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_Wheelchair_Override.init(0, QgsProperty(), QgsPropertyDefinition("Wheelchair", "Wheelchair as Boolean", QgsPropertyDefinition.Boolean), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_Wheelchair_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_Wheelchair_Override.init(0, QgsProperty(), QgsPropertyDefinition("Wheelchair", "Wheelchair as Boolean", QgsPropertyDefinition.Boolean), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #WaitReluctance
-        self.dlg.Isochrones_WaitReluctance_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_WaitReluctance_Override.init(0, QgsProperty(), QgsPropertyDefinition("WaitReluctance", "Wait Reluctance Factor as Double", QgsPropertyDefinition.Double), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_WaitReluctance_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_WaitReluctance_Override.init(0, QgsProperty(), QgsPropertyDefinition("WaitReluctance", "Wait Reluctance Factor as Double", QgsPropertyDefinition.Double), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #MaxTransfers
-        self.dlg.Isochrones_MaxTransfers_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_MaxTransfers_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxTransfers", "Maximum Transfers as Integer", QgsPropertyDefinition.IntegerPositive), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_MaxTransfers_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_MaxTransfers_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxTransfers", "Maximum Transfers as Integer", QgsPropertyDefinition.IntegerPositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #MaxWalkDistance
-        self.dlg.Isochrones_MaxWalkDistance_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_MaxWalkDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxWalkDistance", "Maximum Walk Distance in Meters", QgsPropertyDefinition.IntegerPositive), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_MaxWalkDistance_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_MaxWalkDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxWalkDistance", "Maximum Walk Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #MaxOffroadDistance
-        self.dlg.Isochrones_MaxOffroadDistance_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_MaxOffroadDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxOffroadDistance", "Maximum Offroad Distance in Meters", QgsPropertyDefinition.IntegerPositive), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_MaxOffroadDistance_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_MaxOffroadDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxOffroadDistance", "Maximum Offroad Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #PrecisionMeters
-        self.dlg.Isochrones_PrecisionMeters_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_PrecisionMeters_Override.init(0, QgsProperty(), QgsPropertyDefinition("PrecisionMeters", "Level of Detail in Meters", QgsPropertyDefinition.IntegerPositiveGreaterZero), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_PrecisionMeters_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_PrecisionMeters_Override.init(0, QgsProperty(), QgsPropertyDefinition("PrecisionMeters", "Level of Detail in Meters", QgsPropertyDefinition.IntegerPositiveGreaterZero), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #Interval
-        self.dlg.Isochrones_Interval_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_Interval_Override.init(0, QgsProperty(), QgsPropertyDefinition("Interval", "Isochrones Interval in Seconds as String using Integer Values separated by Comma", QgsPropertyDefinition.String), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_Interval_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_Interval_Override.init(0, QgsProperty(), QgsPropertyDefinition("Interval", "Isochrones Interval in Seconds as String using Integer Values separated by Comma", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #TransportationMode
-        self.dlg.Isochrones_TransportationMode_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_TransportationMode_Override.init(0, QgsProperty(), QgsPropertyDefinition("TransportationMode", "TransportationMode as String separated by Comma", QgsPropertyDefinition.String), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_TransportationMode_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_TransportationMode_Override.init(0, QgsProperty(), QgsPropertyDefinition("TransportationMode", "TransportationMode as String separated by Comma", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #AdditionalParameters
-        self.dlg.Isochrones_AdditionalParameters_Override.registerExpressionContextGenerator(isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_AdditionalParameters_Override.init(0, QgsProperty(), QgsPropertyDefinition("AdditionalParameters", "Additional Parameters as String", QgsPropertyDefinition.String), isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_AdditionalParameters_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_AdditionalParameters_Override.init(0, QgsProperty(), QgsPropertyDefinition("AdditionalParameters", "Additional Parameters as String", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
 
         
     def routes_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
@@ -2058,7 +2040,6 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         self.routes_selectedLayer_source = self.dlg.Routes_SelectInputLayer_Source.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
         self.dlg.Routes_SelectInputLayer_Target.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
         self.routes_selectedLayer_target = self.dlg.Routes_SelectInputLayer_Target.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer         
-        #routes_selectedLayer_source = self.routes_selectedLayer_source # I could just replace all isochrones_selectedLayer variables by self.isochrones_selectedLayer which would actually make more sense, but got lost in search and replace ending up in a mess...
         if self.routes_selectedLayer_source is not None: # prevents showing python error when no point-layer is available
             self.routes_inputlayer_source_fieldnames = [field.name() for field in self.routes_selectedLayer_source.fields()] # Receive Inputlayer_Fieldnames from selected layer
         if self.routes_selectedLayer_target is not None: # prevents showing python error when no point-layer is available
@@ -2144,7 +2125,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
             self.routes_maplayerselection()
             self.isochrones_maplayerselection() 
             # Execute Main-Functions on Click: Placing them here prevents them from beeing executed multiple times, see https://gis.stackexchange.com/a/137161/107424
-            self.dlg.Isochrones_RequestIsochrones.clicked.connect(lambda: self.Isochrones_RequestIsochrones(self.isochrones_selectedLayer, self.Isochrones_Inputlayer_Fieldnames)) #Call Isochrones_RequestIsochrones function when clicking on RequestIsochrones button and handing over isochrones_selectedLayer. lambda function necessary to do this... (Reference: https://gis.stackexchange.com/a/351167/107424)
+            self.dlg.Isochrones_RequestIsochrones.clicked.connect(lambda: self.Isochrones_RequestIsochrones()) #Call Isochrones_RequestIsochrones function when clicking on RequestIsochrones button and handing over isochrones_selectedLayer. lambda function necessary to do this... (Reference: https://gis.stackexchange.com/a/351167/107424)
             self.dlg.Routes_RequestRoutes.clicked.connect(lambda: self.Routes_RequestRoutes())
         
         # Setting GUI stuff for startup

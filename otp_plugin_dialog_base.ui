@@ -37,7 +37,7 @@
       <rect>
        <x>10</x>
        <y>490</y>
-       <width>701</width>
+       <width>561</width>
        <height>23</height>
       </rect>
      </property>
@@ -976,6 +976,22 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Save Settings</string>
      </property>
     </widget>
+    <widget class="QPushButton" name="Isochrones_Cancel">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>491</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Request isochrones and store as polygon layer.</string>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_run_routes">
     <attribute name="title">
@@ -1083,7 +1099,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <rect>
        <x>10</x>
        <y>490</y>
-       <width>701</width>
+       <width>561</width>
        <height>23</height>
       </rect>
      </property>
@@ -2073,13 +2089,29 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>120</y>
+       <y>130</y>
        <width>301</width>
-       <height>31</height>
+       <height>16</height>
       </rect>
      </property>
      <property name="orientation">
       <enum>Qt::Horizontal</enum>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="Routes_Cancel">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>490</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Request isochrones and store as polygon layer.</string>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
      </property>
     </widget>
    </widget>
