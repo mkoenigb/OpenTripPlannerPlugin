@@ -816,8 +816,10 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         route_uid_counter = 0
         route_id_counter = 0
         
-        QgsMessageLog.logMessage("",MESSAGE_CATEGORY, Qgis.Info)
-        QgsMessageLog.logMessage("--- Routes job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---",MESSAGE_CATEGORY, Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("##### Routes job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         routes_starttime = datetime.now()
         
         # Getting fieldtypes and names of selected matchingfields
@@ -1571,6 +1573,12 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                         fieldindex_target += 1
                     # END OF errorroutecreation
                 i += 1
+                if route_error != 'Success: No Error':
+                    QgsMessageLog.logMessage(str(route_error) + ' - ErrorID: ' + str(route_errorid) + ' - ErrorDSC: ' + str(route_errordescription),MESSAGE_CATEGORY,Qgis.Warning)
+                QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
+                QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
+                QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
+                
                 # Update Progressbar
                 progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
                 self.dlg.Routes_ProgressBar.setValue(progressbar_percent)
@@ -1584,7 +1592,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         self.iface.messageBar().pushMessage("Done!", " Routes job finished", level=Qgis.Success, duration=3) 
         routes_endtime = datetime.now()
         routes_runtime = routes_endtime - routes_starttime
-        QgsMessageLog.logMessage("--- Routes job done in " + str(routes_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("##### Routes job done in " + str(routes_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
@@ -1599,7 +1607,10 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         isochrone_uid_counter = 0
         isochrone_id_counter = 0
         
-        QgsMessageLog.logMessage("--- Isochrones job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("##### Isochrones job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         isochrones_starttime = datetime.now()
         
         # Setting up Override Button context
@@ -1618,7 +1629,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                                           QgsField("Isochrone_ID", QVariant.Int),
                                           QgsField("Isochrone_Error", QVariant.String),
                                           QgsField("Isochrone_URL", QVariant.String)
-                                          ]) # Add Error and URL Field to outputlayer        
+                                          ]) # Add Error and URL Field to outputlayer
         Isochrones_Memorylayer_PR.addAttributes(self.isochrones_selectedLayer.fields()) # Copy all fieldnames of inputlayer to outputlayer  
         Inputlayer_NumberOfFields = self.isochrones_selectedLayer.fields().count() # count number of fields in inputlayer
         Inputlayer_outFeat = QgsFeature() # set QgsFeature
@@ -1935,8 +1946,6 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
             # Throw back final status on this one
             if (Isochrones_Error != 'Success: No Error'):
                 QgsMessageLog.logMessage('Final Status: ' + str(Isochrones_Error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...',MESSAGE_CATEGORY,Qgis.Warning)
-            else:
-                QgsMessageLog.logMessage('Final Status: ' + str(Isochrones_Error),MESSAGE_CATEGORY,Qgis.Warning)
             
             #get features of file
             Isochrone_Features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
@@ -1977,7 +1986,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", level=Qgis.Success, duration=3)
         isochrones_endtime = datetime.now()
         isochrones_runtime = isochrones_endtime - isochrones_starttime
-        QgsMessageLog.logMessage("--- Isochrones job done in " + str(isochrones_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " ---",MESSAGE_CATEGORY,Qgis.Info)
+        QgsMessageLog.logMessage("##### Isochrones job done in " + str(isochrones_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
