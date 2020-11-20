@@ -16,7 +16,7 @@ repository=https://github.com/mkoenigb/OpenTripPlannerPlugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=0.3 Added calculated field for totalroutedistance, code improvements, python-naming-conventions
+changelog=0.3 Added calculated field for totalroutedistance, minor code and general improvements, python-naming-conventions
     0.2 Functionality for Routes added and minor optimizations
     0.1 First experimental version, able to work with Isochrones
 
