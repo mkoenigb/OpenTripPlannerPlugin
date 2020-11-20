@@ -198,25 +198,26 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
     # https://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/settings.html and https://gis.stackexchange.com/questions/114527/qgis-plugin-with-save-settings-dialog
     def store_general_variables(self):
         s = QgsSettings()
-        self.serverUrl = self.dlg.GeneralSettings_ServerURL.toPlainText() # read from textbox
-        s.setValue("otp_plugin/GeneralSettings_ServerURL", self.serverUrl) # store as variable via QgsSettings
-        self.iface.messageBar().pushMessage("Success", "General settings stored! ServerURL: " + self.serverUrl, level=Qgis.Success, duration=3)
+        self.serverurl = self.dlg.GeneralSettings_ServerURL.toPlainText() # read from textbox
+        s.setValue("otp_plugin/GeneralSettings_ServerURL", self.serverurl) # store as variable via QgsSettings
+        self.iface.messageBar().pushMessage("Success", "General settings stored! ServerURL: " + self.serverurl, MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+        QgsMessageLog.logMessage("General settings stored! ServerURL: " + self.serverurl,MESSAGE_CATEGORY,Qgis.Info)
         
     def read_general_variables(self):
         s = QgsSettings()
         #ServerURL = s.value("myplugin/mytext", "http://localhost:8080/otp/routers/test/")
-        self.serverUrl = s.value("otp_plugin/GeneralSettings_ServerURL", "") # read from variable via QgsSettings
-        if isinstance(self.serverUrl, str): self.dlg.GeneralSettings_ServerURL.setText(self.serverUrl) # set textbox text to variable from QgsSettings
-        #self.iface.messageBar().pushMessage("Success", "Function read_general_variables running! Var: " + self.serverUrl, level=Qgis.Success, duration=3)
+        self.serverurl = s.value("otp_plugin/GeneralSettings_ServerURL", "") # read from variable via QgsSettings
+        if isinstance(self.serverurl, str): self.dlg.GeneralSettings_ServerURL.setText(self.serverurl) # set textbox text to variable from QgsSettings
+        #self.iface.messageBar().pushMessage("Success", "Function read_general_variables running! Var: " + self.serverurl, level=Qgis.Success, duration=3)
 
     def store_route_variables(self):
         s = QgsSettings()
         
         # Walk Speed
-        self.Routes_WalkSpeed_Use_setting = int(self.dlg.Routes_WalkSpeed_Use.isChecked())
-        s.setValue("otp_plugin/Routes_WalkSpeed_Use", self.Routes_WalkSpeed_Use_setting)
-        self.Routes_WalkSpeed_setting = float(self.dlg.Routes_WalkSpeed.value())
-        s.setValue("otp_plugin/Routes_WalkSpeed", self.Routes_WalkSpeed_setting)
+        self.routes_walkspeed_use_setting = int(self.dlg.Routes_WalkSpeed_Use.isChecked())
+        s.setValue("otp_plugin/Routes_WalkSpeed_Use", self.routes_walkspeed_use_setting)
+        self.routes_walkspeed_setting = float(self.dlg.Routes_WalkSpeed.value())
+        s.setValue("otp_plugin/Routes_WalkSpeed", self.routes_walkspeed_setting)
         # Test for Override Buttons - doesnt work
         #self.Routes_Routes_WalkSpeed_Override_Use_setting = int(self.dlg.Routes_WalkSpeed_Override.isActive())
         #s.setValue("otp_plugin/Routes_WalkSpeed_Override_Use", self.Routes_WalkSpeed_Override_Use_setting)
@@ -224,93 +225,94 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         #s.setValue("otp_plugin/Routes_WalkSpeed_Override", self.Routes_WalkSpeed_Override_setting)
         
         # Bike Speed
-        self.Routes_BikeSpeed_Use_setting = int(self.dlg.Routes_BikeSpeed_Use.isChecked())
-        s.setValue("otp_plugin/Routes_BikeSpeed_Use", self.Routes_BikeSpeed_Use_setting)
-        self.Routes_BikeSpeed_setting = float(self.dlg.Routes_BikeSpeed.value())
-        s.setValue("otp_plugin/Routes_BikeSpeed", self.Routes_BikeSpeed_setting)
+        self.routes_bikespeed_use_setting = int(self.dlg.Routes_BikeSpeed_Use.isChecked())
+        s.setValue("otp_plugin/Routes_BikeSpeed_Use", self.routes_bikespeed_use_setting)
+        self.routes_bikespeed_setting = float(self.dlg.Routes_BikeSpeed.value())
+        s.setValue("otp_plugin/Routes_BikeSpeed", self.routes_bikespeed_setting)
         
         # Date
-        self.Routes_Date_Use_setting = int(self.dlg.Routes_Date_Use.isChecked())
-        s.setValue("otp_plugin/Routes_Date_Use", self.Routes_Date_Use_setting)
-        self.Routes_Date_setting = self.dlg.Routes_Date.date()
-        s.setValue("otp_plugin/Routes_Date", self.Routes_Date_setting)
+        self.routes_date_use_setting = int(self.dlg.Routes_Date_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Date_Use", self.routes_date_use_setting)
+        self.routes_date_setting = self.dlg.Routes_Date.date()
+        s.setValue("otp_plugin/Routes_Date", self.routes_date_setting)
         
         # Time
-        self.Routes_Time_Use_setting = int(self.dlg.Routes_Time_Use.isChecked())
-        s.setValue("otp_plugin/Routes_Time_Use", self.Routes_Time_Use_setting)
-        self.Routes_Time_setting = self.dlg.Routes_Time.time()
-        s.setValue("otp_plugin/Routes_Time", self.Routes_Time_setting)
+        self.routes_time_use_setting = int(self.dlg.Routes_Time_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Time_Use", self.routes_time_use_setting)
+        self.routes_time_setting = self.dlg.Routes_Time.time()
+        s.setValue("otp_plugin/Routes_Time", self.routes_time_setting)
         
         # ArriveBy
-        self.Routes_ArriveBy_Use_setting = int(self.dlg.Routes_ArriveBy_Use.isChecked())
-        s.setValue("otp_plugin/Routes_ArriveBy_Use", self.Routes_ArriveBy_Use_setting)
-        self.Routes_ArriveBy_setting = int(self.dlg.Routes_ArriveBy.isChecked())
-        s.setValue("otp_plugin/Routes_ArriveBy", self.Routes_ArriveBy_setting)
+        self.routes_arriveby_use_setting = int(self.dlg.Routes_ArriveBy_Use.isChecked())
+        s.setValue("otp_plugin/Routes_ArriveBy_Use", self.routes_arriveby_use_setting)
+        self.routes_arriveby_setting = int(self.dlg.Routes_ArriveBy.isChecked())
+        s.setValue("otp_plugin/Routes_ArriveBy", self.routes_arriveby_setting)
         
         # Wheelchair
-        self.Routes_Wheelchair_Use_setting = int(self.dlg.Routes_Wheelchair_Use.isChecked())
-        s.setValue("otp_plugin/Routes_Wheelchair_Use", self.Routes_Wheelchair_Use_setting)
-        self.Routes_Wheelchair_setting = int(self.dlg.Routes_Wheelchair.isChecked())
-        s.setValue("otp_plugin/Routes_Wheelchair", self.Routes_Wheelchair_setting)
+        self.routes_wheelchair_use_setting = int(self.dlg.Routes_Wheelchair_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Wheelchair_Use", self.routes_wheelchair_use_setting)
+        self.routes_wheelchair_setting = int(self.dlg.Routes_Wheelchair.isChecked())
+        s.setValue("otp_plugin/Routes_Wheelchair", self.routes_wheelchair_setting)
         
         # Wait Reluctance
-        self.Routes_WaitReluctance_Use_setting = int(self.dlg.Routes_WaitReluctance_Use.isChecked())
-        s.setValue("otp_plugin/Routes_WaitReluctance_Use", self.Routes_WaitReluctance_Use_setting)
-        self.Routes_WaitReluctance_setting = float(self.dlg.Routes_WaitReluctance.value())
-        s.setValue("otp_plugin/Routes_WaitReluctance", self.Routes_WaitReluctance_setting)
+        self.routes_waitreluctance_use_setting = int(self.dlg.Routes_WaitReluctance_Use.isChecked())
+        s.setValue("otp_plugin/Routes_WaitReluctance_Use", self.routes_waitreluctance_use_setting)
+        self.routes_waitreluctance_setting = float(self.dlg.Routes_WaitReluctance.value())
+        s.setValue("otp_plugin/Routes_WaitReluctance", self.routes_waitreluctance_setting)
         
         # Max Transfers
-        self.Routes_MaxTransfers_Use_setting = int(self.dlg.Routes_MaxTransfers_Use.isChecked())
-        s.setValue("otp_plugin/Routes_MaxTransfers_Use", self.Routes_MaxTransfers_Use_setting)
-        self.Routes_MaxTransfers_setting = int(self.dlg.Routes_MaxTransfers.value())
-        s.setValue("otp_plugin/Routes_MaxTransfers", self.Routes_MaxTransfers_setting)
+        self.routes_maxtransfers_use_setting = int(self.dlg.Routes_MaxTransfers_Use.isChecked())
+        s.setValue("otp_plugin/Routes_MaxTransfers_Use", self.routes_maxtransfers_use_setting)
+        self.routes_maxtransfers_setting = int(self.dlg.Routes_MaxTransfers.value())
+        s.setValue("otp_plugin/Routes_MaxTransfers", self.routes_maxtransfers_setting)
         
         # Max Walkdistance
-        self.Routes_MaxWalkDistance_Use_setting = int(self.dlg.Routes_MaxWalkDistance_Use.isChecked())
-        s.setValue("otp_plugin/Routes_MaxWalkDistance_Use", self.Routes_MaxWalkDistance_Use_setting)
-        self.Routes_MaxWalkDistance_setting = int(self.dlg.Routes_MaxWalkDistance.value())
-        s.setValue("otp_plugin/Routes_MaxWalkDistance", self.Routes_MaxWalkDistance_setting)
+        self.routes_maxwalkdistance_use_setting = int(self.dlg.Routes_MaxWalkDistance_Use.isChecked())
+        s.setValue("otp_plugin/Routes_MaxWalkDistance_Use", self.routes_maxwalkdistance_use_setting)
+        self.routes_maxwalkdistance_setting = int(self.dlg.Routes_MaxWalkDistance.value())
+        s.setValue("otp_plugin/Routes_MaxWalkDistance", self.routes_maxwalkdistance_setting)
         
         # Max Offroaddistance
-        self.Routes_MaxOffroadDistance_Use_setting = int(self.dlg.Routes_MaxOffroadDistance_Use.isChecked())
-        s.setValue("otp_plugin/Routes_MaxOffroadDistance_Use", self.Routes_MaxOffroadDistance_Use_setting)
-        self.Routes_MaxOffroadDistance_setting = int(self.dlg.Routes_MaxOffroadDistance.value())
-        s.setValue("otp_plugin/Routes_MaxOffroadDistance", self.Routes_MaxOffroadDistance_setting)
+        self.routes_maxoffroaddistance_use_setting = int(self.dlg.Routes_MaxOffroadDistance_Use.isChecked())
+        s.setValue("otp_plugin/Routes_MaxOffroadDistance_Use", self.routes_maxoffroaddistance_use_setting)
+        self.routes_maxoffroaddistance_setting = int(self.dlg.Routes_MaxOffroadDistance.value())
+        s.setValue("otp_plugin/Routes_MaxOffroadDistance", self.routes_maxoffroaddistance_setting)
         
         # Iterinaries
-        self.Routes_Iterinaries_Use_setting = int(self.dlg.Routes_Iterinaries_Use.isChecked())
-        s.setValue("otp_plugin/Routes_Iterinaries_Use", self.Routes_Iterinaries_Use_setting)
-        self.Routes_Iterinaries_setting = int(self.dlg.Routes_Iterinaries.value())
-        s.setValue("otp_plugin/Routes_Iterinaries", self.Routes_Iterinaries_setting)        
+        self.routes_iterinaries_use_setting = int(self.dlg.Routes_Iterinaries_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Iterinaries_Use", self.routes_iterinaries_use_setting)
+        self.routes_iterinaries_setting = int(self.dlg.Routes_Iterinaries.value())
+        s.setValue("otp_plugin/Routes_Iterinaries", self.routes_iterinaries_setting)        
         
         # Optimize
-        self.Routes_Optimize_Use_setting = int(self.dlg.Routes_Optimize_Use.isChecked())
-        s.setValue("otp_plugin/Routes_Optimize_Use", self.Routes_Optimize_Use_setting)
-        self.Routes_Optimize_setting = str(self.dlg.Routes_Optimize.currentText())
-        s.setValue("otp_plugin/Routes_Optimize", self.Routes_Optimize_setting)
+        self.routes_optimize_use_setting = int(self.dlg.Routes_Optimize_Use.isChecked())
+        s.setValue("otp_plugin/Routes_Optimize_Use", self.routes_optimize_use_setting)
+        self.routes_optimize_setting = str(self.dlg.Routes_Optimize.currentText())
+        s.setValue("otp_plugin/Routes_Optimize", self.routes_optimize_setting)
 
         # Mode
-        self.Routes_TransportationMode_setting = self.dlg.Routes_TransportationMode.toPlainText()
-        s.setValue("otp_plugin/Routes_TransportationMode", self.Routes_TransportationMode_setting)
+        self.routes_transportationmode_setting = self.dlg.Routes_TransportationMode.toPlainText()
+        s.setValue("otp_plugin/Routes_TransportationMode", self.routes_transportationmode_setting)
         
         # Additional Parameters
-        self.Routes_AdditionalParameters_setting = self.dlg.Routes_AdditionalParameters.toPlainText()
-        s.setValue("otp_plugin/Routes_AdditionalParameters", self.Routes_AdditionalParameters_setting)
+        self.routes_additionalparameters_setting = self.dlg.Routes_AdditionalParameters.toPlainText()
+        s.setValue("otp_plugin/Routes_AdditionalParameters", self.routes_additionalparameters_setting)
         
         # Matrixmatching
-        self.Routes_OnlyMatching_setting = int(self.dlg.Routes_OnlyMatching.isChecked())
-        s.setValue("otp_plugin/Routes_OnlyMatching", self.Routes_OnlyMatching_setting)
+        self.routes_onlymatching_setting = int(self.dlg.Routes_OnlyMatching.isChecked())
+        s.setValue("otp_plugin/Routes_OnlyMatching", self.routes_onlymatching_setting)
         
-        self.iface.messageBar().pushMessage("Success", "Route settings stored!", level=Qgis.Success, duration=3) 
+        self.iface.messageBar().pushMessage("Success", "Route settings stored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
+        QgsMessageLog.logMessage("Route settings stored!",MESSAGE_CATEGORY,Qgis.Info)
         
     def read_route_variables(self):
         s = QgsSettings()
         
         # Walk Speed
-        self.Routes_WalkSpeed_Use_setting = int(s.value("otp_plugin/Routes_WalkSpeed_Use", 0))
-        self.dlg.Routes_WalkSpeed_Use.setChecked(self.Routes_WalkSpeed_Use_setting)
-        self.Routes_WalkSpeed_setting = float(s.value("otp_plugin/Routes_WalkSpeed", 4.828032))
-        self.dlg.Routes_WalkSpeed.setValue(self.Routes_WalkSpeed_setting)
+        self.routes_walkspeed_use_setting = int(s.value("otp_plugin/Routes_WalkSpeed_Use", 0))
+        self.dlg.Routes_WalkSpeed_Use.setChecked(self.routes_walkspeed_use_setting)
+        self.routes_walkspeed_setting = float(s.value("otp_plugin/Routes_WalkSpeed", 4.828032))
+        self.dlg.Routes_WalkSpeed.setValue(self.routes_walkspeed_setting)
         # Test for Override Buttons - doesnt work
         #self.Routes_WalkSpeed_Override_Use_setting = int(s.value("otp_plugin/Routes_WalkSpeed_Override_Use", 1))
         #self.dlg.Routes_WalkSpeed_Override.setActive(self.Routes_WalkSpeed_Override_Use_setting)
@@ -318,86 +320,86 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         #self.dlg.Routes_WalkSpeed_Override.setExpressionString(self.Routes_WalkSpeed_Override_setting)
               
         # Bike Speed
-        self.Routes_BikeSpeed_Use_setting = int(s.value("otp_plugin/Routes_BikeSpeed_Use", 0))
-        self.dlg.Routes_BikeSpeed_Use.setChecked(self.Routes_BikeSpeed_Use_setting)
-        self.Routes_BikeSpeed_setting = float(s.value("otp_plugin/Routes_BikeSpeed", 17.7))
-        self.dlg.Routes_BikeSpeed.setValue(self.Routes_BikeSpeed_setting)
+        self.routes_bikespeed_use_setting = int(s.value("otp_plugin/Routes_BikeSpeed_Use", 0))
+        self.dlg.Routes_BikeSpeed_Use.setChecked(self.routes_bikespeed_use_setting)
+        self.routes_bikespeed_setting = float(s.value("otp_plugin/Routes_BikeSpeed", 17.7))
+        self.dlg.Routes_BikeSpeed.setValue(self.routes_bikespeed_setting)
         
         # Date
-        self.Routes_Date_Use_setting = int(s.value("otp_plugin/Routes_Date_Use", 1))
-        self.dlg.Routes_Date_Use.setChecked(self.Routes_Date_Use_setting)
-        self.Routes_Date_setting = s.value("otp_plugin/Routes_Date", QtCore.QDateTime.currentDateTime())
+        self.routes_date_use_setting = int(s.value("otp_plugin/Routes_Date_Use", 1))
+        self.dlg.Routes_Date_Use.setChecked(self.routes_date_use_setting)
+        self.routes_date_setting = s.value("otp_plugin/Routes_Date", QtCore.QDateTime.currentDateTime())
         # I guess nobody understands this date 'stuff'....
         try:
-            self.dlg.Routes_Date.setDateTime(self.Routes_Date_setting) # Standard value
+            self.dlg.Routes_Date.setDateTime(self.routes_date_setting) # Standard value
         except:
-            self.dlg.Routes_Date.setDate(self.Routes_Date_setting) # Stored value
+            self.dlg.Routes_Date.setDate(self.routes_date_setting) # Stored value
         
         # Time
-        self.Routes_Time_Use_setting = int(s.value("otp_plugin/Routes_Time_Use", 1))
-        self.dlg.Routes_Time_Use.setChecked(self.Routes_Time_Use_setting)
-        self.Routes_Time_setting = s.value("otp_plugin/Routes_Time", QTime.fromString('14:00:00'))
-        self.dlg.Routes_Time.setTime(self.Routes_Time_setting)
+        self.routes_time_use_setting = int(s.value("otp_plugin/Routes_Time_Use", 1))
+        self.dlg.Routes_Time_Use.setChecked(self.routes_time_use_setting)
+        self.routes_time_setting = s.value("otp_plugin/Routes_Time", QTime.fromString('14:00:00'))
+        self.dlg.Routes_Time.setTime(self.routes_time_setting)
         
         # Arrive By
-        self.Routes_ArriveBy_Use_setting = int(s.value("otp_plugin/Routes_ArriveBy_Use", 0))
-        self.dlg.Routes_ArriveBy_Use.setChecked(self.Routes_ArriveBy_Use_setting)
-        self.Routes_ArriveBy_setting = int(s.value("otp_plugin/Routes_ArriveBy", 0))
-        self.dlg.Routes_ArriveBy.setChecked(self.Routes_ArriveBy_setting)
+        self.routes_arriveby_use_setting = int(s.value("otp_plugin/Routes_ArriveBy_Use", 0))
+        self.dlg.Routes_ArriveBy_Use.setChecked(self.routes_arriveby_use_setting)
+        self.routes_arriveby_setting = int(s.value("otp_plugin/Routes_ArriveBy", 0))
+        self.dlg.Routes_ArriveBy.setChecked(self.routes_arriveby_setting)
         
         # Wheelchair
-        self.Routes_Wheelchair_Use_setting = int(s.value("otp_plugin/Routes_Wheelchair_Use", 0))
-        self.dlg.Routes_Wheelchair_Use.setChecked(self.Routes_Wheelchair_Use_setting)
-        self.Routes_Wheelchair_setting = int(s.value("otp_plugin/Routes_Wheelchair", 0))
-        self.dlg.Routes_Wheelchair.setChecked(self.Routes_Wheelchair_setting)
+        self.routes_wheelchair_use_setting = int(s.value("otp_plugin/Routes_Wheelchair_Use", 0))
+        self.dlg.Routes_Wheelchair_Use.setChecked(self.routes_wheelchair_use_setting)
+        self.routes_wheelchair_setting = int(s.value("otp_plugin/Routes_Wheelchair", 0))
+        self.dlg.Routes_Wheelchair.setChecked(self.routes_wheelchair_setting)
         
         # Wait Reluctance
-        self.Routes_WaitReluctance_Use_setting = int(s.value("otp_plugin/Routes_WaitReluctance_Use", 0))
-        self.dlg.Routes_WaitReluctance_Use.setChecked(self.Routes_WaitReluctance_Use_setting)
-        self.Routes_WaitReluctance_setting = float(s.value("otp_plugin/Routes_WaitReluctance", 0.95))
-        self.dlg.Routes_WaitReluctance.setValue(self.Routes_WaitReluctance_setting)
+        self.routes_waitreluctance_use_setting = int(s.value("otp_plugin/Routes_WaitReluctance_Use", 0))
+        self.dlg.Routes_WaitReluctance_Use.setChecked(self.routes_waitreluctance_use_setting)
+        self.routes_waitreluctance_setting = float(s.value("otp_plugin/Routes_WaitReluctance", 0.95))
+        self.dlg.Routes_WaitReluctance.setValue(self.routes_waitreluctance_setting)
         
         # Max Transfers
-        self.Routes_MaxTransfers_Use_setting = int(s.value("otp_plugin/Routes_MaxTransfers_Use", 0))
-        self.dlg.Routes_MaxTransfers_Use.setChecked(self.Routes_MaxTransfers_Use_setting)
-        self.Routes_MaxTransfers_setting = int(s.value("otp_plugin/Routes_MaxTransfers", 5))
-        self.dlg.Routes_MaxTransfers.setValue(self.Routes_MaxTransfers_setting)
+        self.routes_maxtransfers_use_setting = int(s.value("otp_plugin/Routes_MaxTransfers_Use", 0))
+        self.dlg.Routes_MaxTransfers_Use.setChecked(self.routes_maxtransfers_use_setting)
+        self.routes_maxtransfers_setting = int(s.value("otp_plugin/Routes_MaxTransfers", 5))
+        self.dlg.Routes_MaxTransfers.setValue(self.routes_maxtransfers_setting)
         
         # Max WalkDistance
-        self.Routes_MaxWalkDistance_Use_setting = int(s.value("otp_plugin/Routes_MaxWalkDistance_Use", 0))
-        self.dlg.Routes_MaxWalkDistance_Use.setChecked(self.Routes_MaxWalkDistance_Use_setting)
-        self.Routes_MaxWalkDistance_setting = int(s.value("otp_plugin/Routes_MaxWalkDistance", 1000))
-        self.dlg.Routes_MaxWalkDistance.setValue(self.Routes_MaxWalkDistance_setting)
+        self.routes_maxwalkdistance_use_setting = int(s.value("otp_plugin/Routes_MaxWalkDistance_Use", 0))
+        self.dlg.Routes_MaxWalkDistance_Use.setChecked(self.routes_maxwalkdistance_use_setting)
+        self.routes_maxwalkdistance_setting = int(s.value("otp_plugin/Routes_MaxWalkDistance", 1000))
+        self.dlg.Routes_MaxWalkDistance.setValue(self.routes_maxwalkdistance_setting)
         
         # Max OffRoadDistance
-        self.Routes_MaxOffroadDistance_Use_setting = int(s.value("otp_plugin/Routes_MaxOffroadDistance_Use", 0))
-        self.dlg.Routes_MaxOffroadDistance_Use.setChecked(self.Routes_MaxOffroadDistance_Use_setting)
-        self.Routes_MaxOffroadDistance_setting = int(s.value("otp_plugin/Routes_MaxOffroadDistance", 150))
-        self.dlg.Routes_MaxOffroadDistance.setValue(self.Routes_MaxOffroadDistance_setting)
+        self.routes_maxoffroaddistance_use_setting = int(s.value("otp_plugin/Routes_MaxOffroadDistance_Use", 0))
+        self.dlg.Routes_MaxOffroadDistance_Use.setChecked(self.routes_maxoffroaddistance_use_setting)
+        self.routes_maxoffroaddistance_setting = int(s.value("otp_plugin/Routes_MaxOffroadDistance", 150))
+        self.dlg.Routes_MaxOffroadDistance.setValue(self.routes_maxoffroaddistance_setting)
         
         # Iterinaries
-        self.Routes_Iterinaries_Use_setting = int(s.value("otp_plugin/Routes_Iterinaries_Use", 1))
-        self.dlg.Routes_Iterinaries_Use.setChecked(self.Routes_Iterinaries_Use_setting)
-        self.Routes_Iterinaries_setting = int(s.value("otp_plugin/Routes_Iterinaries", 1))
-        self.dlg.Routes_Iterinaries.setValue(self.Routes_Iterinaries_setting)        
+        self.routes_iterinaries_use_setting = int(s.value("otp_plugin/Routes_Iterinaries_Use", 1))
+        self.dlg.Routes_Iterinaries_Use.setChecked(self.routes_iterinaries_use_setting)
+        self.routes_iterinaries_setting = int(s.value("otp_plugin/Routes_Iterinaries", 1))
+        self.dlg.Routes_Iterinaries.setValue(self.routes_iterinaries_setting)        
         
         # Optimize
-        self.Routes_Optimize_Use_setting = int(s.value("otp_plugin/Routes_Optimize_Use", 0))
-        self.dlg.Routes_Optimize_Use.setChecked(self.Routes_Optimize_Use_setting)
-        self.Routes_Optimize_setting = str(s.value("otp_plugin/Routes_Optimize", 'QUICK'))
-        self.dlg.Routes_Optimize.setCurrentText(self.Routes_Optimize_setting)
+        self.routes_optimize_use_setting = int(s.value("otp_plugin/Routes_Optimize_Use", 0))
+        self.dlg.Routes_Optimize_Use.setChecked(self.routes_optimize_use_setting)
+        self.routes_optimize_setting = str(s.value("otp_plugin/Routes_Optimize", 'QUICK'))
+        self.dlg.Routes_Optimize.setCurrentText(self.routes_optimize_setting)
         
         # Mode
-        self.Routes_TransportationMode = s.value("otp_plugin/Routes_TransportationMode", "WALK,TRANSIT")
-        if isinstance(self.Routes_TransportationMode, str): self.dlg.Routes_TransportationMode.setText(self.Routes_TransportationMode)
+        self.routes_transportationmode = s.value("otp_plugin/Routes_TransportationMode", "WALK,TRANSIT")
+        if isinstance(self.routes_transportationmode, str): self.dlg.Routes_TransportationMode.setText(self.routes_transportationmode)
         
         # Additional Parameters
-        self.Routes_AdditionalParameters = s.value("otp_plugin/Routes_AdditionalParameters", "")
-        if isinstance(self.Routes_AdditionalParameters, str): self.dlg.Routes_AdditionalParameters.setText(self.Routes_AdditionalParameters)
+        self.routes_additionalparameters = s.value("otp_plugin/Routes_AdditionalParameters", "")
+        if isinstance(self.routes_additionalparameters, str): self.dlg.Routes_AdditionalParameters.setText(self.routes_additionalparameters)
         
         # Matrixmatching
-        self.Routes_OnlyMatching_setting = int(s.value("otp_plugin/Routes_OnlyMatching", 1))
-        self.dlg.Routes_OnlyMatching.setChecked(self.Routes_OnlyMatching_setting)
+        self.routes_onlymatching_setting = int(s.value("otp_plugin/Routes_OnlyMatching", 1))
+        self.dlg.Routes_OnlyMatching.setChecked(self.routes_onlymatching_setting)
         
         #self.iface.messageBar().pushMessage("Success", "Function read_route_variables running!", level=Qgis.Success, duration=3)
 
@@ -405,259 +407,260 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         s = QgsSettings()
         #DefaultSettings
         # Walk Speed
-        self.Routes_WalkSpeed_Use_setting = int(0)
-        self.dlg.Routes_WalkSpeed_Use.setChecked(self.Routes_WalkSpeed_Use_setting)
-        self.Routes_WalkSpeed_setting = float(4.828032)
-        self.dlg.Routes_WalkSpeed.setValue(self.Routes_WalkSpeed_setting)
+        self.routes_walkspeed_use_setting = int(0)
+        self.dlg.Routes_WalkSpeed_Use.setChecked(self.routes_walkspeed_use_setting)
+        self.routes_walkspeed_setting = float(4.828032)
+        self.dlg.Routes_WalkSpeed.setValue(self.routes_walkspeed_setting)
         
         # Bike Speed
-        self.Routes_BikeSpeed_Use_setting = int(0)
-        self.dlg.Routes_BikeSpeed_Use.setChecked(self.Routes_BikeSpeed_Use_setting)
-        self.Routes_BikeSpeed_setting = float(17.7)
-        self.dlg.Routes_BikeSpeed.setValue(self.Routes_BikeSpeed_setting)
+        self.routes_bikespeed_use_setting = int(0)
+        self.dlg.Routes_BikeSpeed_Use.setChecked(self.routes_bikespeed_use_setting)
+        self.routes_bikespeed_setting = float(17.7)
+        self.dlg.Routes_BikeSpeed.setValue(self.routes_bikespeed_setting)
         
         # Date #####
-        self.Routes_Date_Use_setting = int(1)
-        self.dlg.Routes_Date_Use.setChecked(self.Routes_Date_Use_setting)
-        self.Routes_Date_setting = QDateTime(QtCore.QDateTime.currentDateTime())
-        self.dlg.Routes_Date.setDateTime(self.Routes_Date_setting)
+        self.routes_date_use_setting = int(1)
+        self.dlg.Routes_Date_Use.setChecked(self.routes_date_use_setting)
+        self.routes_date_setting = QDateTime(QtCore.QDateTime.currentDateTime())
+        self.dlg.Routes_Date.setDateTime(self.routes_date_setting)
         
         # Time
-        self.Routes_Time_Use_setting = int(1)
-        self.dlg.Routes_Time_Use.setChecked(self.Routes_Time_Use_setting)
-        self.Routes_Time_setting = QTime.fromString('14:00:00')
-        self.dlg.Routes_Time.setTime(self.Routes_Time_setting)
+        self.routes_time_use_setting = int(1)
+        self.dlg.Routes_Time_Use.setChecked(self.routes_time_use_setting)
+        self.routes_time_setting = QTime.fromString('14:00:00')
+        self.dlg.Routes_Time.setTime(self.routes_time_setting)
         
         # Arrive By
-        self.Routes_ArriveBy_Use_setting = int(0)
-        self.dlg.Routes_ArriveBy_Use.setChecked(self.Routes_ArriveBy_Use_setting)
-        self.Routes_ArriveBy_setting = int(0)
-        self.dlg.Routes_ArriveBy.setChecked(self.Routes_ArriveBy_setting)
+        self.routes_arriveby_use_setting = int(0)
+        self.dlg.Routes_ArriveBy_Use.setChecked(self.routes_arriveby_use_setting)
+        self.routes_arriveby_setting = int(0)
+        self.dlg.Routes_ArriveBy.setChecked(self.routes_arriveby_setting)
         
         # Wheelchair
-        self.Routes_Wheelchair_Use_setting = int(0)
-        self.dlg.Routes_Wheelchair_Use.setChecked(self.Routes_Wheelchair_Use_setting)
-        self.Routes_Wheelchair_setting = int(0)
-        self.dlg.Routes_Wheelchair.setChecked(self.Routes_Wheelchair_setting)
+        self.routes_wheelchair_use_setting = int(0)
+        self.dlg.Routes_Wheelchair_Use.setChecked(self.routes_wheelchair_use_setting)
+        self.routes_wheelchair_setting = int(0)
+        self.dlg.Routes_Wheelchair.setChecked(self.routes_wheelchair_setting)
         
         # Wait Reluctance
-        self.Routes_WaitReluctance_Use_setting = int(0)
-        self.dlg.Routes_WaitReluctance_Use.setChecked(self.Routes_WaitReluctance_Use_setting)
-        self.Routes_WaitReluctance_setting = float(0.95)
-        self.dlg.Routes_WaitReluctance.setValue(self.Routes_WaitReluctance_setting)
+        self.routes_waitreluctance_use_setting = int(0)
+        self.dlg.Routes_WaitReluctance_Use.setChecked(self.routes_waitreluctance_use_setting)
+        self.routes_waitreluctance_setting = float(0.95)
+        self.dlg.Routes_WaitReluctance.setValue(self.routes_waitreluctance_setting)
         
         # Max Transfers
-        self.Routes_MaxTransfers_Use_setting = int(0)
-        self.dlg.Routes_MaxTransfers_Use.setChecked(self.Routes_MaxTransfers_Use_setting)
-        self.Routes_MaxTransfers_setting = int(5)
-        self.dlg.Routes_MaxTransfers.setValue(self.Routes_MaxTransfers_setting)
+        self.routes_maxtransfers_use_setting = int(0)
+        self.dlg.Routes_MaxTransfers_Use.setChecked(self.routes_maxtransfers_use_setting)
+        self.routes_maxtransfers_setting = int(5)
+        self.dlg.Routes_MaxTransfers.setValue(self.routes_maxtransfers_setting)
         
         # Max WalkDistance
-        self.Routes_MaxWalkDistance_Use_setting = int(0)
-        self.dlg.Routes_MaxWalkDistance_Use.setChecked(self.Routes_MaxWalkDistance_Use_setting)
-        self.Routes_MaxWalkDistance_setting = int(1000)
-        self.dlg.Routes_MaxWalkDistance.setValue(self.Routes_MaxWalkDistance_setting)
+        self.routes_maxwalkdistance_use_setting = int(0)
+        self.dlg.Routes_MaxWalkDistance_Use.setChecked(self.routes_maxwalkdistance_use_setting)
+        self.routes_maxwalkdistance_setting = int(1000)
+        self.dlg.Routes_MaxWalkDistance.setValue(self.routes_maxwalkdistance_setting)
         
         # Max OffRoadDistance
-        self.Routes_MaxOffroadDistance_Use_setting = int(0)
-        self.dlg.Routes_MaxOffroadDistance_Use.setChecked(self.Routes_MaxOffroadDistance_Use_setting)
-        self.Routes_MaxOffroadDistance_setting = int(150)
-        self.dlg.Routes_MaxOffroadDistance.setValue(self.Routes_MaxOffroadDistance_setting)
+        self.routes_maxoffroaddistance_use_setting = int(0)
+        self.dlg.Routes_MaxOffroadDistance_Use.setChecked(self.routes_maxoffroaddistance_use_setting)
+        self.routes_maxoffroaddistance_setting = int(150)
+        self.dlg.Routes_MaxOffroadDistance.setValue(self.routes_maxoffroaddistance_setting)
         
         # Iterinaries
-        self.Routes_Iterinaries_Use_setting = int(1)
-        self.dlg.Routes_Iterinaries_Use.setChecked(self.Routes_Iterinaries_Use_setting)
-        self.Routes_Iterinaries_setting = int(1)
-        self.dlg.Routes_Iterinaries.setValue(self.Routes_Iterinaries_setting)        
+        self.routes_iterinaries_use_setting = int(1)
+        self.dlg.Routes_Iterinaries_Use.setChecked(self.routes_iterinaries_use_setting)
+        self.routes_iterinaries_setting = int(1)
+        self.dlg.Routes_Iterinaries.setValue(self.routes_iterinaries_setting)        
         
         # Optimize
-        self.Routes_Optimize_Use_setting = int(0)
-        self.dlg.Routes_Optimize_Use.setChecked(self.Routes_Optimize_Use_setting)
-        self.Routes_Optimize_setting = 'QUICK'
-        self.dlg.Routes_Optimize.setCurrentText(self.Routes_Optimize_setting)        
+        self.routes_optimize_use_setting = int(0)
+        self.dlg.Routes_Optimize_Use.setChecked(self.routes_optimize_use_setting)
+        self.routes_optimize_setting = 'QUICK'
+        self.dlg.Routes_Optimize.setCurrentText(self.routes_optimize_setting)        
         
         # Mode
-        self.Routes_TransportationMode = ""
-        if isinstance(self.Routes_TransportationMode, str): self.dlg.Routes_TransportationMode.setText(self.Routes_TransportationMode)
+        self.routes_transportationmode = ""
+        if isinstance(self.routes_transportationmode, str): self.dlg.Routes_TransportationMode.setText(self.routes_transportationmode)
         
         # Additional Parameters
-        self.Routes_AdditionalParameters = ""
-        if isinstance(self.Routes_AdditionalParameters, str): self.dlg.Routes_AdditionalParameters.setText(self.Routes_AdditionalParameters)
+        self.routes_additionalparameters = ""
+        if isinstance(self.routes_additionalparameters, str): self.dlg.Routes_AdditionalParameters.setText(self.routes_additionalparameters)
         
         # Matrixmatching
-        self.Routes_OnlyMatching_setting = int(1)
-        self.dlg.Routes_OnlyMatching.setChecked(self.Routes_OnlyMatching_setting)        
+        self.routes_onlymatching_setting = int(1)
+        self.dlg.Routes_OnlyMatching.setChecked(self.routes_onlymatching_setting)        
         
-        self.iface.messageBar().pushMessage("Success", "Default route settings restored!", level=Qgis.Success, duration=3)
-        
+        self.iface.messageBar().pushMessage("Success", "Default route settings restored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+        QgsMessageLog.logMessage("Default route settings restored!",MESSAGE_CATEGORY,Qgis.Info)
         
     def store_isochrone_variables(self):
         s = QgsSettings()
         
         # Walk Speed
-        self.Isochrones_WalkSpeed_Use_setting = int(self.dlg.Isochrones_WalkSpeed_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_WalkSpeed_Use", self.Isochrones_WalkSpeed_Use_setting)
-        self.Isochrones_WalkSpeed_setting = float(self.dlg.Isochrones_WalkSpeed.value())
-        s.setValue("otp_plugin/Isochrones_WalkSpeed", self.Isochrones_WalkSpeed_setting)
+        self.isochrones_walkspeed_use_setting = int(self.dlg.Isochrones_WalkSpeed_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_WalkSpeed_Use", self.isochrones_walkspeed_use_setting)
+        self.isochrones_walkspeed_setting = float(self.dlg.Isochrones_WalkSpeed.value())
+        s.setValue("otp_plugin/Isochrones_WalkSpeed", self.isochrones_walkspeed_setting)
         
         # Bike Speed
-        self.Isochrones_BikeSpeed_Use_setting = int(self.dlg.Isochrones_BikeSpeed_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_BikeSpeed_Use", self.Isochrones_BikeSpeed_Use_setting)
-        self.Isochrones_BikeSpeed_setting = float(self.dlg.Isochrones_BikeSpeed.value())
-        s.setValue("otp_plugin/Isochrones_BikeSpeed", self.Isochrones_BikeSpeed_setting)
+        self.isochrones_bikespeed_use_setting = int(self.dlg.Isochrones_BikeSpeed_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_BikeSpeed_Use", self.isochrones_bikespeed_use_setting)
+        self.isochrones_bikespeed_setting = float(self.dlg.Isochrones_BikeSpeed.value())
+        s.setValue("otp_plugin/Isochrones_BikeSpeed", self.isochrones_bikespeed_setting)
         
         # Date
-        self.Isochrones_Date_Use_setting = int(self.dlg.Isochrones_Date_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_Date_Use", self.Isochrones_Date_Use_setting)
-        self.Isochrones_Date_setting = self.dlg.Isochrones_Date.date()
-        s.setValue("otp_plugin/Isochrones_Date", self.Isochrones_Date_setting)
+        self.isochrones_date_use_setting = int(self.dlg.Isochrones_Date_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_Date_Use", self.isochrones_date_use_setting)
+        self.isochrones_date_setting = self.dlg.Isochrones_Date.date()
+        s.setValue("otp_plugin/Isochrones_Date", self.isochrones_date_setting)
         
         # Time
-        self.Isochrones_Time_Use_setting = int(self.dlg.Isochrones_Time_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_Time_Use", self.Isochrones_Time_Use_setting)
-        self.Isochrones_Time_setting = self.dlg.Isochrones_Time.time()
-        s.setValue("otp_plugin/Isochrones_Time", self.Isochrones_Time_setting)
+        self.isochrones_time_use_setting = int(self.dlg.Isochrones_Time_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_Time_Use", self.isochrones_time_use_setting)
+        self.isochrones_time_setting = self.dlg.Isochrones_Time.time()
+        s.setValue("otp_plugin/Isochrones_Time", self.isochrones_time_setting)
         
         # ArriveBy
-        self.Isochrones_ArriveBy_Use_setting = int(self.dlg.Isochrones_ArriveBy_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_ArriveBy_Use", self.Isochrones_ArriveBy_Use_setting)
-        self.Isochrones_ArriveBy_setting = int(self.dlg.Isochrones_ArriveBy.isChecked())
-        s.setValue("otp_plugin/Isochrones_ArriveBy", self.Isochrones_ArriveBy_setting)
+        self.isochrones_arriveby_use_setting = int(self.dlg.Isochrones_ArriveBy_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_ArriveBy_Use", self.isochrones_arriveby_use_setting)
+        self.isochrones_arriveby_setting = int(self.dlg.Isochrones_ArriveBy.isChecked())
+        s.setValue("otp_plugin/Isochrones_ArriveBy", self.isochrones_arriveby_setting)
         
         # Wheelchair
-        self.Isochrones_Wheelchair_Use_setting = int(self.dlg.Isochrones_Wheelchair_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_Wheelchair_Use", self.Isochrones_Wheelchair_Use_setting)
-        self.Isochrones_Wheelchair_setting = int(self.dlg.Isochrones_Wheelchair.isChecked())
-        s.setValue("otp_plugin/Isochrones_Wheelchair", self.Isochrones_Wheelchair_setting)
+        self.isochrones_wheelchair_use_setting = int(self.dlg.Isochrones_Wheelchair_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_Wheelchair_Use", self.isochrones_wheelchair_use_setting)
+        self.isochrones_wheelchair_setting = int(self.dlg.Isochrones_Wheelchair.isChecked())
+        s.setValue("otp_plugin/Isochrones_Wheelchair", self.isochrones_wheelchair_setting)
         
         # Wait Reluctance
-        self.Isochrones_WaitReluctance_Use_setting = int(self.dlg.Isochrones_WaitReluctance_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_WaitReluctance_Use", self.Isochrones_WaitReluctance_Use_setting)
-        self.Isochrones_WaitReluctance_setting = float(self.dlg.Isochrones_WaitReluctance.value())
-        s.setValue("otp_plugin/Isochrones_WaitReluctance", self.Isochrones_WaitReluctance_setting)
+        self.isochrones_waitreluctance_use_setting = int(self.dlg.Isochrones_WaitReluctance_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_WaitReluctance_Use", self.isochrones_waitreluctance_use_setting)
+        self.isochrones_waitreluctance_setting = float(self.dlg.Isochrones_WaitReluctance.value())
+        s.setValue("otp_plugin/Isochrones_WaitReluctance", self.isochrones_waitreluctance_setting)
         
         # Max Transfers
-        self.Isochrones_MaxTransfers_Use_setting = int(self.dlg.Isochrones_MaxTransfers_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_MaxTransfers_Use", self.Isochrones_MaxTransfers_Use_setting)
-        self.Isochrones_MaxTransfers_setting = int(self.dlg.Isochrones_MaxTransfers.value())
-        s.setValue("otp_plugin/Isochrones_MaxTransfers", self.Isochrones_MaxTransfers_setting)
+        self.isochrones_maxtransfers_use_setting = int(self.dlg.Isochrones_MaxTransfers_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_MaxTransfers_Use", self.isochrones_maxtransfers_use_setting)
+        self.isochrones_maxtransfers_setting = int(self.dlg.Isochrones_MaxTransfers.value())
+        s.setValue("otp_plugin/Isochrones_MaxTransfers", self.isochrones_maxtransfers_setting)
         
         # Max Walkdistance
-        self.Isochrones_MaxWalkDistance_Use_setting = int(self.dlg.Isochrones_MaxWalkDistance_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_MaxWalkDistance_Use", self.Isochrones_MaxWalkDistance_Use_setting)
-        self.Isochrones_MaxWalkDistance_setting = int(self.dlg.Isochrones_MaxWalkDistance.value())
-        s.setValue("otp_plugin/Isochrones_MaxWalkDistance", self.Isochrones_MaxWalkDistance_setting)
+        self.isochrones_maxwalkdistance_use_setting = int(self.dlg.Isochrones_MaxWalkDistance_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_MaxWalkDistance_Use", self.isochrones_maxwalkdistance_use_setting)
+        self.isochrones_maxwalkdistance_setting = int(self.dlg.Isochrones_MaxWalkDistance.value())
+        s.setValue("otp_plugin/Isochrones_MaxWalkDistance", self.isochrones_maxwalkdistance_setting)
         
         # Max Offroaddistance
-        self.Isochrones_MaxOffroadDistance_Use_setting = int(self.dlg.Isochrones_MaxOffroadDistance_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_MaxOffroadDistance_Use", self.Isochrones_MaxOffroadDistance_Use_setting)
-        self.Isochrones_MaxOffroadDistance_setting = int(self.dlg.Isochrones_MaxOffroadDistance.value())
-        s.setValue("otp_plugin/Isochrones_MaxOffroadDistance", self.Isochrones_MaxOffroadDistance_setting)
+        self.isochrones_maxoffroaddistance_use_setting = int(self.dlg.Isochrones_MaxOffroadDistance_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_MaxOffroadDistance_Use", self.isochrones_maxoffroaddistance_use_setting)
+        self.isochrones_maxoffroaddistance_setting = int(self.dlg.Isochrones_MaxOffroadDistance.value())
+        s.setValue("otp_plugin/Isochrones_MaxOffroadDistance", self.isochrones_maxoffroaddistance_setting)
         
         # Precision Meters
-        self.Isochrones_PrecisionMeters_Use_setting = int(self.dlg.Isochrones_PrecisionMeters_Use.isChecked())
-        s.setValue("otp_plugin/Isochrones_PrecisionMeters_Use", self.Isochrones_PrecisionMeters_Use_setting)
-        self.Isochrones_PrecisionMeters_setting = int(self.dlg.Isochrones_PrecisionMeters.value())
-        s.setValue("otp_plugin/Isochrones_PrecisionMeters", self.Isochrones_PrecisionMeters_setting)
+        self.isochrones_precisionmeters_use_setting = int(self.dlg.Isochrones_PrecisionMeters_Use.isChecked())
+        s.setValue("otp_plugin/Isochrones_PrecisionMeters_Use", self.isochrones_precisionmeters_use_setting)
+        self.isochrones_precisionmeters_setting = int(self.dlg.Isochrones_PrecisionMeters.value())
+        s.setValue("otp_plugin/Isochrones_PrecisionMeters", self.isochrones_precisionmeters_setting)
         
         # Cutoff Secs
-        self.Isochrones_Interval_setting = self.dlg.Isochrones_Interval.toPlainText()
-        s.setValue("otp_plugin/Isochrones_Interval", self.Isochrones_Interval_setting)
+        self.isochrones_interval_setting = self.dlg.Isochrones_Interval.toPlainText()
+        s.setValue("otp_plugin/Isochrones_Interval", self.isochrones_interval_setting)
         
         # Mode
-        self.Isochrones_TransportationMode_setting = self.dlg.Isochrones_TransportationMode.toPlainText()
-        s.setValue("otp_plugin/Isochrones_TransportationMode", self.Isochrones_TransportationMode_setting)
+        self.isochrones_transportationmode_setting = self.dlg.Isochrones_TransportationMode.toPlainText()
+        s.setValue("otp_plugin/Isochrones_TransportationMode", self.isochrones_transportationmode_setting)
         
         # Additional Parameters
-        self.Isochrones_AdditionalParameters_setting = self.dlg.Isochrones_AdditionalParameters.toPlainText()
-        s.setValue("otp_plugin/Isochrones_AdditionalParameters", self.Isochrones_AdditionalParameters_setting)
+        self.isochrones_additionalparameters_setting = self.dlg.Isochrones_AdditionalParameters.toPlainText()
+        s.setValue("otp_plugin/Isochrones_AdditionalParameters", self.isochrones_additionalparameters_setting)
         
-        self.iface.messageBar().pushMessage("Success", "Isochrone settings stored!", level=Qgis.Success, duration=3) 
+        self.iface.messageBar().pushMessage("Success", "Isochrone settings stored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
+        QgsMessageLog.logMessage("Isochrone settings stored!",MESSAGE_CATEGORY,Qgis.Info)
         
     def read_isochrone_variables(self):
         s = QgsSettings()
         
         # Walk Speed
-        self.Isochrones_WalkSpeed_Use_setting = int(s.value("otp_plugin/Isochrones_WalkSpeed_Use", 0))
-        self.dlg.Isochrones_WalkSpeed_Use.setChecked(self.Isochrones_WalkSpeed_Use_setting)
-        self.Isochrones_WalkSpeed_setting = float(s.value("otp_plugin/Isochrones_WalkSpeed", 4.828032))
-        self.dlg.Isochrones_WalkSpeed.setValue(self.Isochrones_WalkSpeed_setting)
+        self.isochrones_walkspeed_use_setting = int(s.value("otp_plugin/Isochrones_WalkSpeed_Use", 0))
+        self.dlg.Isochrones_WalkSpeed_Use.setChecked(self.isochrones_walkspeed_use_setting)
+        self.isochrones_walkspeed_setting = float(s.value("otp_plugin/Isochrones_WalkSpeed", 4.828032))
+        self.dlg.Isochrones_WalkSpeed.setValue(self.isochrones_walkspeed_setting)
         
         # Bike Speed
-        self.Isochrones_BikeSpeed_Use_setting = int(s.value("otp_plugin/Isochrones_BikeSpeed_Use", 0))
-        self.dlg.Isochrones_BikeSpeed_Use.setChecked(self.Isochrones_BikeSpeed_Use_setting)
-        self.Isochrones_BikeSpeed_setting = float(s.value("otp_plugin/Isochrones_BikeSpeed", 17.7))
-        self.dlg.Isochrones_BikeSpeed.setValue(self.Isochrones_BikeSpeed_setting)
+        self.isochrones_bikespeed_use_setting = int(s.value("otp_plugin/Isochrones_BikeSpeed_Use", 0))
+        self.dlg.Isochrones_BikeSpeed_Use.setChecked(self.isochrones_bikespeed_use_setting)
+        self.isochrones_bikespeed_setting = float(s.value("otp_plugin/Isochrones_BikeSpeed", 17.7))
+        self.dlg.Isochrones_BikeSpeed.setValue(self.isochrones_bikespeed_setting)
         
         # Date
-        self.Isochrones_Date_Use_setting = int(s.value("otp_plugin/Isochrones_Date_Use", 1))
-        self.dlg.Isochrones_Date_Use.setChecked(self.Isochrones_Date_Use_setting)
-        self.Isochrones_Date_setting = s.value("otp_plugin/Isochrones_Date", QtCore.QDateTime.currentDateTime())
+        self.isochrones_date_use_setting = int(s.value("otp_plugin/Isochrones_Date_Use", 1))
+        self.dlg.Isochrones_Date_Use.setChecked(self.isochrones_date_use_setting)
+        self.isochrones_date_setting = s.value("otp_plugin/Isochrones_Date", QtCore.QDateTime.currentDateTime())
         # I guess nobody understands this date 'stuff'....
         try:
-            self.dlg.Isochrones_Date.setDateTime(self.Isochrones_Date_setting) # Standard value
+            self.dlg.Isochrones_Date.setDateTime(self.isochrones_date_setting) # Standard value
         except:
-            self.dlg.Isochrones_Date.setDate(self.Isochrones_Date_setting) # Stored value
+            self.dlg.Isochrones_Date.setDate(self.isochrones_date_setting) # Stored value
         
         # Time
-        self.Isochrones_Time_Use_setting = int(s.value("otp_plugin/Isochrones_Time_Use", 1))
-        self.dlg.Isochrones_Time_Use.setChecked(self.Isochrones_Time_Use_setting)
-        self.Isochrones_Time_setting = s.value("otp_plugin/Isochrones_Time", QTime.fromString('14:00:00'))
-        self.dlg.Isochrones_Time.setTime(self.Isochrones_Time_setting)
+        self.isochrones_time_use_setting = int(s.value("otp_plugin/Isochrones_Time_Use", 1))
+        self.dlg.Isochrones_Time_Use.setChecked(self.isochrones_time_use_setting)
+        self.isochrones_time_setting = s.value("otp_plugin/Isochrones_Time", QTime.fromString('14:00:00'))
+        self.dlg.Isochrones_Time.setTime(self.isochrones_time_setting)
         
         # Arrive By
-        self.Isochrones_ArriveBy_Use_setting = int(s.value("otp_plugin/Isochrones_ArriveBy_Use", 0))
-        self.dlg.Isochrones_ArriveBy_Use.setChecked(self.Isochrones_ArriveBy_Use_setting)
-        self.Isochrones_ArriveBy_setting = int(s.value("otp_plugin/Isochrones_ArriveBy", 0))
-        self.dlg.Isochrones_ArriveBy.setChecked(self.Isochrones_ArriveBy_setting)
+        self.isochrones_arriveby_use_setting = int(s.value("otp_plugin/Isochrones_ArriveBy_Use", 0))
+        self.dlg.Isochrones_ArriveBy_Use.setChecked(self.isochrones_arriveby_use_setting)
+        self.isochrones_arriveby_setting = int(s.value("otp_plugin/Isochrones_ArriveBy", 0))
+        self.dlg.Isochrones_ArriveBy.setChecked(self.isochrones_arriveby_setting)
         
         # Wheelchair
-        self.Isochrones_Wheelchair_Use_setting = int(s.value("otp_plugin/Isochrones_Wheelchair_Use", 0))
-        self.dlg.Isochrones_Wheelchair_Use.setChecked(self.Isochrones_Wheelchair_Use_setting)
-        self.Isochrones_Wheelchair_setting = int(s.value("otp_plugin/Isochrones_Wheelchair", 0))
-        self.dlg.Isochrones_Wheelchair.setChecked(self.Isochrones_Wheelchair_setting)
+        self.isochrones_wheelchair_use_setting = int(s.value("otp_plugin/Isochrones_Wheelchair_Use", 0))
+        self.dlg.Isochrones_Wheelchair_Use.setChecked(self.isochrones_wheelchair_use_setting)
+        self.isochrones_wheelchair_setting = int(s.value("otp_plugin/Isochrones_Wheelchair", 0))
+        self.dlg.Isochrones_Wheelchair.setChecked(self.isochrones_wheelchair_setting)
         
         # Wait Reluctance
-        self.Isochrones_WaitReluctance_Use_setting = int(s.value("otp_plugin/Isochrones_WaitReluctance_Use", 0))
-        self.dlg.Isochrones_WaitReluctance_Use.setChecked(self.Isochrones_WaitReluctance_Use_setting)
-        self.Isochrones_WaitReluctance_setting = float(s.value("otp_plugin/Isochrones_WaitReluctance", 0.95))
-        self.dlg.Isochrones_WaitReluctance.setValue(self.Isochrones_WaitReluctance_setting)
+        self.isochrones_waitreluctance_use_setting = int(s.value("otp_plugin/Isochrones_WaitReluctance_Use", 0))
+        self.dlg.Isochrones_WaitReluctance_Use.setChecked(self.isochrones_waitreluctance_use_setting)
+        self.isochrones_waitreluctance_setting = float(s.value("otp_plugin/Isochrones_WaitReluctance", 0.95))
+        self.dlg.Isochrones_WaitReluctance.setValue(self.isochrones_waitreluctance_setting)
         
         # Max Transfers
-        self.Isochrones_MaxTransfers_Use_setting = int(s.value("otp_plugin/Isochrones_MaxTransfers_Use", 0))
-        self.dlg.Isochrones_MaxTransfers_Use.setChecked(self.Isochrones_MaxTransfers_Use_setting)
-        self.Isochrones_MaxTransfers_setting = int(s.value("otp_plugin/Isochrones_MaxTransfers", 5))
-        self.dlg.Isochrones_MaxTransfers.setValue(self.Isochrones_MaxTransfers_setting)
+        self.isochrones_maxtransfers_use_setting = int(s.value("otp_plugin/Isochrones_MaxTransfers_Use", 0))
+        self.dlg.Isochrones_MaxTransfers_Use.setChecked(self.isochrones_maxtransfers_use_setting)
+        self.isochrones_maxtransfers_setting = int(s.value("otp_plugin/Isochrones_MaxTransfers", 5))
+        self.dlg.Isochrones_MaxTransfers.setValue(self.isochrones_maxtransfers_setting)
         
         # Max WalkDistance
-        self.Isochrones_MaxWalkDistance_Use_setting = int(s.value("otp_plugin/Isochrones_MaxWalkDistance_Use", 0))
-        self.dlg.Isochrones_MaxWalkDistance_Use.setChecked(self.Isochrones_MaxWalkDistance_Use_setting)
-        self.Isochrones_MaxWalkDistance_setting = int(s.value("otp_plugin/Isochrones_MaxWalkDistance", 1000))
-        self.dlg.Isochrones_MaxWalkDistance.setValue(self.Isochrones_MaxWalkDistance_setting)
+        self.isochrones_maxwalkdistance_use_setting = int(s.value("otp_plugin/Isochrones_MaxWalkDistance_Use", 0))
+        self.dlg.Isochrones_MaxWalkDistance_Use.setChecked(self.isochrones_maxwalkdistance_use_setting)
+        self.isochrones_maxwalkdistance_setting = int(s.value("otp_plugin/Isochrones_MaxWalkDistance", 1000))
+        self.dlg.Isochrones_MaxWalkDistance.setValue(self.isochrones_maxwalkdistance_setting)
         
         # Max OffRoadDistance
-        self.Isochrones_MaxOffroadDistance_Use_setting = int(s.value("otp_plugin/Isochrones_MaxOffroadDistance_Use", 0))
-        self.dlg.Isochrones_MaxOffroadDistance_Use.setChecked(self.Isochrones_MaxOffroadDistance_Use_setting)
-        self.Isochrones_MaxOffroadDistance_setting = int(s.value("otp_plugin/Isochrones_MaxOffroadDistance", 150))
-        self.dlg.Isochrones_MaxOffroadDistance.setValue(self.Isochrones_MaxOffroadDistance_setting)
+        self.isochrones_maxoffroaddistance_use_setting = int(s.value("otp_plugin/Isochrones_MaxOffroadDistance_Use", 0))
+        self.dlg.Isochrones_MaxOffroadDistance_Use.setChecked(self.isochrones_maxoffroaddistance_use_setting)
+        self.isochrones_maxoffroaddistance_setting = int(s.value("otp_plugin/Isochrones_MaxOffroadDistance", 150))
+        self.dlg.Isochrones_MaxOffroadDistance.setValue(self.isochrones_maxoffroaddistance_setting)
         
         # Precision Meters
-        self.Isochrones_PrecisionMeters_Use_setting = int(s.value("otp_plugin/Isochrones_PrecisionMeters_Use", 0))
-        self.dlg.Isochrones_PrecisionMeters_Use.setChecked(self.Isochrones_PrecisionMeters_Use_setting)
-        self.Isochrones_PrecisionMeters_setting = int(s.value("otp_plugin/Isochrones_PrecisionMeters", 200))
-        self.dlg.Isochrones_PrecisionMeters.setValue(self.Isochrones_PrecisionMeters_setting)
+        self.isochrones_precisionmeters_use_setting = int(s.value("otp_plugin/Isochrones_PrecisionMeters_Use", 0))
+        self.dlg.Isochrones_PrecisionMeters_Use.setChecked(self.isochrones_precisionmeters_use_setting)
+        self.isochrones_precisionmeters_setting = int(s.value("otp_plugin/Isochrones_PrecisionMeters", 200))
+        self.dlg.Isochrones_PrecisionMeters.setValue(self.isochrones_precisionmeters_setting)
         
         # Cutoff Sec
-        self.Isochrones_Interval = s.value("otp_plugin/Isochrones_Interval", "60,120,180,240,300")
-        if isinstance(self.Isochrones_Interval, str): self.dlg.Isochrones_Interval.setText(self.Isochrones_Interval)
+        self.isochrones_interval = s.value("otp_plugin/Isochrones_Interval", "60,120,180,240,300")
+        if isinstance(self.isochrones_interval, str): self.dlg.Isochrones_Interval.setText(self.isochrones_interval)
         
         # Mode
-        self.Isochrones_TransportationMode = s.value("otp_plugin/Isochrones_TransportationMode", "WALK,TRANSIT")
-        if isinstance(self.Isochrones_TransportationMode, str): self.dlg.Isochrones_TransportationMode.setText(self.Isochrones_TransportationMode)
+        self.isochrones_transportationmode = s.value("otp_plugin/Isochrones_TransportationMode", "WALK,TRANSIT")
+        if isinstance(self.isochrones_transportationmode, str): self.dlg.Isochrones_TransportationMode.setText(self.isochrones_transportationmode)
         
         # Additional Parameters
-        self.Isochrones_AdditionalParameters = s.value("otp_plugin/Isochrones_AdditionalParameters", "")
-        if isinstance(self.Isochrones_AdditionalParameters, str): self.dlg.Isochrones_AdditionalParameters.setText(self.Isochrones_AdditionalParameters)
+        self.isochrones_additionalparameters = s.value("otp_plugin/Isochrones_AdditionalParameters", "")
+        if isinstance(self.isochrones_additionalparameters, str): self.dlg.Isochrones_AdditionalParameters.setText(self.isochrones_additionalparameters)
         
         #self.iface.messageBar().pushMessage("Success", "Function read_isochrone_variables running!", level=Qgis.Success, duration=3)
 
@@ -665,85 +668,85 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         s = QgsSettings()
         #DefaultSettings
         # Walk Speed
-        self.Isochrones_WalkSpeed_Use_setting = int(0)
-        self.dlg.Isochrones_WalkSpeed_Use.setChecked(self.Isochrones_WalkSpeed_Use_setting)
-        self.Isochrones_WalkSpeed_setting = float(4.828032)
-        self.dlg.Isochrones_WalkSpeed.setValue(self.Isochrones_WalkSpeed_setting)
+        self.isochrones_walkspeed_use_setting = int(0)
+        self.dlg.Isochrones_WalkSpeed_Use.setChecked(self.isochrones_walkspeed_use_setting)
+        self.isochrones_walkspeed_setting = float(4.828032)
+        self.dlg.Isochrones_WalkSpeed.setValue(self.isochrones_walkspeed_setting)
         
         # Bike Speed
-        self.Isochrones_BikeSpeed_Use_setting = int(0)
-        self.dlg.Isochrones_BikeSpeed_Use.setChecked(self.Isochrones_BikeSpeed_Use_setting)
-        self.Isochrones_BikeSpeed_setting = float(17.7)
-        self.dlg.Isochrones_BikeSpeed.setValue(self.Isochrones_BikeSpeed_setting)
+        self.isochrones_bikespeed_use_setting = int(0)
+        self.dlg.Isochrones_BikeSpeed_Use.setChecked(self.isochrones_bikespeed_use_setting)
+        self.isochrones_bikespeed_setting = float(17.7)
+        self.dlg.Isochrones_BikeSpeed.setValue(self.isochrones_bikespeed_setting)
         
         # Date #####
-        self.Isochrones_Date_Use_setting = int(1)
-        self.dlg.Isochrones_Date_Use.setChecked(self.Isochrones_Date_Use_setting)
-        self.Isochrones_Date_setting = QDateTime(QtCore.QDateTime.currentDateTime())
-        self.dlg.Isochrones_Date.setDateTime(self.Isochrones_Date_setting)
+        self.isochrones_date_use_setting = int(1)
+        self.dlg.Isochrones_Date_Use.setChecked(self.isochrones_date_use_setting)
+        self.isochrones_date_setting = QDateTime(QtCore.QDateTime.currentDateTime())
+        self.dlg.Isochrones_Date.setDateTime(self.isochrones_date_setting)
         
         # Time
-        self.Isochrones_Time_Use_setting = int(1)
-        self.dlg.Isochrones_Time_Use.setChecked(self.Isochrones_Time_Use_setting)
-        self.Isochrones_Time_setting = QTime.fromString('14:00:00')
-        self.dlg.Isochrones_Time.setTime(self.Isochrones_Time_setting)
+        self.isochrones_time_use_setting = int(1)
+        self.dlg.Isochrones_Time_Use.setChecked(self.isochrones_time_use_setting)
+        self.isochrones_time_setting = QTime.fromString('14:00:00')
+        self.dlg.Isochrones_Time.setTime(self.isochrones_time_setting)
         
         # Arrive By
-        self.Isochrones_ArriveBy_Use_setting = int(0)
-        self.dlg.Isochrones_ArriveBy_Use.setChecked(self.Isochrones_ArriveBy_Use_setting)
-        self.Isochrones_ArriveBy_setting = int(0)
-        self.dlg.Isochrones_ArriveBy.setChecked(self.Isochrones_ArriveBy_setting)
+        self.isochrones_arriveby_use_setting = int(0)
+        self.dlg.Isochrones_ArriveBy_Use.setChecked(self.isochrones_arriveby_use_setting)
+        self.isochrones_arriveby_setting = int(0)
+        self.dlg.Isochrones_ArriveBy.setChecked(self.isochrones_arriveby_setting)
         
         # Wheelchair
-        self.Isochrones_Wheelchair_Use_setting = int(0)
-        self.dlg.Isochrones_Wheelchair_Use.setChecked(self.Isochrones_Wheelchair_Use_setting)
-        self.Isochrones_Wheelchair_setting = int(0)
-        self.dlg.Isochrones_Wheelchair.setChecked(self.Isochrones_Wheelchair_setting)
+        self.isochrones_wheelchair_use_setting = int(0)
+        self.dlg.Isochrones_Wheelchair_Use.setChecked(self.isochrones_wheelchair_use_setting)
+        self.isochrones_wheelchair_setting = int(0)
+        self.dlg.Isochrones_Wheelchair.setChecked(self.isochrones_wheelchair_setting)
         
         # Wait Reluctance
-        self.Isochrones_WaitReluctance_Use_setting = int(0)
-        self.dlg.Isochrones_WaitReluctance_Use.setChecked(self.Isochrones_WaitReluctance_Use_setting)
-        self.Isochrones_WaitReluctance_setting = float(0.95)
-        self.dlg.Isochrones_WaitReluctance.setValue(self.Isochrones_WaitReluctance_setting)
+        self.isochrones_waitreluctance_use_setting = int(0)
+        self.dlg.Isochrones_WaitReluctance_Use.setChecked(self.isochrones_waitreluctance_use_setting)
+        self.isochrones_waitreluctance_setting = float(0.95)
+        self.dlg.Isochrones_WaitReluctance.setValue(self.isochrones_waitreluctance_setting)
         
         # Max Transfers
-        self.Isochrones_MaxTransfers_Use_setting = int(0)
-        self.dlg.Isochrones_MaxTransfers_Use.setChecked(self.Isochrones_MaxTransfers_Use_setting)
-        self.Isochrones_MaxTransfers_setting = int(5)
-        self.dlg.Isochrones_MaxTransfers.setValue(self.Isochrones_MaxTransfers_setting)
+        self.isochrones_maxtransfers_use_setting = int(0)
+        self.dlg.Isochrones_MaxTransfers_Use.setChecked(self.isochrones_maxtransfers_use_setting)
+        self.isochrones_maxtransfers_setting = int(5)
+        self.dlg.Isochrones_MaxTransfers.setValue(self.isochrones_maxtransfers_setting)
         
         # Max WalkDistance
-        self.Isochrones_MaxWalkDistance_Use_setting = int(0)
-        self.dlg.Isochrones_MaxWalkDistance_Use.setChecked(self.Isochrones_MaxWalkDistance_Use_setting)
-        self.Isochrones_MaxWalkDistance_setting = int(1000)
-        self.dlg.Isochrones_MaxWalkDistance.setValue(self.Isochrones_MaxWalkDistance_setting)
+        self.isochrones_maxwalkdistance_use_setting = int(0)
+        self.dlg.Isochrones_MaxWalkDistance_Use.setChecked(self.isochrones_maxwalkdistance_use_setting)
+        self.isochrones_maxwalkdistance_setting = int(1000)
+        self.dlg.Isochrones_MaxWalkDistance.setValue(self.isochrones_maxwalkdistance_setting)
         
         # Max OffRoadDistance
-        self.Isochrones_MaxOffroadDistance_Use_setting = int(0)
-        self.dlg.Isochrones_MaxOffroadDistance_Use.setChecked(self.Isochrones_MaxOffroadDistance_Use_setting)
-        self.Isochrones_MaxOffroadDistance_setting = int(150)
-        self.dlg.Isochrones_MaxOffroadDistance.setValue(self.Isochrones_MaxOffroadDistance_setting)
+        self.isochrones_maxoffroaddistance_use_setting = int(0)
+        self.dlg.Isochrones_MaxOffroadDistance_Use.setChecked(self.isochrones_maxoffroaddistance_use_setting)
+        self.isochrones_maxoffroaddistance_setting = int(150)
+        self.dlg.Isochrones_MaxOffroadDistance.setValue(self.isochrones_maxoffroaddistance_setting)
         
         # Precision Meters
-        self.Isochrones_PrecisionMeters_Use_setting = int(0)
-        self.dlg.Isochrones_PrecisionMeters_Use.setChecked(self.Isochrones_PrecisionMeters_Use_setting)
-        self.Isochrones_PrecisionMeters_setting = int(200)
-        self.dlg.Isochrones_PrecisionMeters.setValue(self.Isochrones_PrecisionMeters_setting)
+        self.isochrones_precisionmeters_use_setting = int(0)
+        self.dlg.Isochrones_PrecisionMeters_Use.setChecked(self.isochrones_precisionmeters_use_setting)
+        self.isochrones_precisionmeters_setting = int(200)
+        self.dlg.Isochrones_PrecisionMeters.setValue(self.isochrones_precisionmeters_setting)
         
         # Cutoff Sec
-        self.Isochrones_Interval = ""
-        if isinstance(self.Isochrones_Interval, str): self.dlg.Isochrones_Interval.setText(self.Isochrones_Interval)
+        self.isochrones_interval = ""
+        if isinstance(self.isochrones_interval, str): self.dlg.Isochrones_Interval.setText(self.isochrones_interval)
         
         # Mode
-        self.Isochrones_TransportationMode = ""
-        if isinstance(self.Isochrones_TransportationMode, str): self.dlg.Isochrones_TransportationMode.setText(self.Isochrones_TransportationMode)
+        self.isochrones_transportationmode = ""
+        if isinstance(self.isochrones_transportationmode, str): self.dlg.Isochrones_TransportationMode.setText(self.isochrones_transportationmode)
         
         # Additional Parameters
-        self.Isochrones_AdditionalParameters = ""
-        if isinstance(self.Isochrones_AdditionalParameters, str): self.dlg.Isochrones_AdditionalParameters.setText(self.Isochrones_AdditionalParameters)
+        self.isochrones_additionalparameters = ""
+        if isinstance(self.isochrones_additionalparameters, str): self.dlg.Isochrones_AdditionalParameters.setText(self.isochrones_additionalparameters)
         
-        self.iface.messageBar().pushMessage("Success", "Default isochrone settings restored!", level=Qgis.Success, duration=3)
-
+        self.iface.messageBar().pushMessage("Success", "Default isochrone settings restored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+        QgsMessageLog.logMessage("Default isochrone settings restored!",MESSAGE_CATEGORY,Qgis.Info)
       
     # Source: https://stackoverflow.com/a/33557535/8947209 (slightly modified)
     def decode_polyline(self, polyline_str):
@@ -788,12 +791,12 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         #foldername, _filter = QFileDialog.getExistingDirectory(self.dlg, "Open Directory","",ShowDirsOnly)
         #filename, _filter = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.*')
         #self.dlg.GeneralSettings_SavePath.setText(filename)
-        #print(self.serverUrl)
+        #print(self.serverurl)
         
         #Run Store-Variables-Function and Read-Stored-Variables-Function before so users do not have to click save button before checking status
         self.store_general_variables()
         self.read_general_variables()
-        servercheckrequest = urllib.request.Request(str(self.serverUrl))
+        servercheckrequest = urllib.request.Request(str(self.serverurl))
         try:
             urllib.request.urlopen(servercheckrequest)
             self.dlg.GeneralSettings_ServerStatusResult.setText("Server is Online :)")
@@ -806,7 +809,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
             self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: red; color: white ")
 
     
-    def Routes_RequestRoutes(self):
+    def routes_request_routes(self):
         # clear and initialize vars and stuff
         route_url = None
         route_error = None
@@ -824,13 +827,13 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         
         # Getting fieldtypes and names of selected matchingfields
         sourceidfieldname = self.dlg.Routes_SelectInputField_Source.currentField()
-        sourceidfieldindex = self.routes_selectedLayer_source.fields().indexFromName(sourceidfieldname)
+        sourceidfieldindex = self.routes_selectedlayer_source.fields().indexFromName(sourceidfieldname)
         targetidfieldname = str(self.dlg.Routes_SelectInputField_Target.currentField())
-        targetidfieldindex = self.routes_selectedLayer_target.fields().indexFromName(targetidfieldname)
-        for field in self.routes_selectedLayer_source.fields():
+        targetidfieldindex = self.routes_selectedlayer_target.fields().indexFromName(targetidfieldname)
+        for field in self.routes_selectedlayer_source.fields():
             if field.name() == sourceidfieldname:
                 sourceidfieldtype = field.type()
-        for field in self.routes_selectedLayer_target.fields():
+        for field in self.routes_selectedlayer_target.fields():
             if field.name() == targetidfieldname:
                 targetidfieldtype = field.type()
                 
@@ -861,6 +864,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
             QgsField("Route_To_StopCode", QVariant.String),
             QgsField("Route_To_Name", QVariant.String),      
             QgsField("Route_To_EndTime", QVariant.DateTime),
+            QgsField("Route_Total_Mode", QVariant.String),
             QgsField("Route_Total_Duration", QVariant.Int),
             QgsField("Route_Total_Distance", QVariant.Double),
             QgsField("Route_Total_TransitTime", QVariant.Int),
@@ -901,17 +905,14 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
             fieldindexdict[fieldindexcounter] = x # assign index as key and fieldname as value
             if '_url' in x:
                 fieldindex_position_of_last_alwaysneededfield = fieldindexcounter
+            if 'route_total_distance' in x:
+                fieldindex_position_of_routetotaldistance = fieldindexcounter
             fieldindexcounter += 1
         len_fieldindexdict = len(fieldindexdict)
-
-        inputlayer_numberOfFields_routes_source = self.routes_selectedLayer_source.fields().count() # count number of fields in inputlayer
-        inputlayer_numberOfFields_routes_target = self.routes_selectedLayer_target.fields().count() # count number of fields in inputlayer            
-        #routes_memorylayer_pr.addAttributes(self.routes_selectedLayer_source.fields()) # Copy all fieldnames of inputlayer to outputlayer  
-        #routes_memorylayer_pr.addAttributes(self.routes_selectedLayer_target.fields()) # Copy all fieldnames of inputlayer to outputlayer 
         
         fieldindexcounter_source = 0 + len_fieldindexdict
         fieldindexdict_source = {}        
-        for field in self.routes_selectedLayer_source.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
+        for field in self.routes_selectedlayer_source.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
             routes_memorylayer_pr.addAttributes([QgsField('Source_' + str(field.name()), field.type())]) # Old fieldname + Source_ as prefix. Keep original field type
             x = 'source_' + str(field.name()).lower() # add to fieldindexdictionary
             fieldindexdict_source[fieldindexcounter_source] = x # add to fieldindexdictionary
@@ -920,7 +921,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
 
         fieldindexcounter_target = 0 + len_fieldindexdict + len_fieldindexdict_source
         fieldindexdict_target = {}
-        for field in self.routes_selectedLayer_target.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
+        for field in self.routes_selectedlayer_target.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
             routes_memorylayer_pr.addAttributes([QgsField('Target_' + str(field.name()), field.type())]) # Old fieldname + Target_ as prefix. Keep original field type       
             x = 'target_' + str(field.name()).lower() # add to fieldindexdictionary
             fieldindexdict_target[fieldindexcounter_target] = x # add to fieldindexdictionary
@@ -932,9 +933,9 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         # See: https://gis.stackexchange.com/questions/377807/using-an-attribute-index-to-find-matching-attributes-of-two-layers-faster and https://stackoverflow.com/a/64597197/8947209
         dict_source = {}
         dict_target = {}
-        for feat_source in self.routes_selectedLayer_source.getFeatures():
+        for feat_source in self.routes_selectedlayer_source.getFeatures():
             dict_source[feat_source.id()] = feat_source.attribute(sourceidfieldindex) # feature id is used as key and attribute as value
-        for feat_target in self.routes_selectedLayer_target.getFeatures():
+        for feat_target in self.routes_selectedlayer_target.getFeatures():
             dict_target[feat_target.id()] = feat_target.attribute(targetidfieldindex) # feature id is used as key and attribute as value
         
         # Create matching dictionary for performance optimization
@@ -971,7 +972,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                 n_totalrelations += len(v)
         #print(n_totalrelations)
         if n_totalrelations == 0:
-            self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes", level=Qgis.Warning, duration=6)
+            self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)
             QgsMessageLog.logMessage("Warning! No Routes to create. Probably due to no matching attributes found or empty layer(s).",MESSAGE_CATEGORY,Qgis.Warning)
         
         # Preparing Progressbar
@@ -981,26 +982,26 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         self.dlg.Routes_ProgressBar.setValue(progressbar_percent)    
         
         # General Settings
-        serverUrl = self.serverUrl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()
+        serverurl = self.serverurl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()
         
         # Setting up Override Button context
         if self.dlg.Routes_DataDefinedLayer_Source.isChecked() == True:
-            ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.routes_selectedLayer_source)) #This context will be able to evaluate global, project, and layer variables
+            ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.routes_selectedlayer_source)) #This context will be able to evaluate global, project, and layer variables
         elif self.dlg.Routes_DataDefinedLayer_Target.isChecked() == True:
-            ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.routes_selectedLayer_target)) #This context will be able to evaluate global, project, and layer variables
+            ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.routes_selectedlayer_target)) #This context will be able to evaluate global, project, and layer variables
         else:
-            ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.routes_selectedLayer_source)) #This context will be able to evaluate global, project, and layer variables
+            ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.routes_selectedlayer_source)) #This context will be able to evaluate global, project, and layer variables
         
         # Preparing Features
-        routes_inputlayer_features_source = self.routes_selectedLayer_source.getFeatures()
-        routes_inputlayer_features_target = self.routes_selectedLayer_target.getFeatures()
+        routes_inputlayer_features_source = self.routes_selectedlayer_source.getFeatures()
+        routes_inputlayer_features_target = self.routes_selectedlayer_target.getFeatures()
         
         # Preparing Transformation to WGS 84
-        sourceCrs1 = QgsCoordinateReferenceSystem(self.routes_selectedLayer_source.crs().authid()) # Read CRS of input layer
-        sourceCrs2 = QgsCoordinateReferenceSystem(self.routes_selectedLayer_target.crs().authid()) # Read CRS of input layer
-        destCrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
-        tr1 = QgsCoordinateTransform(sourceCrs1, destCrs, QgsProject.instance()) # Setting up transformation
-        tr2 = QgsCoordinateTransform(sourceCrs2, destCrs, QgsProject.instance()) # Setting up transformation
+        sourcecrs1 = QgsCoordinateReferenceSystem(self.routes_selectedlayer_source.crs().authid()) # Read CRS of input layer
+        sourcecrs2 = QgsCoordinateReferenceSystem(self.routes_selectedlayer_target.crs().authid()) # Read CRS of input layer
+        destcrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
+        tr1 = QgsCoordinateTransform(sourcecrs1, destcrs, QgsProject.instance()) # Setting up transformation
+        tr2 = QgsCoordinateTransform(sourcecrs2, destcrs, QgsProject.instance()) # Setting up transformation
         
         # Counter
         route_legid = 0
@@ -1019,6 +1020,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         errorlinegeomp2 = QgsPoint(float(0.1),float(0.0))
         errorlinegeom.append(errorlinegeomp2)
         
+        QgsProject.instance().addMapLayer(routes_memorylayer_vl)# Show in project
         
         # Request the routes
         for source, target in route_matches.items(): # loop through key (source) and value (target) of matching dictionary
@@ -1029,8 +1031,8 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                 
                 source_fid = source # key of matching dict represents keys of dict_source and therefore featureids of sourcelayer
                 target_fid = target[i] # values of matching dict represent keys of dict_target and therefore featureids of targetlayer                
-                sourcelayer_feature = self.routes_selectedLayer_source.getFeature(source_fid)
-                targetlayer_feature = self.routes_selectedLayer_target.getFeature(target_fid)
+                sourcelayer_feature = self.routes_selectedlayer_source.getFeature(source_fid)
+                targetlayer_feature = self.routes_selectedlayer_target.getFeature(target_fid)
                 
                 # Override Button
                 if self.dlg.Routes_DataDefinedLayer_Source.isChecked() == True:
@@ -1041,20 +1043,20 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                     ctx.setFeature(sourcelayer_feature)
                 
                 # Values of current source and target ids
-                if self.routes_selectedLayer_source.getFeature(source_fid).attribute(sourceidfieldindex) is None: # Prevent error when value is NULL
+                if self.routes_selectedlayer_source.getFeature(source_fid).attribute(sourceidfieldindex) is None: # Prevent error when value is NULL
                     source_feature_idvalue = None
                 else:
-                    source_feature_idvalue = self.routes_selectedLayer_source.getFeature(source_fid).attribute(sourceidfieldindex)
-                if self.routes_selectedLayer_target.getFeature(target_fid).attribute(targetidfieldindex) is None: # Prevent error when value is NULL
+                    source_feature_idvalue = self.routes_selectedlayer_source.getFeature(source_fid).attribute(sourceidfieldindex)
+                if self.routes_selectedlayer_target.getFeature(target_fid).attribute(targetidfieldindex) is None: # Prevent error when value is NULL
                     target_feature_idvalue = None
                 else:
-                    target_feature_idvalue = self.routes_selectedLayer_target.getFeature(target_fid).attribute(targetidfieldindex)
+                    target_feature_idvalue = self.routes_selectedlayer_target.getFeature(target_fid).attribute(targetidfieldindex)
                 
                 route_from = source_feature_idvalue
                 route_to = target_feature_idvalue
                 
-                geom_source = self.routes_selectedLayer_source.getFeature(source_fid).geometry()
-                geom_target = self.routes_selectedLayer_target.getFeature(target_fid).geometry()
+                geom_source = self.routes_selectedlayer_source.getFeature(source_fid).geometry()
+                geom_target = self.routes_selectedlayer_target.getFeature(target_fid).geometry()
                 geom_source.transform(tr1) # Transform geometry to WGS 84
                 geom_target.transform(tr2) # Transform geometry to WGS 84
                 pointgeom_source = geom_source.asPoint() #Read Point geometry
@@ -1070,201 +1072,202 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                 #WalkSpeed
                 if self.dlg.Routes_WalkSpeed_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_WalkSpeed_Override.isActive() == True: # Check if override button shall be used
-                        Routes_WalkSpeed_Value, IrrelevantSuccessStorage = self.dlg.Routes_WalkSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_walkspeed_value, irrelevantsuccessstorage = self.dlg.Routes_WalkSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_WalkSpeed_Value = self.dlg.Routes_WalkSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
-                    if Routes_WalkSpeed_Value is not None: # Check if received value is NULL
-                        Routes_WalkSpeed_MS = float(Routes_WalkSpeed_Value) * 0.27777777777778 # Convert float and km/h to m/s
-                        Routes_WalkSpeed_URLstring = '&walkSpeed=' + str(round(Routes_WalkSpeed_MS,6)) # Concatenate to URL string if option is used and value is not NULL
+                        routes_walkspeed_value = self.dlg.Routes_WalkSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
+                    if routes_walkspeed_value is not None: # Check if received value is NULL
+                        routes_walkspeed_ms = float(routes_walkspeed_value) * 0.27777777777778 # Convert float and km/h to m/s
+                        routes_walkspeed_urlstring = '&walkSpeed=' + str(round(routes_walkspeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_WalkSpeed_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_walkspeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_WalkSpeed_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_walkspeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
  
                 #BikeSpeed
                 if self.dlg.Routes_BikeSpeed_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_BikeSpeed_Override.isActive() == True: # Check if override button shall be used
-                        Routes_BikeSpeed_Value, IrrelevantSuccessStorage = self.dlg.Routes_BikeSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_bikespeed_value, irrelevantsuccessstorage = self.dlg.Routes_BikeSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_BikeSpeed_Value = self.dlg.Routes_BikeSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
-                    if Routes_BikeSpeed_Value is not None: # Check if received value is NULL
-                        Routes_BikeSpeed_MS = float(Routes_BikeSpeed_Value) * 0.27777777777778 # Convert float and km/h to m/s
-                        Routes_BikeSpeed_URLstring = '&bikeSpeed=' + str(round(Routes_BikeSpeed_MS,6)) # Concatenate to URL string if option is used and value is not NULL
+                        routes_bikespeed_value = self.dlg.Routes_BikeSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
+                    if routes_bikespeed_value is not None: # Check if received value is NULL
+                        routes_bikespeed_ms = float(routes_bikespeed_value) * 0.27777777777778 # Convert float and km/h to m/s
+                        routes_bikespeed_urlstring = '&bikeSpeed=' + str(round(routes_bikespeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_BikeSpeed_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_bikespeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_BikeSpeed_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_bikespeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
 
                 #Date
                 if self.dlg.Routes_Date_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_Date_Override.isActive() == True: # Check if override button shall be used
-                        Routes_Date_Value, IrrelevantSuccessStorage = self.dlg.Routes_Date_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_date_value, irrelevantsuccessstorage = self.dlg.Routes_Date_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_Date_Value = self.dlg.Routes_Date.date().toString("yyyy-MM-dd") # Receiving Value from GUI: QDateEdit
-                    if Routes_Date_Value is not None: # Check if received value is NULL
-                        Routes_Date_URLstring = '&date=' + str(Routes_Date_Value) # Concatenate to URL string if option is used and value is not NULL
+                        routes_date_value = self.dlg.Routes_Date.date().toString("yyyy-MM-dd") # Receiving Value from GUI: QDateEdit
+                    if routes_date_value is not None: # Check if received value is NULL
+                        routes_date_urlstring = '&date=' + str(routes_date_value) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_Date_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_date_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_Date_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_date_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
                 #Time
                 if self.dlg.Routes_Time_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_Time_Override.isActive() == True: # Check if override button shall be used
-                        Routes_Time_Value, IrrelevantSuccessStorage = self.dlg.Routes_Time_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_time_value, irrelevantsuccessstorage = self.dlg.Routes_Time_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_Time_Value = self.dlg.Routes_Time.time().toString("HH:mm:ss") # Receiving Value from GUI: QTimeEdit
-                    if Routes_Time_Value is not None: # Check if received value is NULL
-                        Routes_Time_URLstring = '&time=' + str(Routes_Time_Value) # Concatenate to URL string if option is used and value is not NULL
+                        routes_time_value = self.dlg.Routes_Time.time().toString("HH:mm:ss") # Receiving Value from GUI: QTimeEdit
+                    if routes_time_value is not None: # Check if received value is NULL
+                        routes_time_urlstring = '&time=' + str(routes_time_value) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_Time_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_time_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_Time_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_time_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
                 #ArriveBy
                 if self.dlg.Routes_ArriveBy_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_ArriveBy_Override.isActive() == True: # Check if override button shall be used
-                        Routes_ArriveBy_Value, IrrelevantSuccessStorage = self.dlg.Routes_ArriveBy_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_arriveby_value, irrelevantsuccessstorage = self.dlg.Routes_ArriveBy_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_ArriveBy_Value = self.dlg.Routes_ArriveBy.isChecked() # Receiving Value from GUI: QCheckBox
-                    if Routes_ArriveBy_Value is not None: # Check if received value is NULL
-                        Routes_ArriveBy_URLstring = '&arriveBy=' + str(Routes_ArriveBy_Value) # Concatenate to URL string if option is used and value is not NULL
+                        routes_arriveby_value = self.dlg.Routes_ArriveBy.isChecked() # Receiving Value from GUI: QCheckBox
+                    if routes_arriveby_value is not None: # Check if received value is NULL
+                        routes_arriveby_urlstring = '&arriveBy=' + str(routes_arriveby_value) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_ArriveBy_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_arriveby_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_ArriveBy_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_arriveby_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
                 #Wheelchair
                 if self.dlg.Routes_Wheelchair_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_Wheelchair_Override.isActive() == True: # Check if override button shall be used
-                        Routes_Wheelchair_Value, IrrelevantSuccessStorage = self.dlg.Routes_Wheelchair_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_wheelchair_value, irrelevantsuccessstorage = self.dlg.Routes_Wheelchair_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_Wheelchair_Value = self.dlg.Routes_Wheelchair.isChecked() # Receiving Value from GUI: QCheckBox
-                    if Routes_Wheelchair_Value is not None: # Check if received value is NULL
-                        Routes_Wheelchair_URLstring = '&wheelchair=' + str(Routes_Wheelchair_Value) # Concatenate to URL string if option is used and value is not NULL
+                        routes_wheelchair_value = self.dlg.Routes_Wheelchair.isChecked() # Receiving Value from GUI: QCheckBox
+                    if routes_wheelchair_value is not None: # Check if received value is NULL
+                        routes_wheelchair_urlstring = '&wheelchair=' + str(routes_wheelchair_value) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_Wheelchair_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_wheelchair_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_Wheelchair_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_wheelchair_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
                 #WaitReluctance
                 if self.dlg.Routes_WaitReluctance_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_WaitReluctance_Override.isActive() == True: # Check if override button shall be used
-                        Routes_WaitReluctance_Value, IrrelevantSuccessStorage = self.dlg.Routes_WaitReluctance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_waitreluctance_value, irrelevantsuccessstorage = self.dlg.Routes_WaitReluctance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_WaitReluctance_Value = self.dlg.Routes_WaitReluctance.value() # Receiving Value from GUI: QDoubleSpinBox
-                    if Routes_WaitReluctance_Value is not None: # Check if received value is NULL
-                        Routes_WaitReluctance_Float = round(float(Routes_WaitReluctance_Value),2)
-                        Routes_WaitReluctance_URLstring = '&waitReluctance=' + str(Routes_WaitReluctance_Float) # Concatenate to URL string if option is used and value is not NULL
+                        routes_waitreluctance_value = self.dlg.Routes_WaitReluctance.value() # Receiving Value from GUI: QDoubleSpinBox
+                    if routes_waitreluctance_value is not None: # Check if received value is NULL
+                        routes_waitreluctance_float = round(float(routes_waitreluctance_value),2)
+                        routes_waitreluctance_urlstring = '&waitReluctance=' + str(routes_waitreluctance_float) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_WaitReluctance_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_waitreluctance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_WaitReluctance_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_waitreluctance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
                 #MaxTransfers
                 if self.dlg.Routes_MaxTransfers_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_MaxTransfers_Override.isActive() == True: # Check if override button shall be used
-                        Routes_MaxTransfers_Value, IrrelevantSuccessStorage = self.dlg.Routes_MaxTransfers_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_maxtransfers_value, irrelevantsuccessstorage = self.dlg.Routes_MaxTransfers_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_MaxTransfers_Value = self.dlg.Routes_MaxTransfers.value() # Receiving Value from GUI: QSpinBox
-                    if Routes_MaxTransfers_Value is not None: # Check if received value is NULL
-                        Routes_MaxTransfers_URLstring = '&maxTransfers=' + str(Routes_MaxTransfers_Value) # Concatenate to URL string if option is used and value is not NULL
+                        routes_maxtransfers_value = self.dlg.Routes_MaxTransfers.value() # Receiving Value from GUI: QSpinBox
+                    if routes_maxtransfers_value is not None: # Check if received value is NULL
+                        routes_maxtransfers_urlstring = '&maxTransfers=' + str(routes_maxtransfers_value) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_MaxTransfers_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_maxtransfers_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_MaxTransfers_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_maxtransfers_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
              
                 #MaxWalkDistance
                 if self.dlg.Routes_MaxWalkDistance_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_MaxWalkDistance_Override.isActive() == True: # Check if override button shall be used
-                        Routes_MaxWalkDistance_Value, IrrelevantSuccessStorage = self.dlg.Routes_MaxWalkDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_maxwalkdistance_value, irrelevantsuccessstorage = self.dlg.Routes_MaxWalkDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_MaxWalkDistance_Value = self.dlg.Routes_MaxWalkDistance.value() # Receiving Value from GUI: QSpinBox
-                    if Routes_MaxWalkDistance_Value is not None: # Check if received value is NULL
-                        Routes_MaxWalkDistance_URLstring = '&maxWalkDistance=' + str(Routes_MaxWalkDistance_Value) # Concatenate to URL string if option is used and value is not NULL
+                        routes_maxwalkdistance_value = self.dlg.Routes_MaxWalkDistance.value() # Receiving Value from GUI: QSpinBox
+                    if routes_maxwalkdistance_value is not None: # Check if received value is NULL
+                        routes_maxwalkdistance_urlstring = '&maxWalkDistance=' + str(routes_maxwalkdistance_value) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_MaxWalkDistance_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_maxwalkdistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_MaxWalkDistance_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_maxwalkdistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
              
                 #MaxOffroadDistance
                 if self.dlg.Routes_MaxOffroadDistance_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_MaxOffroadDistance_Override.isActive() == True: # Check if override button shall be used
-                        Routes_MaxOffroadDistance_Value, IrrelevantSuccessStorage = self.dlg.Routes_MaxOffroadDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_maxoffroaddistance_value, irrelevantsuccessstorage = self.dlg.Routes_MaxOffroadDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_MaxOffroadDistance_Value = self.dlg.Routes_MaxOffroadDistance.value() # Receiving Value from GUI: QSpinBox
-                    if Routes_MaxOffroadDistance_Value is not None: # Check if received value is NULL
-                        Routes_MaxOffroadDistance_URLstring = '&offRoadDistanceMeters=' + str(Routes_MaxOffroadDistance_Value) # Concatenate to URL string if option is used and value is not NULL
+                        routes_maxoffroaddistance_value = self.dlg.Routes_MaxOffroadDistance.value() # Receiving Value from GUI: QSpinBox
+                    if routes_maxoffroaddistance_value is not None: # Check if received value is NULL
+                        routes_maxoffroaddistance_urlstring = '&offRoadDistanceMeters=' + str(routes_maxoffroaddistance_value) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_MaxOffroadDistance_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_maxoffroaddistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_MaxOffroadDistance_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_maxoffroaddistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
 
                 #Iterinaries
                 if self.dlg.Routes_Iterinaries_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_Iterinaries_Override.isActive() == True: # Check if override button shall be used
-                        Routes_Iterinaries_Value, IrrelevantSuccessStorage = self.dlg.Routes_Iterinaries_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_iterinaries_value, irrelevantsuccessstorage = self.dlg.Routes_Iterinaries_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_Iterinaries_Value = self.dlg.Routes_Iterinaries.value() # Receiving Value from GUI: QSpinBox
-                    if Routes_Iterinaries_Value is not None: # Check if received value is NULL
-                        Routes_Iterinaries_URLstring = '&numItineraries=' + str(Routes_Iterinaries_Value) # Concatenate to URL string if option is used and value is not NULL
+                        routes_iterinaries_value = self.dlg.Routes_Iterinaries.value() # Receiving Value from GUI: QSpinBox
+                    if routes_iterinaries_value is not None: # Check if received value is NULL
+                        routes_iterinaries_urlstring = '&numItineraries=' + str(routes_iterinaries_value) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_Iterinaries_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_iterinaries_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_Iterinaries_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_iterinaries_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
 
                 #Optimize
                 if self.dlg.Routes_Optimize_Use.isChecked() == True: # Check if option shall be used                
                     if self.dlg.Routes_Optimize_Override.isActive() == True: # Check if override button shall be used
-                        Routes_Optimize_Value, IrrelevantSuccessStorage = self.dlg.Routes_Optimize_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        routes_optimize_value, irrelevantsuccessstorage = self.dlg.Routes_Optimize_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                     else:
-                        Routes_Optimize_Value = self.dlg.Routes_Optimize.currentText() # Receiving Value from GUI: QComboBox
-                    if Routes_Optimize_Value is not None: # Check if received value is NULL
-                        Routes_Optimize_URLstring = '&optimize=' + str(Routes_Optimize_Value) # Concatenate to URL string if option is used and value is not NULL
+                        routes_optimize_value = self.dlg.Routes_Optimize.currentText() # Receiving Value from GUI: QComboBox
+                    if routes_optimize_value is not None: # Check if received value is NULL
+                        routes_optimize_urlstring = '&optimize=' + str(routes_optimize_value) # Concatenate to URL string if option is used and value is not NULL
                     else:
-                        Routes_Optimize_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                        routes_optimize_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
-                    Routes_Optimize_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    routes_optimize_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                     
                 #Transportation Mode
                 if self.dlg.Routes_TransportationMode_Override.isActive() == True:
-                    Routes_TransportationMode_Value, IrrelevantSuccessStorage = self.dlg.Routes_TransportationMode_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    routes_transportationmode_value, irrelevantsuccessstorage = self.dlg.Routes_TransportationMode_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Routes_TransportationMode_Value = self.dlg.Routes_TransportationMode.toPlainText() #Receiving Value from GUI: QTextEdit
-                if not Routes_TransportationMode_Value: # Check if it is NULL
-                    Routes_TransportationMode_Value = 'WALK,TRANSIT' # Make sure Mode is not empty because it is a must have parameter
-                Routes_TransportationMode_URLstring = "&mode=" + Routes_TransportationMode_Value.upper() # Make sure Mode is given as uppercase to prevent possible server errors (not sure how otp handels this exactly)
-            
+                    routes_transportationmode_value = self.dlg.Routes_TransportationMode.toPlainText() #Receiving Value from GUI: QTextEdit
+                if not routes_transportationmode_value: # Check if it is NULL
+                    routes_transportationmode_value = 'WALK,TRANSIT' # Make sure Mode is not empty because it is a must have parameter
+                routes_transportationmode_urlstring = "&mode=" + routes_transportationmode_value.upper() # Make sure Mode is given as uppercase to prevent possible server errors (not sure how otp handels this exactly)
+                route_total_mode = routes_transportationmode_value
+                
                 #Additional Parameters
                 if self.dlg.Routes_AdditionalParameters_Override.isActive() == True:
-                    Routes_AdditionalParameters_Value, IrrelevantSuccessStorage = self.dlg.Routes_AdditionalParameters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    routes_additionalparameters_value, irrelevantsuccessstorage = self.dlg.Routes_AdditionalParameters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Routes_AdditionalParameters_Value = self.dlg.Routes_AdditionalParameters.toPlainText() #Receiving Value from GUI: QTextEdit
-                if Routes_AdditionalParameters_Value is not None: # If Additional Parameters are filled, use it
-                    Routes_AdditionalParameters_URLstring = str(Routes_AdditionalParameters_Value) # Create the string
+                    routes_additionalparameters_value = self.dlg.Routes_AdditionalParameters.toPlainText() #Receiving Value from GUI: QTextEdit
+                if routes_additionalparameters_value is not None: # If Additional Parameters are filled, use it
+                    routes_additionalparameters_urlstring = str(routes_additionalparameters_value) # Create the string
                 else: # If Additional Parameters are not filled, do not use it
-                    Routes_AdditionalParameters_URLstring = '' # Create the string (Empty, because it is not used, not NULL!!)
+                    routes_additionalparameters_urlstring = '' # Create the string (Empty, because it is not used, not NULL!!)
                 
                 #Example URL: https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT
                 #https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT
                 #Concat URL and convert to string
-                route_url = (str(serverUrl) + "plan?" + # Add Plan request to server url
+                route_url = (str(serverurl) + "plan?" + # Add Plan request to server url
                                 "fromPlace=" + str(y_source) + "," + str(x_source) + # concatenate x and y coordinates as string
                                 "&toPlace=" + str(y_target) + "," + str(x_target) + 
-                                Routes_TransportationMode_URLstring + #
-                                Routes_WalkSpeed_URLstring + #
-                                Routes_BikeSpeed_URLstring + #
-                                Routes_Date_URLstring + #
-                                Routes_Time_URLstring + #
-                                Routes_ArriveBy_URLstring + #
-                                Routes_Wheelchair_URLstring + #
-                                Routes_WaitReluctance_URLstring + #
-                                Routes_MaxTransfers_URLstring + #
-                                Routes_MaxWalkDistance_URLstring + #
-                                Routes_MaxOffroadDistance_URLstring + #
-                                Routes_Iterinaries_URLstring +
-                                Routes_Optimize_URLstring +
-                                Routes_AdditionalParameters_URLstring # Additional Parameters entered as OTP-Readable string -> User responsibility
+                                routes_transportationmode_urlstring + #
+                                routes_walkspeed_urlstring + #
+                                routes_bikespeed_urlstring + #
+                                routes_date_urlstring + #
+                                routes_time_urlstring + #
+                                routes_arriveby_urlstring + #
+                                routes_wheelchair_urlstring + #
+                                routes_waitreluctance_urlstring + #
+                                routes_maxtransfers_urlstring + #
+                                routes_maxwalkdistance_urlstring + #
+                                routes_maxoffroaddistance_urlstring + #
+                                routes_iterinaries_urlstring +
+                                routes_optimize_urlstring +
+                                routes_additionalparameters_urlstring # Additional Parameters entered as OTP-Readable string -> User responsibility
                                 )
                 
                 testurl = 'https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT'
@@ -1368,10 +1371,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                             route_total_duration = iter['duration']
                         except:
                             route_total_duration = notavailableint
-                        try:
-                            route_total_distance = 0
-                        except:
-                            route_total_distance = notavailableint
+                        route_total_distance = 0 # set to 0 on start of each new route, well take the sum of all legs of a route
                         try:
                             route_total_transittime = iter['transitTime']
                         except:
@@ -1395,6 +1395,7 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                         #print('From lat: ' + str(route_total_duration))
                         
                         # loop through legs --> they will become the features of our layer
+                        route_leg_totaldistcounter = 0 # set to 0 on start of each new route
                         for leg in iter['legs']: 
                             route_legid += 1
                             feature = QgsFeature()
@@ -1425,10 +1426,10 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                                 route_leg_duration = notavailableint
                             try:
                                 route_leg_distance = leg['distance']
-                                route_total_distance = None # Field does not exist in response. To complicated to calculate as it would require to loop over entire result layer again. Maybe add in a later release...
+                                route_total_distance += route_leg_distance # Field does not exist in response. Build sum of all legs
                             except:
                                 route_leg_distance = notavailableint
-                                route_total_distance = None # Field does not exist in response.....
+                                route_total_distance += 0 # Field does not exist in response.....
                             try:
                                 route_leg_mode = leg['mode']
                             except:
@@ -1484,7 +1485,6 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                             
                             try:
                                 route_leg_encodedpolylinestring = leg['legGeometry']['points']
-                                #print(route_leg_encodedpolylinestring)
                                 route_leg_decodedpolylinestring_aspointlist = self.decode_polyline(route_leg_encodedpolylinestring)
                                 feature.setGeometry(QgsGeometry.fromPolyline(route_leg_decodedpolylinestring_aspointlist))
                             except:
@@ -1503,18 +1503,29 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                             fieldindex_source = 0 # fieldindex in sourcelayer
                             for key, value in fieldindexdict_source.items(): # loop through fields of sourcelayer
                                 fieldindex_new = key # fieldindex in resultlayer
-                                fieldvalue = self.routes_selectedLayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
+                                fieldvalue = self.routes_selectedlayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
                                 attrs_source = { fieldindex_new : fieldvalue } # prepare attributes
                                 routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_source }) # copy over value of sourcelayer to resultlayer
                                 fieldindex_source += 1 # go to next field of sourcelayer
                             fieldindex_target = 0
                             for key, value in fieldindexdict_target.items():
                                 fieldindex_new = key
-                                fieldvalue = self.routes_selectedLayer_target.getFeature(target_fid).attribute(fieldindex_target)
+                                fieldvalue = self.routes_selectedlayer_target.getFeature(target_fid).attribute(fieldindex_target)
                                 attrs_target = { fieldindex_new : fieldvalue }
                                 routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_target })
                                 fieldindex_target += 1
+                            route_leg_totaldistcounter += 1 # counting the number of legs of a route
                             # END OF LOOP legs
+                        
+                        # Update total distance here since it is the sum of all legs and not available in response jsons
+                        attr_totaldistance = { fieldindex_position_of_routetotaldistance : route_total_distance } # only change totaldistance field, we get its position while building the dict
+                        current_featureid_totaldistance = feature.id() # the current featureid of a route, needed to count later in loop
+                        last_featureid_totaldistance = feature.id() # the last featureid of a route
+                        first_featureid_totaldistance = last_featureid_totaldistance - route_leg_totaldistcounter + 1 # the first featureid of a route
+                        for features_before in range(first_featureid_totaldistance,last_featureid_totaldistance): # loop through all legs of the current route
+                            routes_memorylayer_pr.changeAttributeValues({ features_before : attr_totaldistance }) # add the leg-sum of all legs of a route as totaldistance
+                            current_featureid_totaldistance += 1
+                            
                         # END OF LOOP iterinaries
                     # END OF if route_error_bool == False
                 else: # Create error-dummyfeature if no route has been returned
@@ -1560,19 +1571,22 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                     fieldindex_source = 0 # fieldindex in sourcelayer
                     for key, value in fieldindexdict_source.items(): # loop through fields of sourcelayer
                         fieldindex_new = key # fieldindex in resultlayer
-                        fieldvalue = self.routes_selectedLayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
+                        fieldvalue = self.routes_selectedlayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
                         attrs_source = { fieldindex_new : fieldvalue } # prepare attributes
                         routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_source }) # copy over value of sourcelayer to resultlayer
                         fieldindex_source += 1 # go to next field of sourcelayer
                     fieldindex_target = 0
                     for key, value in fieldindexdict_target.items():
                         fieldindex_new = key
-                        fieldvalue = self.routes_selectedLayer_target.getFeature(target_fid).attribute(fieldindex_target)
+                        fieldvalue = self.routes_selectedlayer_target.getFeature(target_fid).attribute(fieldindex_target)
                         attrs_target = { fieldindex_new : fieldvalue }
                         routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_target })
                         fieldindex_target += 1
                     # END OF errorroutecreation
                 i += 1
+                routes_memorylayer_vl.updateFields()
+                routes_memorylayer_vl.updateExtents()
+                routes_memorylayer_vl.commitChanges() # Commit changes                
                 if route_error != 'Success: No Error':
                     QgsMessageLog.logMessage(str(route_error) + ' - ErrorID: ' + str(route_errorid) + ' - ErrorDSC: ' + str(route_errordescription),MESSAGE_CATEGORY,Qgis.Warning)
                 QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
@@ -1588,8 +1602,8 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         routes_memorylayer_vl.updateFields()
         routes_memorylayer_vl.updateExtents()
         routes_memorylayer_vl.commitChanges() # Commit changes
-        QgsProject.instance().addMapLayer(routes_memorylayer_vl)# Show in project
-        self.iface.messageBar().pushMessage("Done!", " Routes job finished", level=Qgis.Success, duration=3) 
+
+        self.iface.messageBar().pushMessage("Done!", " Routes job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
         routes_endtime = datetime.now()
         routes_runtime = routes_endtime - routes_starttime
         QgsMessageLog.logMessage("##### Routes job done in " + str(routes_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
@@ -1597,12 +1611,12 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         
-    def Isochrones_RequestIsochrones(self):        
+    def isochrones_request_isochrones(self):        
         # clear and initialize vars and stuff
         isochrone_url = None
-        Isochrones_Error = None
+        isochrones_error = None
         r = None
-        Inputlayer_outFeat = None
+        inputlayer_outfeat = None
         debug_info = None
         isochrone_uid_counter = 0
         isochrone_id_counter = 0
@@ -1614,58 +1628,60 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         isochrones_starttime = datetime.now()
         
         # Setting up Override Button context
-        ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.isochrones_selectedLayer)) #This context will be able to evaluate global, project, and layer variables
+        ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.isochrones_selectedlayer)) #This context will be able to evaluate global, project, and layer variables
         
         # Preparing Features
-        Inputlayer_Features = self.isochrones_selectedLayer.getFeatures()
+        inputlayer_features = self.isochrones_selectedlayer.getFeatures()
         
         # Create the Output-Vectorlayer
-        Isochrones_Memorylayer_VL = QgsVectorLayer("MultiPolygon?crs=epsg:4326", "Isochrones", "memory") # Create temporary polygon layer (output file)
-        Isochrones_Memorylayer_PR = Isochrones_Memorylayer_VL.dataProvider() # No idea what pr stands for, just copied this name from all the examples on the web... probably provider??
-        Isochrones_Memorylayer_VL.startEditing() # Enter editing mode
-        Isochrones_Memorylayer_PR.addAttributes([
+        isochrones_memorylayer_vl = QgsVectorLayer("MultiPolygon?crs=epsg:4326", "Isochrones", "memory") # Create temporary polygon layer (output file)
+        isochrones_memorylayer_pr = isochrones_memorylayer_vl.dataProvider() # No idea what pr stands for, just copied this name from all the examples on the web... probably provider??
+        isochrones_memorylayer_vl.startEditing() # Enter editing mode
+        isochrones_memorylayer_pr.addAttributes([
                                           QgsField("Isochrone_Time",QVariant.Int),
                                           QgsField("Isochrone_UID", QVariant.Int),
                                           QgsField("Isochrone_ID", QVariant.Int),
                                           QgsField("Isochrone_Error", QVariant.String),
                                           QgsField("Isochrone_URL", QVariant.String)
                                           ]) # Add Error and URL Field to outputlayer
-        Isochrones_Memorylayer_PR.addAttributes(self.isochrones_selectedLayer.fields()) # Copy all fieldnames of inputlayer to outputlayer  
-        Inputlayer_NumberOfFields = self.isochrones_selectedLayer.fields().count() # count number of fields in inputlayer
-        Inputlayer_outFeat = QgsFeature() # set QgsFeature
+        isochrones_memorylayer_pr.addAttributes(self.isochrones_selectedlayer.fields()) # Copy all fieldnames of inputlayer to outputlayer  
+        inputlayer_numberoffields = self.isochrones_selectedlayer.fields().count() # count number of fields in inputlayer
+        inputlayer_outfeat = QgsFeature() # set QgsFeature
         
         # Savelocation
         otp_plugin_location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) #Read path of this plugin
         tmp_save_location = os.path.join(otp_plugin_location, 'temp_files\\')  #Concat path of this plugin to save location of temporary shapefiles
 
         # General Settings
-        ServerURL = self.serverUrl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()        
+        serverurl = self.serverurl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()        
  
         # Preparing Transformation to WGS 84
-        sourceCrs = QgsCoordinateReferenceSystem(self.isochrones_selectedLayer.crs().authid()) # Read CRS of input layer
-        destCrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
-        tr = QgsCoordinateTransform(sourceCrs, destCrs, QgsProject.instance()) # Setting up transformation
+        sourcecrs = QgsCoordinateReferenceSystem(self.isochrones_selectedlayer.crs().authid()) # Read CRS of input layer
+        destcrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
+        tr = QgsCoordinateTransform(sourcecrs, destcrs, QgsProject.instance()) # Setting up transformation
         
         # Preparing Progressbar
-        progressbar_featurecount = self.isochrones_selectedLayer.featureCount()
+        progressbar_featurecount = self.isochrones_selectedlayer.featureCount()
         progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
         progressbar_counter = 0
         self.dlg.Isochrones_ProgressBar.setValue(progressbar_percent)
         
-        for Inputlayer_Feature in Inputlayer_Features:
+        QgsProject.instance().addMapLayer(isochrones_memorylayer_vl)# Show in project
+        
+        for inputlayer_feature in inputlayer_features:
         
             # Initial Variables
-            Isochrones_Error = 'Success: No Error' # Empty the error var
+            isochrones_error = 'Success: No Error' # Empty the error var
             progressbar_counter = progressbar_counter + 1
                 
             # retrieve every feature with its geometry and attributes
-            QgsMessageLog.logMessage("Feature ID: " + str(Inputlayer_Feature.id()),MESSAGE_CATEGORY,Qgis.Info)
+            QgsMessageLog.logMessage("Feature ID: " + str(inputlayer_feature.id()),MESSAGE_CATEGORY,Qgis.Info)
             
             # Override Button Feature
-            ctx.setFeature(Inputlayer_Feature) #Setting context to current feature
+            ctx.setFeature(inputlayer_feature) #Setting context to current feature
             
             # Feature Geometry
-            geom = Inputlayer_Feature.geometry() # fetch geometry of current feature
+            geom = inputlayer_feature.geometry() # fetch geometry of current feature
             geom.transform(tr) # Transform geometry to WGS 84 (We prepared this outside the loop)
             pointgeom = geom.asPoint() #Read Point geometry
             x = round(pointgeom.x(),8) #Read X-Value
@@ -1673,216 +1689,216 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
             QgsMessageLog.logMessage("PointX: " + str(x) + " | PointY: " + str(y),MESSAGE_CATEGORY,Qgis.Info)
             
             # Feature Attributes
-            Inputlayer_Attributes = Inputlayer_Feature.attributes() # fetch attributes
+            Inputlayer_Attributes = inputlayer_feature.attributes() # fetch attributes
             #print(str(Inputlayer_Attributes)) # attrs is a list. It contains all the attribute values of this feature
             
             # Copy Attributes to outputlayer
-            Inputlayer_outFeat.setAttributes(Inputlayer_Feature.attributes()) # set the attributes
+            inputlayer_outfeat.setAttributes(inputlayer_feature.attributes()) # set the attributes
             #print (Inputlayer_Attributes[0])
             
             #Check where to gather attributes from: GUI or Layer? 
             #WalkSpeed
             if self.dlg.Isochrones_WalkSpeed_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_WalkSpeed_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_WalkSpeed_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_WalkSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_walkspeed_value, irrelevantsuccessstorage = self.dlg.Isochrones_WalkSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_WalkSpeed_Value = self.dlg.Isochrones_WalkSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
-                if Isochrones_WalkSpeed_Value is not None: # Check if received value is NULL
-                    Isochrones_WalkSpeed_MS = float(Isochrones_WalkSpeed_Value) * 0.27777777777778 # Convert float and km/h to m/s
-                    Isochrones_WalkSpeed_URLstring = '&walkSpeed=' + str(round(Isochrones_WalkSpeed_MS,6)) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_walkspeed_value = self.dlg.Isochrones_WalkSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
+                if isochrones_walkspeed_value is not None: # Check if received value is NULL
+                    isochrones_walkspeed_ms = float(isochrones_walkspeed_value) * 0.27777777777778 # Convert float and km/h to m/s
+                    isochrones_walkspeed_urlstring = '&walkSpeed=' + str(round(isochrones_walkspeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_WalkSpeed_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_walkspeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_WalkSpeed_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_walkspeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
  
             #BikeSpeed
             if self.dlg.Isochrones_BikeSpeed_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_BikeSpeed_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_BikeSpeed_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_BikeSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_bikespeed_value, irrelevantsuccessstorage = self.dlg.Isochrones_BikeSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_BikeSpeed_Value = self.dlg.Isochrones_BikeSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
-                if Isochrones_BikeSpeed_Value is not None: # Check if received value is NULL
-                    Isochrones_BikeSpeed_MS = float(Isochrones_BikeSpeed_Value) * 0.27777777777778 # Convert float and km/h to m/s
-                    Isochrones_BikeSpeed_URLstring = '&bikeSpeed=' + str(round(Isochrones_BikeSpeed_MS,6)) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_bikespeed_value = self.dlg.Isochrones_BikeSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
+                if isochrones_bikespeed_value is not None: # Check if received value is NULL
+                    isochrones_bikespeed_ms = float(isochrones_bikespeed_value) * 0.27777777777778 # Convert float and km/h to m/s
+                    isochrones_bikespeed_urlstring = '&bikeSpeed=' + str(round(isochrones_bikespeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_BikeSpeed_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_bikespeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_BikeSpeed_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_bikespeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
 
             #Date
             if self.dlg.Isochrones_Date_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_Date_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_Date_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_Date_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_date_value, irrelevantsuccessstorage = self.dlg.Isochrones_Date_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_Date_Value = self.dlg.Isochrones_Date.date().toString("yyyy-MM-dd") # Receiving Value from GUI: QDateEdit
-                if Isochrones_Date_Value is not None: # Check if received value is NULL
-                    Isochrones_Date_URLstring = '&date=' + str(Isochrones_Date_Value) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_date_value = self.dlg.Isochrones_Date.date().toString("yyyy-MM-dd") # Receiving Value from GUI: QDateEdit
+                if isochrones_date_value is not None: # Check if received value is NULL
+                    isochrones_date_urlstring = '&date=' + str(isochrones_date_value) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_Date_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_date_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_Date_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_date_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
             #Time
             if self.dlg.Isochrones_Time_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_Time_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_Time_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_Time_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_time_value, irrelevantsuccessstorage = self.dlg.Isochrones_Time_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_Time_Value = self.dlg.Isochrones_Time.time().toString("HH:mm:ss") # Receiving Value from GUI: QTimeEdit
-                if Isochrones_Time_Value is not None: # Check if received value is NULL
-                    Isochrones_Time_URLstring = '&time=' + str(Isochrones_Time_Value) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_time_value = self.dlg.Isochrones_Time.time().toString("HH:mm:ss") # Receiving Value from GUI: QTimeEdit
+                if isochrones_time_value is not None: # Check if received value is NULL
+                    isochrones_time_urlstring = '&time=' + str(isochrones_time_value) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_Time_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_time_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_Time_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_time_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
             #ArriveBy
             if self.dlg.Isochrones_ArriveBy_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_ArriveBy_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_ArriveBy_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_ArriveBy_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_arriveby_value, irrelevantsuccessstorage = self.dlg.Isochrones_ArriveBy_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_ArriveBy_Value = self.dlg.Isochrones_ArriveBy.isChecked() # Receiving Value from GUI: QCheckBox
-                if Isochrones_ArriveBy_Value is not None: # Check if received value is NULL
-                    Isochrones_ArriveBy_URLstring = '&arriveBy=' + str(Isochrones_ArriveBy_Value) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_arriveby_value = self.dlg.Isochrones_ArriveBy.isChecked() # Receiving Value from GUI: QCheckBox
+                if isochrones_arriveby_value is not None: # Check if received value is NULL
+                    isochrones_arriveby_urlstring = '&arriveBy=' + str(isochrones_arriveby_value) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_ArriveBy_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_arriveby_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_ArriveBy_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_arriveby_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
             #Wheelchair
             if self.dlg.Isochrones_Wheelchair_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_Wheelchair_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_Wheelchair_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_Wheelchair_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_wheelchair_value, irrelevantsuccessstorage = self.dlg.Isochrones_Wheelchair_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_Wheelchair_Value = self.dlg.Isochrones_Wheelchair.isChecked() # Receiving Value from GUI: QCheckBox
-                if Isochrones_Wheelchair_Value is not None: # Check if received value is NULL
-                    Isochrones_Wheelchair_URLstring = '&wheelchair=' + str(Isochrones_Wheelchair_Value) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_wheelchair_value = self.dlg.Isochrones_Wheelchair.isChecked() # Receiving Value from GUI: QCheckBox
+                if isochrones_wheelchair_value is not None: # Check if received value is NULL
+                    isochrones_wheelchair_urlstring = '&wheelchair=' + str(isochrones_wheelchair_value) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_Wheelchair_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_wheelchair_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_Wheelchair_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_wheelchair_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
             #WaitReluctance
             if self.dlg.Isochrones_WaitReluctance_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_WaitReluctance_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_WaitReluctance_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_WaitReluctance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_waitreluctance_value, irrelevantsuccessstorage = self.dlg.Isochrones_WaitReluctance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_WaitReluctance_Value = self.dlg.Isochrones_WaitReluctance.value() # Receiving Value from GUI: QDoubleSpinBox
-                if Isochrones_WaitReluctance_Value is not None: # Check if received value is NULL
-                    Isochrones_WaitReluctance_Float = round(float(Isochrones_WaitReluctance_Value),2)
-                    Isochrones_WaitReluctance_URLstring = '&waitReluctance=' + str(Isochrones_WaitReluctance_Float) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_waitreluctance_value = self.dlg.Isochrones_WaitReluctance.value() # Receiving Value from GUI: QDoubleSpinBox
+                if isochrones_waitreluctance_value is not None: # Check if received value is NULL
+                    isochrones_waitreluctance_float = round(float(isochrones_waitreluctance_value),2)
+                    isochrones_waitreluctance_urlstring = '&waitReluctance=' + str(isochrones_waitreluctance_float) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_WaitReluctance_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_waitreluctance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_WaitReluctance_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_waitreluctance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                 
             #MaxTransfers
             if self.dlg.Isochrones_MaxTransfers_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_MaxTransfers_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_MaxTransfers_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_MaxTransfers_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_maxtransfers_value, irrelevantsuccessstorage = self.dlg.Isochrones_MaxTransfers_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_MaxTransfers_Value = self.dlg.Isochrones_MaxTransfers.value() # Receiving Value from GUI: QSpinBox
-                if Isochrones_MaxTransfers_Value is not None: # Check if received value is NULL
-                    Isochrones_MaxTransfers_URLstring = '&maxTransfers=' + str(Isochrones_MaxTransfers_Value) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_maxtransfers_value = self.dlg.Isochrones_MaxTransfers.value() # Receiving Value from GUI: QSpinBox
+                if isochrones_maxtransfers_value is not None: # Check if received value is NULL
+                    isochrones_maxtransfers_urlstring = '&maxTransfers=' + str(isochrones_maxtransfers_value) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_MaxTransfers_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_maxtransfers_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_MaxTransfers_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_maxtransfers_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
              
             #MaxWalkDistance
             if self.dlg.Isochrones_MaxWalkDistance_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_MaxWalkDistance_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_MaxWalkDistance_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_MaxWalkDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_maxwalkdistance_value, irrelevantsuccessstorage = self.dlg.Isochrones_MaxWalkDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_MaxWalkDistance_Value = self.dlg.Isochrones_MaxWalkDistance.value() # Receiving Value from GUI: QSpinBox
-                if Isochrones_MaxWalkDistance_Value is not None: # Check if received value is NULL
-                    Isochrones_MaxWalkDistance_URLstring = '&maxWalkDistance=' + str(Isochrones_MaxWalkDistance_Value) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_maxwalkdistance_value = self.dlg.Isochrones_MaxWalkDistance.value() # Receiving Value from GUI: QSpinBox
+                if isochrones_maxwalkdistance_value is not None: # Check if received value is NULL
+                    isochrones_maxwalkdistance_urlstring = '&maxWalkDistance=' + str(isochrones_maxwalkdistance_value) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_MaxWalkDistance_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_maxwalkdistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_MaxWalkDistance_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_maxwalkdistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
              
             #MaxOffroadDistance
             if self.dlg.Isochrones_MaxOffroadDistance_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_MaxOffroadDistance_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_MaxOffroadDistance_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_MaxOffroadDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_maxoffroaddistance_value, irrelevantsuccessstorage = self.dlg.Isochrones_MaxOffroadDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_MaxOffroadDistance_Value = self.dlg.Isochrones_MaxOffroadDistance.value() # Receiving Value from GUI: QSpinBox
-                if Isochrones_MaxOffroadDistance_Value is not None: # Check if received value is NULL
-                    Isochrones_MaxOffroadDistance_URLstring = '&offRoadDistanceMeters=' + str(Isochrones_MaxOffroadDistance_Value) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_maxoffroaddistance_value = self.dlg.Isochrones_MaxOffroadDistance.value() # Receiving Value from GUI: QSpinBox
+                if isochrones_maxoffroaddistance_value is not None: # Check if received value is NULL
+                    isochrones_maxoffroaddistance_urlstring = '&offRoadDistanceMeters=' + str(isochrones_maxoffroaddistance_value) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_MaxOffroadDistance_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_maxoffroaddistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_MaxOffroadDistance_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                isochrones_maxoffroaddistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
              
             #PrecisionMeters
             if self.dlg.Isochrones_PrecisionMeters_Use.isChecked() == True: # Check if option shall be used                
                 if self.dlg.Isochrones_PrecisionMeters_Override.isActive() == True: # Check if override button shall be used
-                    Isochrones_PrecisionMeters_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_PrecisionMeters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    isochrones_precisionmeters_value, irrelevantsuccessstorage = self.dlg.Isochrones_PrecisionMeters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
                 else:
-                    Isochrones_PrecisionMeters_Value = self.dlg.Isochrones_PrecisionMeters.value() # Receiving Value from GUI: QSpinBox
-                if Isochrones_PrecisionMeters_Value is not None: # Check if received value is NULL
-                    Isochrones_PrecisionMeters_URLstring = '&precisionMeters=' + str(Isochrones_PrecisionMeters_Value) # Concatenate to URL string if option is used and value is not NULL
+                    isochrones_precisionmeters_value = self.dlg.Isochrones_PrecisionMeters.value() # Receiving Value from GUI: QSpinBox
+                if isochrones_precisionmeters_value is not None: # Check if received value is NULL
+                    isochrones_precisionmeters_urlstring = '&precisionMeters=' + str(isochrones_precisionmeters_value) # Concatenate to URL string if option is used and value is not NULL
                 else:
-                    Isochrones_PrecisionMeters_URLstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    isochrones_precisionmeters_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
             else:
-                Isochrones_PrecisionMeters_URLstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)                   
+                isochrones_precisionmeters_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)                   
 
             #Isochrones Interval
             if self.dlg.Isochrones_Interval_Override.isActive() == True:
-                Isochrones_Interval_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_Interval_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                isochrones_interval_value, irrelevantsuccessstorage = self.dlg.Isochrones_Interval_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
             else:
-                Isochrones_Interval_Value = self.dlg.Isochrones_Interval.toPlainText() #Receiving Value from GUI: QTextEdit
-            if not Isochrones_Interval_Value: # Check if it is NULL
-                Isochrones_Interval_Value = '300,600,900' # Make sure cutoffSec is not empty because it is a must have parameter   
-            Isochrones_Interval_Value = Isochrones_Interval_Value.replace(" ", "")  # Remove whitespaces in case user entered them              
-            Interval_list = list(Isochrones_Interval_Value.split(",")) # Split given Integers (as string) separated by comma into a list
-            Isochrones_Interval_URLstring = "&cutoffSec=".join(Interval_list) #Join the list to a string and add leading "&cutoffSec=" to each Integer. The first item of the list will get no leading "&cutoffSec=", we will add this later
+                isochrones_interval_value = self.dlg.Isochrones_Interval.toPlainText() #Receiving Value from GUI: QTextEdit
+            if not isochrones_interval_value: # Check if it is NULL
+                isochrones_interval_value = '300,600,900' # Make sure cutoffSec is not empty because it is a must have parameter   
+            isochrones_interval_value = isochrones_interval_value.replace(" ", "")  # Remove whitespaces in case user entered them              
+            interval_list = list(isochrones_interval_value.split(",")) # Split given Integers (as string) separated by comma into a list
+            isochrones_interval_urlstring = "&cutoffSec=".join(interval_list) #Join the list to a string and add leading "&cutoffSec=" to each Integer. The first item of the list will get no leading "&cutoffSec=", we will add this later
 
             #Transportation Mode
             if self.dlg.Isochrones_TransportationMode_Override.isActive() == True:
-                Isochrones_TransportationMode_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_TransportationMode_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                isochrones_transportationmode_value, irrelevantsuccessstorage = self.dlg.Isochrones_TransportationMode_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
             else:
-                Isochrones_TransportationMode_Value = self.dlg.Isochrones_TransportationMode.toPlainText() #Receiving Value from GUI: QTextEdit
-            if not Isochrones_TransportationMode_Value: # Check if it is NULL
-                Isochrones_TransportationMode_Value = 'WALK,TRANSIT' # Make sure Mode is not empty because it is a must have parameter
-            Isochrones_TransportationMode_URLstring = "&mode=" + Isochrones_TransportationMode_Value.upper() # Make sure Mode is given as uppercase to prevent possible server errors (not sure how otp handels this exactly)
+                isochrones_transportationmode_value = self.dlg.Isochrones_TransportationMode.toPlainText() #Receiving Value from GUI: QTextEdit
+            if not isochrones_transportationmode_value: # Check if it is NULL
+                isochrones_transportationmode_value = 'WALK,TRANSIT' # Make sure Mode is not empty because it is a must have parameter
+            isochrones_transportationmode_urlstring = "&mode=" + isochrones_transportationmode_value.upper() # Make sure Mode is given as uppercase to prevent possible server errors (not sure how otp handels this exactly)
             
             #Additional Parameters
             if self.dlg.Isochrones_AdditionalParameters_Override.isActive() == True:
-                Isochrones_AdditionalParameters_Value, IrrelevantSuccessStorage = self.dlg.Isochrones_AdditionalParameters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                isochrones_additionalparameters_value, irrelevantsuccessstorage = self.dlg.Isochrones_AdditionalParameters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
             else:
-                Isochrones_AdditionalParameters_Value = self.dlg.Isochrones_AdditionalParameters.toPlainText() #Receiving Value from GUI: QTextEdit
-            if Isochrones_AdditionalParameters_Value is not None: # If Additional Parameters are filled, use it
-                Isochrones_AdditionalParameters_URLstring = str(Isochrones_AdditionalParameters_Value) # Create the string
+                isochrones_additionalparameters_value = self.dlg.Isochrones_AdditionalParameters.toPlainText() #Receiving Value from GUI: QTextEdit
+            if isochrones_additionalparameters_value is not None: # If Additional Parameters are filled, use it
+                isochrones_additionalparameters_urlstring = str(isochrones_additionalparameters_value) # Create the string
             else: # If Additional Parameters are not filled, do not use it
-                Isochrones_AdditionalParameters_URLstring = '' # Create the string (Empty, because it is not used, not NULL!!)
+                isochrones_additionalparameters_urlstring = '' # Create the string (Empty, because it is not used, not NULL!!)
                 
             #Example URL: http://localhost:8080/otp/routers/ttc/isochrone?fromPlace=43.637,-79.434&mode=WALK,TRANSIT&date=11-14-2017&time=8:00am&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
             #https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=11-14-2017&time=8:00am&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
             #Concat URL and convert to string
-            isochrone_url = (str(ServerURL) + "isochrone?algorithm=accSampling" + # Add Isochrones request and algorithm to server url
+            isochrone_url = (str(serverurl) + "isochrone?algorithm=accSampling" + # Add Isochrones request and algorithm to server url
                             "&fromPlace=" + str(y) + "," + str(x) + # concatenate x and y coordinates as string
-                            Isochrones_TransportationMode_URLstring + #
-                            Isochrones_WalkSpeed_URLstring + #
-                            Isochrones_BikeSpeed_URLstring + #
-                            Isochrones_Date_URLstring + #
-                            Isochrones_Time_URLstring + #
-                            Isochrones_ArriveBy_URLstring + #
-                            Isochrones_Wheelchair_URLstring + #
-                            Isochrones_WaitReluctance_URLstring + #
-                            Isochrones_MaxTransfers_URLstring + #
-                            Isochrones_MaxWalkDistance_URLstring + #
-                            Isochrones_MaxOffroadDistance_URLstring + #
-                            Isochrones_PrecisionMeters_URLstring + #
-                            Isochrones_AdditionalParameters_URLstring + # Additional Parameters entered as OTP-Readable string -> User responsibility
-                            "&cutoffSec=" + str(Isochrones_Interval_URLstring) # Interval-Integers are taken as comma separated string, then split into list and then joined to string with leading "&cutoffSec=". The first interval therefore has no leading "&cutoffSec=" thats why we add it here
+                            isochrones_transportationmode_urlstring + #
+                            isochrones_walkspeed_urlstring + #
+                            isochrones_bikespeed_urlstring + #
+                            isochrones_date_urlstring + #
+                            isochrones_time_urlstring + #
+                            isochrones_arriveby_urlstring + #
+                            isochrones_wheelchair_urlstring + #
+                            isochrones_waitreluctance_urlstring + #
+                            isochrones_maxtransfers_urlstring + #
+                            isochrones_maxwalkdistance_urlstring + #
+                            isochrones_maxoffroaddistance_urlstring + #
+                            isochrones_precisionmeters_urlstring + #
+                            isochrones_additionalparameters_urlstring + # Additional Parameters entered as OTP-Readable string -> User responsibility
+                            "&cutoffSec=" + str(isochrones_interval_urlstring) # Interval-Integers are taken as comma separated string, then split into list and then joined to string with leading "&cutoffSec=". The first interval therefore has no leading "&cutoffSec=" thats why we add it here
                             )
                           
             #create url
             #Working example: https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=2019-11-01&time=08:00:00&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
             isochrone_url = isochrone_url #'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql'
             QgsMessageLog.logMessage(str(isochrone_url),MESSAGE_CATEGORY,Qgis.Info)
-            debug_info = "Feature ID: " + str(Inputlayer_Feature.id()) + ' of Layer: ' + str(self.isochrones_selectedLayer) + ' at: ' + str(y) + ',' + str(x) + ' with URL: ' + str(isochrone_url) + '\n'
+            debug_info = "Feature ID: " + str(inputlayer_feature.id()) + ' of Layer: ' + str(self.isochrones_selectedlayer) + ' at: ' + str(y) + ',' + str(x) + ' with URL: ' + str(isochrone_url) + '\n'
             
             #use lokal shp for testing to avoid bombing the server with requests :)
             #request and download file
@@ -1906,68 +1922,72 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
                             isochrone_responseLayer = QgsVectorLayer(tmp_save_location + "null.shp", "null", "ogr") # load just downloaded file as vector layer
                             isochrone_responseLayer.updateExtents()
                         except:
-                            Isochrones_Error = 'Error: loading response failed'
-                            QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
+                            isochrones_error = 'Error: loading response failed'
+                            QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
                     except:
-                        Isochrones_Error = 'Error: response file not valid'
-                        QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
+                        isochrones_error = 'Error: response file not valid'
+                        QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
                 except:
-                    Isochrones_Error = 'Error: writing response to harddrive failed'
-                    QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
+                    isochrones_error = 'Error: writing response to harddrive failed'
+                    QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
             except:
-                Isochrones_Error = 'Error: request failed' 
-                QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
+                isochrones_error = 'Error: request failed' 
+                QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
 
 
                 
             # Check Validity of Responselayer
             try:
                 if (not isochrone_responseLayer.isValid()) or (isochrone_responseLayer.extent().yMaximum() == 0.0) or (isochrone_responseLayer.extent().xMaximum() == 0.0) or (isochrone_responseLayer.extent().yMinimum() == 0.0) or (isochrone_responseLayer.extent().xMinimum() == 0.0):
-                    Isochrones_Error = 'Error: response layer is not valid'
-                    QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
+                    isochrones_error = 'Error: response layer is not valid'
+                    QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
             except:
-                Isochrones_Error = 'Error: response layer is not valid'
-                QgsMessageLog.logMessage(Isochrones_Error,MESSAGE_CATEGORY,Qgis.Warning)
+                isochrones_error = 'Error: response layer is not valid'
+                QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
             
             # Create Dummylayer on Error to prevent errors in code or broken result layer
-            if Isochrones_Error != 'Success: No Error':
+            if isochrones_error != 'Success: No Error':
                 isochrone_responseLayer = QgsVectorLayer("MultiPolygon?crs=epsg:4326","Errorlayer","memory")
                 isochrone_responseLayer_pr = isochrone_responseLayer.dataProvider()
                 isochrone_responseLayer.startEditing()
                 error_feature = QgsFeature()
                 error_feature.setGeometry(QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))"))
                 isochrone_responseLayer_pr.addAttributes([QgsField("time",QVariant.Int)])
-                for j in Interval_list:
+                for j in interval_list:
                     isochrone_responseLayer_pr.addFeatures([error_feature])
                 isochrone_responseLayer.commitChanges()
                 isochrone_responseLayer.updateExtents()
-                Isochrones_Error = Isochrones_Error + ' - Dummyfeature created to prevent entire result from beeing broken'
+                isochrones_error = isochrones_error + ' - Dummyfeature created to prevent entire result from beeing broken'
                 
             # Throw back final status on this one
-            if (Isochrones_Error != 'Success: No Error'):
-                QgsMessageLog.logMessage('Final Status: ' + str(Isochrones_Error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...',MESSAGE_CATEGORY,Qgis.Warning)
+            if (isochrones_error != 'Success: No Error'):
+                QgsMessageLog.logMessage('Final Status: ' + str(isochrones_error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...',MESSAGE_CATEGORY,Qgis.Warning)
             
             #get features of file
-            Isochrone_Features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
+            isochrone_features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
             
             #iterate trough isochrone
             isochrone_id_counter = isochrone_id_counter + 1
-            for Isochrone_Feature in Isochrone_Features:
+            for isochrone_feature in isochrone_features:
                 isochrone_uid_counter = isochrone_uid_counter + 1
-                Isochrones_Memorylayer_PR.addFeature(Isochrone_Feature) # copy features of responselayer including geometry and attributes (it is always only one attribute) to new layer  
-                attrs_isochrone = { 1 : isochrone_uid_counter, 2 : isochrone_id_counter, 3 : Isochrones_Error , 4 : isochrone_url } # set further generic attributes    
-                Isochrones_Memorylayer_PR.changeAttributeValues({ Isochrone_Feature.id() : attrs_isochrone }) # change attribute values of new layer to the just set ones  
-                for i in range(0, Inputlayer_NumberOfFields): # iterate over new layer as many fields as the input layer has                
+                isochrones_memorylayer_pr.addFeature(isochrone_feature) # copy features of responselayer including geometry and attributes (it is always only one attribute) to new layer  
+                attrs_isochrone = { 1 : isochrone_uid_counter, 2 : isochrone_id_counter, 3 : isochrones_error , 4 : isochrone_url } # set further generic attributes    
+                isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_isochrone }) # change attribute values of new layer to the just set ones  
+                for i in range(0, inputlayer_numberoffields): # iterate over new layer as many fields as the input layer has                
                     attrs_inputlayer = { i + 5 : Inputlayer_Attributes[i] } # set attributes of inputlayer (+5 because we added 5 new fields before)
-                    Isochrones_Memorylayer_PR.changeAttributeValues({ Isochrone_Feature.id() : attrs_inputlayer }) # change attribute values of new layer to the ones from inputlayer 
-                    if Isochrones_Error != 'Success: No Error': # change stuff to null/dummy if isochrone is not valid
+                    isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_inputlayer }) # change attribute values of new layer to the ones from inputlayer 
+                    if isochrones_error != 'Success: No Error': # change stuff to null/dummy if isochrone is not valid
                         err_attrs_isochrone = { 0 : 0 } # set time field to 0 on error
-                        Isochrones_Memorylayer_PR.changeAttributeValues({ Isochrone_Feature.id() : err_attrs_isochrone }) # set time field to 0 on error
+                        isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : err_attrs_isochrone }) # set time field to 0 on error
                         nullgeom = QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))") # create pseudopolygon
                         #nullgeom = QgsGeometry.fromWkt('') #causes issues with layer. Just stick to pseudopolygon
-                        Isochrones_Memorylayer_PR.changeGeometryValues({ Isochrone_Feature.id() : nullgeom }) # set geometry of feature to null on error 
-                Isochrones_Memorylayer_VL.updateFields() # make sure to fetch changes from the provider
-                Isochrones_Memorylayer_VL.updateExtents()
+                        isochrones_memorylayer_pr.changeGeometryValues({ isochrone_feature.id() : nullgeom }) # set geometry of feature to null on error 
+                isochrones_memorylayer_vl.updateFields() # make sure to fetch changes from the provider
+                isochrones_memorylayer_vl.updateExtents()
+            
+            isochrones_memorylayer_vl.updateFields()
+            isochrones_memorylayer_vl.updateExtents()
+            isochrones_memorylayer_vl.commitChanges() # Commit changes
             
             # Update Progressbar
             progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
@@ -1980,10 +2000,11 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         #END OF LOOP
         
         # Isochrones Memory VectorLayer
-        Isochrones_Memorylayer_VL.updateExtents()
-        Isochrones_Memorylayer_VL.commitChanges() # Commit changes
-        QgsProject.instance().addMapLayer(Isochrones_Memorylayer_VL)# Show in project
-        self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", level=Qgis.Success, duration=3)
+        isochrones_memorylayer_vl.updateFields()
+        isochrones_memorylayer_vl.updateExtents()
+        isochrones_memorylayer_vl.commitChanges() # Commit changes
+
+        self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         isochrones_endtime = datetime.now()
         isochrones_runtime = isochrones_endtime - isochrones_starttime
         QgsMessageLog.logMessage("##### Isochrones job done in " + str(isochrones_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
@@ -1994,88 +2015,89 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
     def isochrones_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
         layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers
         self.dlg.Isochrones_SelectInputLayer.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
-        self.isochrones_selectedLayer = self.dlg.Isochrones_SelectInputLayer.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
-        if self.isochrones_selectedLayer is not None: # prevents showing python error when no point-layer is available
-            self.Isochrones_Inputlayer_Fieldnames = [field.name() for field in self.isochrones_selectedLayer.fields()] # Receive Isochrones_Inputlayer_Fieldnames from selected layer
+        self.isochrones_selectedlayer = self.dlg.Isochrones_SelectInputLayer.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
+        if self.isochrones_selectedlayer is not None: # prevents showing python error when no point-layer is available
+            self.isochrones_inputlayer_fieldnames = [field.name() for field in self.isochrones_selectedlayer.fields()] # Receive Isochrones_Inputlayer_Fieldnames from selected layer
         
         # Setting up QgsOverrideButtons (Reference: https://gis.stackexchange.com/a/350993/107424). Has to be done here, so they get updated when the layer selection has changed...
         #WalkSpeed
-        self.dlg.Isochrones_WalkSpeed_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_WalkSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("walkSpeed", "Walk Speed in km/h", QgsPropertyDefinition.DoublePositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_WalkSpeed_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_WalkSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("walkSpeed", "Walk Speed in km/h", QgsPropertyDefinition.DoublePositive), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #BikeSpeed
-        self.dlg.Isochrones_BikeSpeed_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_BikeSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("bikeSpeed", "Bike Speed in km/h", QgsPropertyDefinition.DoublePositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_BikeSpeed_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_BikeSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("bikeSpeed", "Bike Speed in km/h", QgsPropertyDefinition.DoublePositive), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #Date
-        self.dlg.Isochrones_Date_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_Date_Override.init(0, QgsProperty(), QgsPropertyDefinition("Date", "Date in YYYY-MM-DD", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_Date_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_Date_Override.init(0, QgsProperty(), QgsPropertyDefinition("Date", "Date in YYYY-MM-DD", QgsPropertyDefinition.String), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #Time
-        self.dlg.Isochrones_Time_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_Time_Override.init(0, QgsProperty(), QgsPropertyDefinition("Time", "Time in HH:MM:SS", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_Time_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_Time_Override.init(0, QgsProperty(), QgsPropertyDefinition("Time", "Time in HH:MM:SS", QgsPropertyDefinition.String), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #ArriveBy
-        self.dlg.Isochrones_ArriveBy_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_ArriveBy_Override.init(0, QgsProperty(), QgsPropertyDefinition("ArriveBy", "ArriveBy as Boolean", QgsPropertyDefinition.Boolean), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_ArriveBy_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_ArriveBy_Override.init(0, QgsProperty(), QgsPropertyDefinition("ArriveBy", "ArriveBy as Boolean", QgsPropertyDefinition.Boolean), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #Wheelchair
-        self.dlg.Isochrones_Wheelchair_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_Wheelchair_Override.init(0, QgsProperty(), QgsPropertyDefinition("Wheelchair", "Wheelchair as Boolean", QgsPropertyDefinition.Boolean), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_Wheelchair_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_Wheelchair_Override.init(0, QgsProperty(), QgsPropertyDefinition("Wheelchair", "Wheelchair as Boolean", QgsPropertyDefinition.Boolean), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #WaitReluctance
-        self.dlg.Isochrones_WaitReluctance_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_WaitReluctance_Override.init(0, QgsProperty(), QgsPropertyDefinition("WaitReluctance", "Wait Reluctance Factor as Double", QgsPropertyDefinition.Double), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_WaitReluctance_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_WaitReluctance_Override.init(0, QgsProperty(), QgsPropertyDefinition("WaitReluctance", "Wait Reluctance Factor as Double", QgsPropertyDefinition.Double), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #MaxTransfers
-        self.dlg.Isochrones_MaxTransfers_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_MaxTransfers_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxTransfers", "Maximum Transfers as Integer", QgsPropertyDefinition.IntegerPositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_MaxTransfers_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_MaxTransfers_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxTransfers", "Maximum Transfers as Integer", QgsPropertyDefinition.IntegerPositive), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #MaxWalkDistance
-        self.dlg.Isochrones_MaxWalkDistance_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_MaxWalkDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxWalkDistance", "Maximum Walk Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_MaxWalkDistance_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_MaxWalkDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxWalkDistance", "Maximum Walk Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #MaxOffroadDistance
-        self.dlg.Isochrones_MaxOffroadDistance_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_MaxOffroadDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxOffroadDistance", "Maximum Offroad Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_MaxOffroadDistance_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_MaxOffroadDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxOffroadDistance", "Maximum Offroad Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #PrecisionMeters
-        self.dlg.Isochrones_PrecisionMeters_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_PrecisionMeters_Override.init(0, QgsProperty(), QgsPropertyDefinition("PrecisionMeters", "Level of Detail in Meters", QgsPropertyDefinition.IntegerPositiveGreaterZero), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_PrecisionMeters_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_PrecisionMeters_Override.init(0, QgsProperty(), QgsPropertyDefinition("PrecisionMeters", "Level of Detail in Meters", QgsPropertyDefinition.IntegerPositiveGreaterZero), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #Interval
-        self.dlg.Isochrones_Interval_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_Interval_Override.init(0, QgsProperty(), QgsPropertyDefinition("Interval", "Isochrones Interval in Seconds as String using Integer Values separated by Comma", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_Interval_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_Interval_Override.init(0, QgsProperty(), QgsPropertyDefinition("Interval", "Isochrones Interval in Seconds as String using Integer Values separated by Comma", QgsPropertyDefinition.String), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #TransportationMode
-        self.dlg.Isochrones_TransportationMode_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_TransportationMode_Override.init(0, QgsProperty(), QgsPropertyDefinition("TransportationMode", "TransportationMode as String separated by Comma", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_TransportationMode_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_TransportationMode_Override.init(0, QgsProperty(), QgsPropertyDefinition("TransportationMode", "TransportationMode as String separated by Comma", QgsPropertyDefinition.String), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #AdditionalParameters
-        self.dlg.Isochrones_AdditionalParameters_Override.registerExpressionContextGenerator(self.isochrones_selectedLayer) # will allow the use of global, project, and layer variables.
-        self.dlg.Isochrones_AdditionalParameters_Override.init(0, QgsProperty(), QgsPropertyDefinition("AdditionalParameters", "Additional Parameters as String", QgsPropertyDefinition.String), self.isochrones_selectedLayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        self.dlg.Isochrones_AdditionalParameters_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.Isochrones_AdditionalParameters_Override.init(0, QgsProperty(), QgsPropertyDefinition("AdditionalParameters", "Additional Parameters as String", QgsPropertyDefinition.String), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
 
         
     def routes_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
         layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers
         self.dlg.Routes_SelectInputLayer_Source.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
-        self.routes_selectedLayer_source = self.dlg.Routes_SelectInputLayer_Source.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
+        self.routes_selectedlayer_source = self.dlg.Routes_SelectInputLayer_Source.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
         self.dlg.Routes_SelectInputLayer_Target.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
-        self.routes_selectedLayer_target = self.dlg.Routes_SelectInputLayer_Target.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer         
-        if self.routes_selectedLayer_source is not None: # prevents showing python error when no point-layer is available
-            self.routes_inputlayer_source_fieldnames = [field.name() for field in self.routes_selectedLayer_source.fields()] # Receive Inputlayer_Fieldnames from selected layer
-        if self.routes_selectedLayer_target is not None: # prevents showing python error when no point-layer is available
-            self.routes_inputlayer_target_fieldnames = [field.name() for field in self.routes_selectedLayer_target.fields()] # Receive Inputlayer_Fieldnames from selected layer
-        self.routes_uidfield_source = self.dlg.Routes_SelectInputField_Source.setLayer(self.routes_selectedLayer_source) # Reference fieldselection to layer
-        self.routes_uidfield_target = self.dlg.Routes_SelectInputField_Target.setLayer(self.routes_selectedLayer_target) # Reference fieldselection to layer
+        self.routes_selectedlayer_target = self.dlg.Routes_SelectInputLayer_Target.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer         
+        if self.routes_selectedlayer_source is not None: # prevents showing python error when no point-layer is available
+            self.routes_inputlayer_source_fieldnames = [field.name() for field in self.routes_selectedlayer_source.fields()] # Receive Inputlayer_Fieldnames from selected layer
+        if self.routes_selectedlayer_target is not None: # prevents showing python error when no point-layer is available
+            self.routes_inputlayer_target_fieldnames = [field.name() for field in self.routes_selectedlayer_target.fields()] # Receive Inputlayer_Fieldnames from selected layer
+        self.routes_uidfield_source = self.dlg.Routes_SelectInputField_Source.setLayer(self.routes_selectedlayer_source) # Reference fieldselection to layer
+        self.routes_uidfield_target = self.dlg.Routes_SelectInputField_Target.setLayer(self.routes_selectedlayer_target) # Reference fieldselection to layer
         try: # setup default selected fields
             if self.dlg.Routes_SelectInputField_Source.currentField() == '': # Only default if no field is selected
-                if self.routes_selectedLayer_source.fields().indexFromName('id') == -1: # if no id field, use the first field
+                if self.routes_selectedlayer_source.fields().indexFromName('id') == -1: # if no id field, use the first field
                     self.dlg.Routes_SelectInputField_Source.setCurrentIndex(0)
                 else: # if id field, use it as default
                     self.dlg.Routes_SelectInputField_Source.setField('id')
                 # same for targetlayer
             if self.dlg.Routes_SelectInputField_Target.currentField() == '': # Only default if no field is selected
-                if self.routes_selectedLayer_target.fields().indexFromName('id') == -1:
+                if self.routes_selectedlayer_target.fields().indexFromName('id') == -1:
                     self.dlg.Routes_SelectInputField_Target.setCurrentIndex(0)
                 else:
                     self.dlg.Routes_SelectInputField_Target.setField('id')
         except: # if layer has no field, throw error
-            self.iface.messageBar().pushMessage("Error", " Layer does not have any fields!", level=Qgis.Critical, duration=3)
-        
+            self.iface.messageBar().pushMessage("Error", " Layer does not have any fields!", MESSAGE_CATEGORY, level=Qgis.Critical, duration=3)
+            QgsMessageLog.logMessage("Layer does not have any fields!",MESSAGE_CATEGORY,Qgis.Warning)
+            
         if self.dlg.Routes_DataDefinedLayer_Source.isChecked() == True:
-            ddomaster = self.routes_selectedLayer_source
+            ddomaster = self.routes_selectedlayer_source
         elif self.dlg.Routes_DataDefinedLayer_Target.isChecked() == True:
-            ddomaster = self.routes_selectedLayer_target
+            ddomaster = self.routes_selectedlayer_target
         else:
-            ddomaster = self.routes_selectedLayer_source
+            ddomaster = self.routes_selectedlayer_source
 
         # Setting up QgsOverrideButtons (Reference: https://gis.stackexchange.com/a/350993/107424). Has to be done here, so they get updated when the layer selection has changed...
         # Use Sourcelayer as Master
@@ -2134,15 +2156,15 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
             self.routes_maplayerselection()
             self.isochrones_maplayerselection() 
             # Execute Main-Functions on Click: Placing them here prevents them from beeing executed multiple times, see https://gis.stackexchange.com/a/137161/107424
-            self.dlg.Isochrones_RequestIsochrones.clicked.connect(lambda: self.Isochrones_RequestIsochrones()) #Call Isochrones_RequestIsochrones function when clicking on RequestIsochrones button and handing over isochrones_selectedLayer. lambda function necessary to do this... (Reference: https://gis.stackexchange.com/a/351167/107424)
-            self.dlg.Routes_RequestRoutes.clicked.connect(lambda: self.Routes_RequestRoutes())
+            self.dlg.Isochrones_RequestIsochrones.clicked.connect(lambda: self.isochrones_request_isochrones()) #Call isochrones_request_isochrones function when clicking on RequestIsochrones button and handing over isochrones_selectedLayer. lambda function necessary to do this... (Reference: https://gis.stackexchange.com/a/351167/107424)
+            self.dlg.Routes_RequestRoutes.clicked.connect(lambda: self.routes_request_routes())
         
         # Setting GUI stuff for startup
         self.dlg.Isochrones_Date.setDateTime(QtCore.QDateTime.currentDateTime()) # Set Dateselection to today on restart or firststart
         self.dlg.Routes_Date.setDateTime(QtCore.QDateTime.currentDateTime())
         self.dlg.Isochrones_ProgressBar.setValue(0) # Set Progressbar to 0 on restart or first start
         self.dlg.Routes_ProgressBar.setValue(0)
-        self.dlg.GeneralSettings_ServerStatusResult.setText("Unknown")
+        self.dlg.GeneralSettings_ServerStatusResult.setText("Serverstatus Unknown")
         self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: white; color: black ")
             
         # Calling Functions to update layer stuff when layerselection has changed
@@ -2174,10 +2196,9 @@ class OpenTripPlannerPlugin(): #OpenTripPlannerPlugin(QgsTask):
         # See if OK was pressed
         if result:
             # Do something useful here - delete the line containing pass and
-            # substitute with your code.
-            #Isochrones_RequestIsochrones()  
+            # substitute with your code. 
             QgsMessageLog.logMessage("OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.",MESSAGE_CATEGORY,Qgis.Warning)
-            self.iface.messageBar().pushMessage("Error", "OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.",level=Qgis.Critical, duration=3)
+            self.iface.messageBar().pushMessage("Error", "OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.",MESSAGE_CATEGORY,level=Qgis.Critical, duration=3)
 
 #t1 = OpenTripPlannerPlugin(iface)
 #QgsApplication.taskManager().addTask(t1)

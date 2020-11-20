@@ -38,7 +38,7 @@
        <x>10</x>
        <y>490</y>
        <width>561</width>
-       <height>23</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="locale">
@@ -982,14 +982,14 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <x>590</x>
        <y>491</y>
        <width>121</width>
-       <height>21</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="toolTip">
       <string>Request isochrones and store as polygon layer.</string>
      </property>
      <property name="text">
-      <string>Cancel</string>
+      <string>Cancel (available soon)</string>
      </property>
     </widget>
    </widget>
@@ -1100,7 +1100,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <x>10</x>
        <y>490</y>
        <width>561</width>
-       <height>23</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="locale">
@@ -2104,14 +2104,14 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <x>590</x>
        <y>490</y>
        <width>121</width>
-       <height>21</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="toolTip">
       <string>Request isochrones and store as polygon layer.</string>
      </property>
      <property name="text">
-      <string>Cancel</string>
+      <string>Cancel (available soon)</string>
      </property>
     </widget>
    </widget>
@@ -2246,7 +2246,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3 - Version 0.2&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 0.3&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
