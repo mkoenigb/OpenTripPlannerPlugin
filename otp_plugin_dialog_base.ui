@@ -989,7 +989,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Request isochrones and store as polygon layer.</string>
      </property>
      <property name="text">
-      <string>Cancel (available soon)</string>
+      <string>Cancel</string>
      </property>
     </widget>
    </widget>
@@ -2032,7 +2032,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Create only Routes for matching Fields</string>
      </property>
      <property name="checked">
-      <bool>true</bool>
+      <bool>false</bool>
      </property>
     </widget>
     <widget class="QCheckBox" name="Routes_DataDefinedLayer_Source">
@@ -2111,7 +2111,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Request isochrones and store as polygon layer.</string>
      </property>
      <property name="text">
-      <string>Cancel (available soon)</string>
+      <string>Cancel</string>
      </property>
     </widget>
    </widget>
@@ -2144,7 +2144,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="text">
-      <string>Server URL including path to OTP-Router ending with a slash (for example &quot;http://localhost:8080/otp/routers/ttc/&quot;:</string>
+      <string>Server URL including path to OTP-Router ending with a slash (for example &quot;http://localhost:8080/otp/routers/default/&quot;:</string>
      </property>
     </widget>
     <widget class="QPushButton" name="GeneralSettings_Save">
@@ -2179,7 +2179,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
      <property name="placeholderText">
-      <string>http://localhost:8080/otp/routers/ttc/</string>
+      <string>http://localhost:8080/otp/routers/default/</string>
      </property>
     </widget>
     <widget class="QPushButton" name="GeneralSettings_CheckServerStatus">
@@ -2246,7 +2246,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 0.3&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 0.4&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
