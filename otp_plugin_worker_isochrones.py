@@ -58,7 +58,7 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         self.isochrones_memorylayer_vl = resultlayer
         self.isochrones_state = 0
         self.gf.read_general_variables()
-        self.gf.read_isochrone_variables()
+        #self.gf.read_isochrone_variables()
     
     def stop(self):
         self.stopisochronesworker = True

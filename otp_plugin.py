@@ -194,7 +194,8 @@ class OpenTripPlannerPlugin():
                 self.tr(u'&OpenTripPlanner Plugin'),
                 action)
             self.iface.removeToolBarIcon(action)
- 
+
+        
     def isochronesStartWorker(self): # method to start the worker thread
         isochrones_memorylayer_vl = QgsVectorLayer("MultiPolygon?crs=epsg:4326", "Isochrones", "memory") # Create temporary polygon layer (output file)
         self.isochrones_thread = QThread()
@@ -210,9 +211,12 @@ class OpenTripPlannerPlugin():
         self.isochrones_worker.isochrones_progress.connect(self.isochronesReportProgress)
         self.isochrones_worker.isochrones_finished.connect(self.isochronesFinished)
         self.isochrones_thread.start() # finally start the thread
-        self.dlg.Isochrones_RequestIsochrones.setEnabled(False) # disable the start-thread button while thread is running
-        self.isochrones_thread.finished.connect(lambda: self.dlg.Isochrones_RequestIsochrones.setEnabled(True)) # enable the start-thread button when thread has been finished
-
+        # Disable/Enable GUI elements to prevent them from beeing used while worker threads are running and accidentially changing settings during progress
+        self.gf.disableIsochronesGui() 
+        self.gf.disableGeneralSettingsGui() 
+        self.isochrones_thread.finished.connect(lambda: self.gf.enableIsochronesGui())
+        self.isochrones_thread.finished.connect(lambda: self.gf.enableGeneralSettingsGui())
+        
     def isochronesKillWorker(self): # method to kill/cancel the worker thread
         # print('pushed cancel') # debugging
         # see https://doc.qt.io/qtforpython/PySide6/QtCore/QThread.html
@@ -243,7 +247,8 @@ class OpenTripPlannerPlugin():
             self.iface.messageBar().pushMessage("Warning", " No Isochrones to create - Check your settings and retry", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)
         else:
             self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
-        
+
+
     def routesStartWorker(self): # method to start the worker thread
         routes_memorylayer_vl = QgsVectorLayer("LineString?crs=epsg:4326", "Routes", "memory") # Create temporary polygon layer (output file)
         self.routes_thread = QThread()
@@ -259,8 +264,11 @@ class OpenTripPlannerPlugin():
         self.routes_worker.routes_progress.connect(self.routesReportProgress)
         self.routes_worker.routes_finished.connect(self.routesFinished)
         self.routes_thread.start() # finally start the thread
-        self.dlg.Routes_RequestRoutes.setEnabled(False) # disable the start-thread button while thread is running
-        self.routes_thread.finished.connect(lambda: self.dlg.Routes_RequestRoutes.setEnabled(True)) # enable the start-thread button when thread has been finished
+        # Disable/Enable GUI elements to prevent them from beeing used while worker threads are running and accidentially changing settings during progress
+        self.gf.disableRoutesGui()
+        self.gf.disableGeneralSettingsGui()
+        self.routes_thread.finished.connect(lambda: self.gf.enableRoutesGui())
+        self.routes_thread.finished.connect(lambda: self.gf.enableGeneralSettingsGui())
 
     def routesKillWorker(self): # method to kill/cancel the worker thread
         # print('pushed cancel') # debugging

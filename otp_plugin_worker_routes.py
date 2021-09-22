@@ -58,7 +58,7 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         self.routes_memorylayer_vl = resultlayer
         self.routes_state = 0
         self.gf.read_general_variables()
-        self.gf.read_route_variables()
+        #self.gf.read_route_variables()
         
     def stop(self):
         self.stoproutesworker = True

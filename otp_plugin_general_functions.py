@@ -828,4 +828,35 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         #AdditionalParameters
         self.dlg.Routes_AdditionalParameters_Override.registerExpressionContextGenerator(ddomaster) # will allow the use of global, project, and layer variables.
         self.dlg.Routes_AdditionalParameters_Override.init(0, QgsProperty(), QgsPropertyDefinition("AdditionalParameters", "Additional Parameters as String", QgsPropertyDefinition.String), ddomaster, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
-        
+    
+    # Disable/Enable GUI elements to prevent them from beeing used while worker threads are running and accidentially changing settings during progress
+    def disableIsochronesGui(self):
+        exceptionlist = ['Isochrones_ProgressBar','Isochrones_Cancel']
+        for widget in self.dlg.tab_run_isochrones.children():
+            if not widget.objectName() in exceptionlist:
+                widget.setEnabled(False)
+    def disableRoutesGui(self):
+        exceptionlist = ['Routes_ProgressBar','Routes_Cancel']
+        for widget in self.dlg.tab_run_routes.children():
+            if not widget.objectName() in exceptionlist:
+                widget.setEnabled(False)
+    def disableGeneralSettingsGui(self):
+        exceptionlist = ['GeneralSettings_Proxy_Use']
+        for widget in self.dlg.tab_settings_general.children():
+            if not widget.objectName() in exceptionlist:
+                widget.setEnabled(False)
+    def enableIsochronesGui(self):
+        exceptionlist = []
+        for widget in self.dlg.tab_run_isochrones.children():
+            if not widget.objectName() in exceptionlist:
+                widget.setEnabled(True)
+    def enableRoutesGui(self):
+        exceptionlist = []
+        for widget in self.dlg.tab_run_routes.children():
+            if not widget.objectName() in exceptionlist:
+                widget.setEnabled(True)
+    def enableGeneralSettingsGui(self):
+        exceptionlist = ['GeneralSettings_Proxy_Use']
+        for widget in self.dlg.tab_settings_general.children():
+            if not widget.objectName() in exceptionlist:
+                widget.setEnabled(True)
