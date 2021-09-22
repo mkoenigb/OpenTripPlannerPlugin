@@ -339,7 +339,7 @@ class OpenTripPlannerPlugin():
             self.dlg.Routes_DataDefinedLayer_Target.stateChanged.connect(self.gf.routes_maplayerselection) 
             
         # Setting GUI stuff for startup every time the plugin is opened
-        self.dlg.Isochrones_Date.setDateTime(QtCore.QDateTime.currentDateTime()) # Set Dateselection to today on restart or firststart
+        self.dlg.Isochrones_Date.setDateTime(QtCore.QDateTime.currentDateTime()) # Set Dateselection to today on restart or firststart, only functional if never used save settings, otherwise overwritten by read_route_variables()
         self.dlg.Routes_Date.setDateTime(QtCore.QDateTime.currentDateTime())
         self.dlg.Isochrones_ProgressBar.setValue(0) # Set Progressbar to 0 on restart or first start
         self.dlg.Routes_ProgressBar.setValue(0)
