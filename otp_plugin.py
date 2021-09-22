@@ -311,31 +311,31 @@ class OpenTripPlannerPlugin():
             self.dlg.Isochrones_Cancel.clicked.connect(lambda: self.isochronesKillWorker())
             self.dlg.Routes_RequestRoutes.clicked.connect(lambda: self.routesStartWorker())
             self.dlg.Routes_Cancel.clicked.connect(lambda: self.routesKillWorker())
-        
-        # Setting GUI stuff for startup
+            
+            # Calling Functions on button click
+            self.dlg.GeneralSettings_CheckServerStatus.clicked.connect(self.gf.check_server_status)
+            self.dlg.GeneralSettings_Save.clicked.connect(self.gf.store_general_variables) #Call store_general_variables function when clicking on save button
+            self.dlg.Isochrones_SaveSettings.clicked.connect(self.gf.store_isochrone_variables)
+            self.dlg.Isochrones_RestoreDefaultSettings.clicked.connect(self.gf.restore_isochrone_variables)
+            self.dlg.Routes_SaveSettings.clicked.connect(self.gf.store_route_variables)
+            self.dlg.Routes_RestoreDefaultSettings.clicked.connect(self.gf.restore_route_variables)
+            
+            # Calling Functions to update layer stuff when layerselection has changed
+            self.dlg.Isochrones_SelectInputLayer.currentIndexChanged.connect(self.gf.isochrones_maplayerselection) # Call function isochrones_maplayerselection to update all selection related stuff when selection has been changed
+            self.dlg.Routes_SelectInputLayer_Source.currentIndexChanged.connect(self.gf.routes_maplayerselection)
+            self.dlg.Routes_SelectInputLayer_Target.currentIndexChanged.connect(self.gf.routes_maplayerselection)
+            self.dlg.Routes_SelectInputField_Source.currentIndexChanged.connect(self.gf.routes_maplayerselection) # or "fieldChanged"?
+            self.dlg.Routes_SelectInputField_Target.currentIndexChanged.connect(self.gf.routes_maplayerselection)
+            self.dlg.Routes_DataDefinedLayer_Source.stateChanged.connect(self.gf.routes_maplayerselection)
+            self.dlg.Routes_DataDefinedLayer_Target.stateChanged.connect(self.gf.routes_maplayerselection) 
+            
+        # Setting GUI stuff for startup every time the plugin is opened
         self.dlg.Isochrones_Date.setDateTime(QtCore.QDateTime.currentDateTime()) # Set Dateselection to today on restart or firststart
         self.dlg.Routes_Date.setDateTime(QtCore.QDateTime.currentDateTime())
         self.dlg.Isochrones_ProgressBar.setValue(0) # Set Progressbar to 0 on restart or first start
         self.dlg.Routes_ProgressBar.setValue(0)
         self.dlg.GeneralSettings_ServerStatusResult.setText("Serverstatus Unknown")
         self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: white; color: black ")
-            
-        # Calling Functions to update layer stuff when layerselection has changed
-        self.dlg.Isochrones_SelectInputLayer.currentIndexChanged.connect(self.gf.isochrones_maplayerselection) # Call function isochrones_maplayerselection to update all selection related stuff when selection has been changed
-        self.dlg.Routes_SelectInputLayer_Source.currentIndexChanged.connect(self.gf.routes_maplayerselection)
-        self.dlg.Routes_SelectInputLayer_Target.currentIndexChanged.connect(self.gf.routes_maplayerselection)
-        self.dlg.Routes_SelectInputField_Source.currentIndexChanged.connect(self.gf.routes_maplayerselection) # or "fieldChanged"?
-        self.dlg.Routes_SelectInputField_Target.currentIndexChanged.connect(self.gf.routes_maplayerselection)
-        self.dlg.Routes_DataDefinedLayer_Source.stateChanged.connect(self.gf.routes_maplayerselection)
-        self.dlg.Routes_DataDefinedLayer_Target.stateChanged.connect(self.gf.routes_maplayerselection)
-        
-        # Calling Functions on button click
-        self.dlg.GeneralSettings_CheckServerStatus.clicked.connect(self.gf.check_server_status) #Open file dialog when hitting button
-        self.dlg.GeneralSettings_Save.clicked.connect(self.gf.store_general_variables) #Call store_general_variables function when clicking on save button
-        self.dlg.Isochrones_SaveSettings.clicked.connect(self.gf.store_isochrone_variables)
-        self.dlg.Isochrones_RestoreDefaultSettings.clicked.connect(self.gf.restore_isochrone_variables)
-        self.dlg.Routes_SaveSettings.clicked.connect(self.gf.store_route_variables)
-        self.dlg.Routes_RestoreDefaultSettings.clicked.connect(self.gf.restore_route_variables)
         
         # Functions to execute every time the plugin is opened
         self.gf.read_general_variables() #Run Read-Stored-Variables-Function on every start
