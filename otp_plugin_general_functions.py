@@ -662,10 +662,11 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         
         
     def check_server_status(self):
-        self.read_proxy_settings()
-        proxy_support = urllib.request.ProxyHandler(self.proxyhandledict)
-        opener = urllib.request.build_opener(proxy_support)
-        urllib.request.install_opener(opener)
+        # Proxy not working properly.... maybe I'll implement this someday...
+        #self.read_proxy_settings()
+        #proxy_support = urllib.request.ProxyHandler(self.proxyhandledict)
+        #opener = urllib.request.build_opener(proxy_support)
+        #urllib.request.install_opener(opener)
         servercheckrequest = urllib.request.Request(str(self.dlg.GeneralSettings_ServerURL.toPlainText()))
         try:
             urllib.request.urlopen(servercheckrequest)
@@ -679,6 +680,9 @@ class OpenTripPlannerPluginGeneralFunctions(object):
             self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: red; color: white ")
         
     def read_proxy_settings(self):
+        pass
+        """
+        # not working properly.... maybe I'll implement this someday...
         s = QSettings()
         self.proxyEnabled = s.value("proxy/proxyEnabled", "")
         self.proxyType = s.value("proxy/proxyType", "" )
@@ -696,6 +700,7 @@ class OpenTripPlannerPluginGeneralFunctions(object):
                 self.proxyhandledict = {}
         except:
             self.proxyhandledict = {}
+        """
             
     def isochrones_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
         layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers

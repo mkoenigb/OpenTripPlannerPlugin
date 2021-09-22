@@ -361,13 +361,14 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                 
                 #request and download file
                 try:
-                    proxy_support = urllib.request.ProxyHandler(self.gf.proxyhandledict)
-                    opener = urllib.request.build_opener(proxy_support)
-                    urllib.request.install_opener(opener)
+                    #Proxy not working properly, maybe I'll implement this someday...
+                    #proxy_support = urllib.request.ProxyHandler(self.gf.proxyhandledict)
+                    #opener = urllib.request.build_opener(proxy_support)
+                    #urllib.request.install_opener(opener)
                     isochrone_headers = {"accept":"application/x-zip-compressed"}
                     isochrone_request = urllib.request.Request(isochrone_url, headers=isochrone_headers)
                     isochrone_response = urllib.request.urlopen(isochrone_request)
-                    #r = requests.get(isochrone_url, headers={"accept":"application/x-zip-compressed"}, proxies=urllib.request.getproxies()) # Sending request to server. Using shapefiles to avoid invalid geometries on high level of detail + geojson throwback seems to be limited to 4 decimals. # Using urllib instead of requests to avoid prerequesites installation fails
+                    # Sending request to server. Using shapefiles to avoid invalid geometries on high level of detail + geojson throwback seems to be limited to 4 decimals. # Using urllib instead of requests to avoid prerequesites installation fails
                 #save file
                     try:                
                         with open(tmp_save_location + 'isochrones.zip', 'wb') as f: # Write shapefile to temp location

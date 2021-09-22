@@ -590,9 +590,10 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                     route_errornopath = None
                     
                     try: # Try to request route
-                        proxy_support = urllib.request.ProxyHandler(self.gf.proxyhandledict)
-                        opener = urllib.request.build_opener(proxy_support)
-                        urllib.request.install_opener(opener)
+                        #Proxy not working properly, maybe I'll implement this someday...
+                        #proxy_support = urllib.request.ProxyHandler(self.gf.proxyhandledict)
+                        #opener = urllib.request.build_opener(proxy_support)
+                        #urllib.request.install_opener(opener)
                         route_headers = {"accept":"application/json"} # this plugin only works for json responses
                         route_request = urllib.request.Request(route_url, headers=route_headers)
                         try: # Try to receive response
