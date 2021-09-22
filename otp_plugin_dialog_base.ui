@@ -1188,6 +1188,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      </property>
     </widget>
     <widget class="QDoubleSpinBox" name="Routes_WalkSpeed">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>240</x>
