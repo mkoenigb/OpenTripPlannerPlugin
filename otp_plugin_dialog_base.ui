@@ -2303,6 +2303,9 @@ to save temporary isochrone files</string>
      </property>
     </widget>
     <widget class="QCheckBox" name="GeneralSettings_Proxy_Use">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="geometry">
       <rect>
        <x>20</x>
@@ -2312,13 +2315,19 @@ to save temporary isochrone files</string>
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this option if you want to use the proxy settings from &amp;quot;Settings -&amp;gt; Options -&amp;gt; Network -&amp;gt; Use Proxy for Web Access&amp;quot; for your connection from this Plugin&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Use this option if you want to use the proxy settings from &amp;quot;Settings -&amp;gt; Options -&amp;gt; Network -&amp;gt; Use Proxy for Web Access&amp;quot; for your connection from this Plugin.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;Currently in testing stage. Maybe available in some future release.&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Use QGIS Proxy-Settings</string>
      </property>
-     <property name="checked">
+     <property name="checkable">
       <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+     <property name="autoExclusive">
+      <bool>false</bool>
      </property>
     </widget>
    </widget>

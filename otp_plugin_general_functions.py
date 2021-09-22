@@ -112,7 +112,7 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.dlg.GeneralSettings_CustomTempFolder_Use.setChecked(self.customtempfolder_use)     
         
         # Proxy-Settings
-        self.proxy_use = int(1)
+        self.proxy_use = int(0)
         self.dlg.GeneralSettings_Proxy_Use.setChecked(self.proxy_use)
         
         # Communicate with user
