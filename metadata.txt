@@ -1,6 +1,6 @@
 [general]
 name=OpenTripPlanner Plugin
-qgisMinimumVersion=3.0
+qgisMinimumVersion=3.2
 description=This plugin makes OpenTripPlanner functionalities accessible from within QGIS
 version=0.5
 author=Mario Koenigbauer
