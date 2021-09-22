@@ -16,7 +16,7 @@ repository=https://github.com/mkoenigb/OpenTripPlannerPlugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=0.5 Bugfixing and codeimprovements, added ability to choose a custom folder to store isochrone tempfiles at in case users do not have write permissions on plugin folder location, added proxy-support
+changelog=0.5 Bugfixing and codeimprovements, added ability to choose a custom folder to store isochrone tempfiles at in case users do not have write permissions on plugin folder location
     0.4 Implemented QThreads to keep GUI responsive on heavy load, added ability to cancel the process, complete restructure of code, minor other improvements
     0.3 Added calculated field for totalroute-distance and totalroute-mode, minor code and general improvements, python-naming-conventions
     0.2 Functionality for Routes added and minor optimizations
