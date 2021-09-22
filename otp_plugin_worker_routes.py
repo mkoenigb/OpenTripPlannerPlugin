@@ -57,7 +57,9 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         self.stoproutesworker = False
         self.routes_memorylayer_vl = resultlayer
         self.routes_state = 0
-    
+        self.gf.read_general_variables()
+        self.gf.read_route_variables()
+        
     def stop(self):
         self.stoproutesworker = True
     
@@ -138,777 +140,779 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                 
                 
         # Create the Output-Vectorlayer
-        routes_memorylayer_vl = QgsVectorLayer("LineString?crs=epsg:4326", "Routes", "memory") # Create temporary polygon layer (output file)
-        routes_memorylayer_pr = routes_memorylayer_vl.dataProvider()
-        routes_memorylayer_vl.startEditing() # Enter editing mode
-        routes_memorylayer_pr.addAttributes([ # Master for attributes and varnames
-            QgsField("Route_LegID",QVariant.Int),
-            QgsField("Route_RouteID", QVariant.Int),
-            QgsField("Route_RelationID", QVariant.Int),
-            QgsField("Route_From", sourceidfieldtype), # !
-            QgsField("Route_To", targetidfieldtype), # !
-            QgsField("Route_Error", QVariant.String),
-            QgsField("Route_ErrorID", QVariant.Int),
-            QgsField("Route_ErrorDescription", QVariant.String),
-            QgsField("Route_URL", QVariant.String),
-            QgsField("Route_From_Lat", QVariant.Double, len=4, prec=8),
-            QgsField("Route_From_Lon", QVariant.Double, len=4, prec=8),
-            QgsField("Route_From_StopId", QVariant.String),
-            QgsField("Route_From_StopCode", QVariant.String),
-            QgsField("Route_From_Name", QVariant.String),
-            QgsField("Route_From_StartTime", QVariant.DateTime),            
-            QgsField("Route_To_Lat", QVariant.Double, len=4, prec=8),
-            QgsField("Route_To_Lon", QVariant.Double, len=4, prec=8),
-            QgsField("Route_To_StopId", QVariant.String),
-            QgsField("Route_To_StopCode", QVariant.String),
-            QgsField("Route_To_Name", QVariant.String),      
-            QgsField("Route_To_EndTime", QVariant.DateTime),
-            QgsField("Route_Total_Mode", QVariant.String),
-            QgsField("Route_Total_Duration", QVariant.Int),
-            QgsField("Route_Total_Distance", QVariant.Double),
-            QgsField("Route_Total_TransitTime", QVariant.Int),
-            QgsField("Route_Total_WaitingTime", QVariant.Int),
-            QgsField("Route_Total_WalkTime", QVariant.Int),
-            QgsField("Route_Total_WalkDistance", QVariant.Double),
-            QgsField("Route_Total_Transfers", QVariant.Int),
-            QgsField("Route_Leg_StartTime", QVariant.DateTime),
-            QgsField("Route_Leg_DepartureDelay", QVariant.Int),
-            QgsField("Route_Leg_EndTime", QVariant.DateTime),
-            QgsField("Route_Leg_ArrivalDelay", QVariant.Int),
-            QgsField("Route_Leg_Duration", QVariant.Int),
-            QgsField("Route_Leg_Distance", QVariant.Double),
-            QgsField("Route_Leg_Mode", QVariant.String),
-            QgsField("Route_Leg_From_Lat", QVariant.Double, len=4, prec=8),
-            QgsField("Route_Leg_From_Lon", QVariant.Double, len=4, prec=8),
-            QgsField("Route_Leg_From_StopId", QVariant.String),
-            QgsField("Route_Leg_From_StopCode", QVariant.String),
-            QgsField("Route_Leg_From_Name", QVariant.String),
-            QgsField("Route_Leg_From_Departure", QVariant.DateTime),
-            QgsField("Route_Leg_To_Lat", QVariant.Double, len=4, prec=8),
-            QgsField("Route_Leg_To_Lon", QVariant.Double, len=4, prec=8),
-            QgsField("Route_Leg_To_StopId", QVariant.String),
-            QgsField("Route_Leg_To_StopCode", QVariant.String),
-            QgsField("Route_Leg_To_Name", QVariant.String),
-            QgsField("Route_Leg_To_Arrival", QVariant.DateTime)
-            ]) # Add fields to outputlayer
-        inputlayer_outFeat = QgsFeature() # set QgsFeature
-        routes_memorylayer_vl.updateFields()
-        routes_memorylayer_vl.commitChanges() # save empty layer with fields
-        routes_memorylayer_vl.startEditing() # start editing again
-
-        # Fieldindex as dictionary to avoid a mess
-        fieldindexcounter = 0 # start with index 0
-        fieldindexdict = {} # empty dictionary
-        for field in routes_memorylayer_vl.fields(): # iterate through field list we just created above
-            x = str(field.name()).lower() # convert to lowercase, string
-            fieldindexdict[fieldindexcounter] = x # assign index as key and fieldname as value
-            if '_url' in x:
-                fieldindex_position_of_last_alwaysneededfield = fieldindexcounter
-            if 'route_total_distance' in x:
-                fieldindex_position_of_routetotaldistance = fieldindexcounter
-            fieldindexcounter += 1
-        len_fieldindexdict = len(fieldindexdict)
-        
-        fieldindexcounter_source = 0 + len_fieldindexdict
-        fieldindexdict_source = {}        
-        for field in self.gf.routes_selectedlayer_source.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
-            routes_memorylayer_pr.addAttributes([QgsField('Source_' + str(field.name()), field.type())]) # Old fieldname + Source_ as prefix. Keep original field type
-            x = 'source_' + str(field.name()).lower() # add to fieldindexdictionary
-            fieldindexdict_source[fieldindexcounter_source] = x # add to fieldindexdictionary
-            fieldindexcounter_source += 1 
-        len_fieldindexdict_source = len(fieldindexdict_source)
-
-        fieldindexcounter_target = 0 + len_fieldindexdict + len_fieldindexdict_source
-        fieldindexdict_target = {}
-        for field in self.gf.routes_selectedlayer_target.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
-            routes_memorylayer_pr.addAttributes([QgsField('Target_' + str(field.name()), field.type())]) # Old fieldname + Target_ as prefix. Keep original field type       
-            x = 'target_' + str(field.name()).lower() # add to fieldindexdictionary
-            fieldindexdict_target[fieldindexcounter_target] = x # add to fieldindexdictionary
-            fieldindexcounter_target += 1     
-        len_fieldindexdict_target = len(fieldindexdict_target)            
-        #print(fieldindexdict)
-        
-        # To optimize speed of loop in case only routes for matching fields shall be created: Create a dictionary for both layers
-        # See: https://gis.stackexchange.com/questions/377807/using-an-attribute-index-to-find-matching-attributes-of-two-layers-faster and https://stackoverflow.com/a/64597197/8947209
-        dict_source = {}
-        dict_target = {}
-        for feat_source in self.gf.routes_selectedlayer_source.getFeatures():
-            dict_source[feat_source.id()] = feat_source.attribute(sourceidfieldindex) # feature id is used as key and attribute as value
-        for feat_target in self.gf.routes_selectedlayer_target.getFeatures():
-            dict_target[feat_target.id()] = feat_target.attribute(targetidfieldindex) # feature id is used as key and attribute as value
-        
-        # Create matching dictionary for performance optimization
-        # See: https://gis.stackexchange.com/questions/377807/using-an-attribute-index-to-find-matching-attributes-of-two-layers-faster and https://stackoverflow.com/a/64597197/8947209
-        dic2 = {}
-        dic3 = []
-        route_matches = {}
-        if self.dlg.Routes_OnlyMatching.isChecked() == True: # only routes from source points which match with target points ids
-            for i in dict_target.keys():
-                elem_target = dict_target[i]
-                if dic2.get(elem_target, None):
-                    dic2[elem_target].append(i)
-                else:
-                    dic2[elem_target] = [i]
-            for i in dict_source.keys():
-                elem_source = dict_source[i]
-                x = dic2.get(elem_source, None)
-                if x:
-                    route_matches[i] = x
-        else: # Route from all source points to all target points
-            for i in dict_target.keys():
-                dic3.append(i)
-            for i in dict_source.keys():
-                route_matches[i] = dic3
-        #print(route_matches)
-        #print(dict_source)
-        #print(dict_target)
-        
-        # Number of total routes to calculate
-        n_totalrelations = 0
-        for v in route_matches.values():
-            # checking whether the value is a list
-            if isinstance(v, list):
-                n_totalrelations += len(v)
-        #print(n_totalrelations)
-        
-        # Preparing Progressbar
-        progressbar_featurecount = n_totalrelations
-        progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
-        progressbar_counter = 0
-        self.routes_progress.emit(int(progressbar_percent))
-        
-        if n_totalrelations == 0:
-            #self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6) # calling from thread crashes QGIS. Instead use route_state in signal to decide in MainClass which message to show
-            QgsMessageLog.logMessage("Warning! No Routes to create. Probably due to no matching attributes found or empty layer(s).",MESSAGE_CATEGORY,Qgis.Warning)
-            self.routes_progress.emit(int(0))
-            self.routes_state = 3
-        
-        # General Settings
-        serverurl = self.gf.serverurl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()
-        
-        # Setting up Override Button context
-        if self.dlg.Routes_DataDefinedLayer_Source.isChecked() == True:
-            ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.gf.routes_selectedlayer_source)) #This context will be able to evaluate global, project, and layer variables
-        elif self.dlg.Routes_DataDefinedLayer_Target.isChecked() == True:
-            ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.gf.routes_selectedlayer_target)) #This context will be able to evaluate global, project, and layer variables
-        else:
-            ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.gf.routes_selectedlayer_source)) #This context will be able to evaluate global, project, and layer variables
-        
-        # Preparing Features
-        routes_inputlayer_features_source = self.gf.routes_selectedlayer_source.getFeatures()
-        routes_inputlayer_features_target = self.gf.routes_selectedlayer_target.getFeatures()
-        
-        # Preparing Transformation to WGS 84
-        sourcecrs1 = QgsCoordinateReferenceSystem(self.gf.routes_selectedlayer_source.crs().authid()) # Read CRS of input layer
-        sourcecrs2 = QgsCoordinateReferenceSystem(self.gf.routes_selectedlayer_target.crs().authid()) # Read CRS of input layer
-        destcrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
-        tr1 = QgsCoordinateTransform(sourcecrs1, destcrs, QgsProject.instance()) # Setting up transformation
-        tr2 = QgsCoordinateTransform(sourcecrs2, destcrs, QgsProject.instance()) # Setting up transformation
-        
-        # Counter
-        route_legid = 0
-        route_routeid = 0
-        route_relationid = 0
-        route_from = ''
-        route_to = ''
-        notavailablestring = None #'not available'
-        notavailableint = None #0
-        notavailableothers = None
-        
-        # Pseudopointlist for errors in decode polyline
-        errorlinegeom = []
-        errorlinegeomp1 = QgsPoint(float(-0.1),float(0.0))
-        errorlinegeom.append(errorlinegeomp1)
-        errorlinegeomp2 = QgsPoint(float(0.1),float(0.0))
-        errorlinegeom.append(errorlinegeomp2)
-        
-
-        # Request the routes
-        for source, target in route_matches.items(): # loop through key (source) and value (target) of matching dictionary
-            if self.stoproutesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
-                self.routes_state = 2
-                break
-            i = 0 # counter to access value in values            
-            for l in target: # loop through list of current value
+        with edit(routes_memorylayer_vl):
+            routes_memorylayer_pr = routes_memorylayer_vl.dataProvider()
+            routes_memorylayer_pr.addAttributes([ # Master for attributes and varnames
+                QgsField("Route_LegID",QVariant.Int),
+                QgsField("Route_RouteID", QVariant.Int),
+                QgsField("Route_RelationID", QVariant.Int),
+                QgsField("Route_From", sourceidfieldtype), # !
+                QgsField("Route_To", targetidfieldtype), # !
+                QgsField("Route_Error", QVariant.String),
+                QgsField("Route_ErrorID", QVariant.Int),
+                QgsField("Route_ErrorDescription", QVariant.String),
+                QgsField("Route_URL", QVariant.String),
+                QgsField("Route_From_Lat", QVariant.Double, len=4, prec=8),
+                QgsField("Route_From_Lon", QVariant.Double, len=4, prec=8),
+                QgsField("Route_From_StopId", QVariant.String),
+                QgsField("Route_From_StopCode", QVariant.String),
+                QgsField("Route_From_Name", QVariant.String),
+                QgsField("Route_From_StartTime", QVariant.DateTime),            
+                QgsField("Route_To_Lat", QVariant.Double, len=4, prec=8),
+                QgsField("Route_To_Lon", QVariant.Double, len=4, prec=8),
+                QgsField("Route_To_StopId", QVariant.String),
+                QgsField("Route_To_StopCode", QVariant.String),
+                QgsField("Route_To_Name", QVariant.String),      
+                QgsField("Route_To_EndTime", QVariant.DateTime),
+                QgsField("Route_Total_Mode", QVariant.String),
+                QgsField("Route_Total_Duration", QVariant.Int),
+                QgsField("Route_Total_Distance", QVariant.Double),
+                QgsField("Route_Total_TransitTime", QVariant.Int),
+                QgsField("Route_Total_WaitingTime", QVariant.Int),
+                QgsField("Route_Total_WalkTime", QVariant.Int),
+                QgsField("Route_Total_WalkDistance", QVariant.Double),
+                QgsField("Route_Total_Transfers", QVariant.Int),
+                QgsField("Route_Leg_StartTime", QVariant.DateTime),
+                QgsField("Route_Leg_DepartureDelay", QVariant.Int),
+                QgsField("Route_Leg_EndTime", QVariant.DateTime),
+                QgsField("Route_Leg_ArrivalDelay", QVariant.Int),
+                QgsField("Route_Leg_Duration", QVariant.Int),
+                QgsField("Route_Leg_Distance", QVariant.Double),
+                QgsField("Route_Leg_Mode", QVariant.String),
+                QgsField("Route_Leg_From_Lat", QVariant.Double, len=4, prec=8),
+                QgsField("Route_Leg_From_Lon", QVariant.Double, len=4, prec=8),
+                QgsField("Route_Leg_From_StopId", QVariant.String),
+                QgsField("Route_Leg_From_StopCode", QVariant.String),
+                QgsField("Route_Leg_From_Name", QVariant.String),
+                QgsField("Route_Leg_From_Departure", QVariant.DateTime),
+                QgsField("Route_Leg_To_Lat", QVariant.Double, len=4, prec=8),
+                QgsField("Route_Leg_To_Lon", QVariant.Double, len=4, prec=8),
+                QgsField("Route_Leg_To_StopId", QVariant.String),
+                QgsField("Route_Leg_To_StopCode", QVariant.String),
+                QgsField("Route_Leg_To_Name", QVariant.String),
+                QgsField("Route_Leg_To_Arrival", QVariant.DateTime)
+                ]) # Add fields to outputlayer
+            inputlayer_outFeat = QgsFeature() # set QgsFeature
+            routes_memorylayer_vl.updateFields()
+            routes_memorylayer_vl.commitChanges() # save empty layer with fields
+            routes_memorylayer_vl.startEditing() # start editing again
+    
+            # Fieldindex as dictionary to avoid a mess
+            fieldindexcounter = 0 # start with index 0
+            fieldindexdict = {} # empty dictionary
+            for field in routes_memorylayer_vl.fields(): # iterate through field list we just created above
+                x = str(field.name()).lower() # convert to lowercase, string
+                fieldindexdict[fieldindexcounter] = x # assign index as key and fieldname as value
+                if '_url' in x:
+                    fieldindex_position_of_last_alwaysneededfield = fieldindexcounter
+                if 'route_total_distance' in x:
+                    fieldindex_position_of_routetotaldistance = fieldindexcounter
+                fieldindexcounter += 1
+            len_fieldindexdict = len(fieldindexdict)
+            
+            fieldindexcounter_source = 0 + len_fieldindexdict
+            fieldindexdict_source = {}        
+            for field in self.gf.routes_selectedlayer_source.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
+                routes_memorylayer_pr.addAttributes([QgsField('Source_' + str(field.name()), field.type())]) # Old fieldname + Source_ as prefix. Keep original field type
+                x = 'source_' + str(field.name()).lower() # add to fieldindexdictionary
+                fieldindexdict_source[fieldindexcounter_source] = x # add to fieldindexdictionary
+                fieldindexcounter_source += 1 
+            len_fieldindexdict_source = len(fieldindexdict_source)
+    
+            fieldindexcounter_target = 0 + len_fieldindexdict + len_fieldindexdict_source
+            fieldindexdict_target = {}
+            for field in self.gf.routes_selectedlayer_target.fields(): # Dont just copy all fieldnames of inputlayers in case both inputs have identical names... add Source_ and Target_ as prefix
+                routes_memorylayer_pr.addAttributes([QgsField('Target_' + str(field.name()), field.type())]) # Old fieldname + Target_ as prefix. Keep original field type       
+                x = 'target_' + str(field.name()).lower() # add to fieldindexdictionary
+                fieldindexdict_target[fieldindexcounter_target] = x # add to fieldindexdictionary
+                fieldindexcounter_target += 1     
+            len_fieldindexdict_target = len(fieldindexdict_target)            
+            #print(fieldindexdict)
+            
+            # To optimize speed of loop in case only routes for matching fields shall be created: Create a dictionary for both layers
+            # See: https://gis.stackexchange.com/questions/377807/using-an-attribute-index-to-find-matching-attributes-of-two-layers-faster and https://stackoverflow.com/a/64597197/8947209
+            dict_source = {}
+            dict_target = {}
+            for feat_source in self.gf.routes_selectedlayer_source.getFeatures():
+                dict_source[feat_source.id()] = feat_source.attribute(sourceidfieldindex) # feature id is used as key and attribute as value
+            for feat_target in self.gf.routes_selectedlayer_target.getFeatures():
+                dict_target[feat_target.id()] = feat_target.attribute(targetidfieldindex) # feature id is used as key and attribute as value
+            
+            # Create matching dictionary for performance optimization
+            # See: https://gis.stackexchange.com/questions/377807/using-an-attribute-index-to-find-matching-attributes-of-two-layers-faster and https://stackoverflow.com/a/64597197/8947209
+            dic2 = {}
+            dic3 = []
+            route_matches = {}
+            if self.dlg.Routes_OnlyMatching.isChecked() == True: # only routes from source points which match with target points ids
+                for i in dict_target.keys():
+                    elem_target = dict_target[i]
+                    if dic2.get(elem_target, None):
+                        dic2[elem_target].append(i)
+                    else:
+                        dic2[elem_target] = [i]
+                for i in dict_source.keys():
+                    elem_source = dict_source[i]
+                    x = dic2.get(elem_source, None)
+                    if x:
+                        route_matches[i] = x
+            else: # Route from all source points to all target points
+                for i in dict_target.keys():
+                    dic3.append(i)
+                for i in dict_source.keys():
+                    route_matches[i] = dic3
+            #print(route_matches)
+            #print(dict_source)
+            #print(dict_target)
+            
+            # Number of total routes to calculate
+            n_totalrelations = 0
+            for v in route_matches.values():
+                # checking whether the value is a list
+                if isinstance(v, list):
+                    n_totalrelations += len(v)
+            #print(n_totalrelations)
+            
+            # Preparing Progressbar
+            progressbar_featurecount = n_totalrelations
+            progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
+            progressbar_counter = 0
+            self.routes_progress.emit(int(progressbar_percent))
+            
+            if n_totalrelations == 0:
+                #self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6) # calling from thread crashes QGIS. Instead use route_state in signal to decide in MainClass which message to show
+                QgsMessageLog.logMessage("Warning! No Routes to create. Probably due to no matching attributes found or empty layer(s).",MESSAGE_CATEGORY,Qgis.Warning)
+                self.routes_progress.emit(int(0))
+                self.routes_state = 3
+            
+            # General Settings
+            serverurl = self.gf.serverurl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()
+            
+            # Setting up Override Button context
+            if self.dlg.Routes_DataDefinedLayer_Source.isChecked() == True:
+                ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.gf.routes_selectedlayer_source)) #This context will be able to evaluate global, project, and layer variables
+            elif self.dlg.Routes_DataDefinedLayer_Target.isChecked() == True:
+                ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.gf.routes_selectedlayer_target)) #This context will be able to evaluate global, project, and layer variables
+            else:
+                ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.gf.routes_selectedlayer_source)) #This context will be able to evaluate global, project, and layer variables
+            
+            # Preparing Features
+            routes_inputlayer_features_source = self.gf.routes_selectedlayer_source.getFeatures()
+            routes_inputlayer_features_target = self.gf.routes_selectedlayer_target.getFeatures()
+            
+            # Preparing Transformation to WGS 84
+            sourcecrs1 = QgsCoordinateReferenceSystem(self.gf.routes_selectedlayer_source.crs().authid()) # Read CRS of input layer
+            sourcecrs2 = QgsCoordinateReferenceSystem(self.gf.routes_selectedlayer_target.crs().authid()) # Read CRS of input layer
+            destcrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
+            tr1 = QgsCoordinateTransform(sourcecrs1, destcrs, QgsProject.instance()) # Setting up transformation
+            tr2 = QgsCoordinateTransform(sourcecrs2, destcrs, QgsProject.instance()) # Setting up transformation
+            
+            # Counter
+            route_legid = 0
+            route_routeid = 0
+            route_relationid = 0
+            route_from = ''
+            route_to = ''
+            notavailablestring = None #'not available'
+            notavailableint = None #0
+            notavailableothers = None
+            
+            # Pseudopointlist for errors in decode polyline
+            errorlinegeom = []
+            errorlinegeomp1 = QgsPoint(float(-0.1),float(0.0))
+            errorlinegeom.append(errorlinegeomp1)
+            errorlinegeomp2 = QgsPoint(float(0.1),float(0.0))
+            errorlinegeom.append(errorlinegeomp2)
+            
+    
+            # Request the routes
+            for source, target in route_matches.items(): # loop through key (source) and value (target) of matching dictionary
                 if self.stoproutesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
                     self.routes_state = 2
                     break
-                progressbar_counter = progressbar_counter + 1
-                route_relationid += 1 
-                
-                source_fid = source # key of matching dict represents keys of dict_source and therefore featureids of sourcelayer
-                target_fid = target[i] # values of matching dict represent keys of dict_target and therefore featureids of targetlayer                
-                sourcelayer_feature = self.gf.routes_selectedlayer_source.getFeature(source_fid)
-                targetlayer_feature = self.gf.routes_selectedlayer_target.getFeature(target_fid)
-                
-                # Override Button
-                if self.dlg.Routes_DataDefinedLayer_Source.isChecked() == True:
-                    ctx.setFeature(sourcelayer_feature)
-                elif self.dlg.Routes_DataDefinedLayer_Target.isChecked() == True:
-                    ctx.setFeature(targetlayer_feature)
-                else:
-                    ctx.setFeature(sourcelayer_feature)
-                
-                # Values of current source and target ids
-                if self.gf.routes_selectedlayer_source.getFeature(source_fid).attribute(sourceidfieldindex) is None: # Prevent error when value is NULL
-                    source_feature_idvalue = None
-                else:
-                    source_feature_idvalue = self.gf.routes_selectedlayer_source.getFeature(source_fid).attribute(sourceidfieldindex)
-                if self.gf.routes_selectedlayer_target.getFeature(target_fid).attribute(targetidfieldindex) is None: # Prevent error when value is NULL
-                    target_feature_idvalue = None
-                else:
-                    target_feature_idvalue = self.gf.routes_selectedlayer_target.getFeature(target_fid).attribute(targetidfieldindex)
-                
-                route_from = source_feature_idvalue
-                route_to = target_feature_idvalue
-                
-                geom_source = self.gf.routes_selectedlayer_source.getFeature(source_fid).geometry()
-                geom_target = self.gf.routes_selectedlayer_target.getFeature(target_fid).geometry()
-                geom_source.transform(tr1) # Transform geometry to WGS 84
-                geom_target.transform(tr2) # Transform geometry to WGS 84
-                pointgeom_source = geom_source.asPoint() #Read Point geometry
-                pointgeom_target = geom_target.asPoint() #Read Point geometry
-                x_source = round(pointgeom_source.x(),8)
-                y_source = round(pointgeom_source.y(),8)
-                x_target = round(pointgeom_target.x(),8)
-                y_target = round(pointgeom_target.y(),8)
-                QgsMessageLog.logMessage("Relation #" + str(route_relationid) + " of " + str(n_totalrelations)  + " total relations.",MESSAGE_CATEGORY,Qgis.Info)
-                QgsMessageLog.logMessage("Relation from Source '" + str(source_feature_idvalue) + "' (" + str(y_source) + "," + str(x_source) + ") to Target '" + str(target_feature_idvalue) + "' (" + str(y_target) + "," + str(x_target) + ")",MESSAGE_CATEGORY,Qgis.Info)
-                
-                #Check where to gather attributes from: GUI or Layer? 
-                #WalkSpeed
-                if self.dlg.Routes_WalkSpeed_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_WalkSpeed_Override.isActive() == True: # Check if override button shall be used
-                        routes_walkspeed_value, irrelevantsuccessstorage = self.dlg.Routes_WalkSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_walkspeed_value = self.dlg.Routes_WalkSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
-                    if routes_walkspeed_value is not None: # Check if received value is NULL
-                        routes_walkspeed_ms = float(routes_walkspeed_value) * 0.27777777777778 # Convert float and km/h to m/s
-                        routes_walkspeed_urlstring = '&walkSpeed=' + str(round(routes_walkspeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_walkspeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_walkspeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
- 
-                #BikeSpeed
-                if self.dlg.Routes_BikeSpeed_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_BikeSpeed_Override.isActive() == True: # Check if override button shall be used
-                        routes_bikespeed_value, irrelevantsuccessstorage = self.dlg.Routes_BikeSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_bikespeed_value = self.dlg.Routes_BikeSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
-                    if routes_bikespeed_value is not None: # Check if received value is NULL
-                        routes_bikespeed_ms = float(routes_bikespeed_value) * 0.27777777777778 # Convert float and km/h to m/s
-                        routes_bikespeed_urlstring = '&bikeSpeed=' + str(round(routes_bikespeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_bikespeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_bikespeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-
-                #Date
-                if self.dlg.Routes_Date_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_Date_Override.isActive() == True: # Check if override button shall be used
-                        routes_date_value, irrelevantsuccessstorage = self.dlg.Routes_Date_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_date_value = self.dlg.Routes_Date.date().toString("yyyy-MM-dd") # Receiving Value from GUI: QDateEdit
-                    if routes_date_value is not None: # Check if received value is NULL
-                        routes_date_urlstring = '&date=' + str(routes_date_value) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_date_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_date_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-                #Time
-                if self.dlg.Routes_Time_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_Time_Override.isActive() == True: # Check if override button shall be used
-                        routes_time_value, irrelevantsuccessstorage = self.dlg.Routes_Time_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_time_value = self.dlg.Routes_Time.time().toString("HH:mm:ss") # Receiving Value from GUI: QTimeEdit
-                    if routes_time_value is not None: # Check if received value is NULL
-                        routes_time_urlstring = '&time=' + str(routes_time_value) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_time_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_time_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-                #ArriveBy
-                if self.dlg.Routes_ArriveBy_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_ArriveBy_Override.isActive() == True: # Check if override button shall be used
-                        routes_arriveby_value, irrelevantsuccessstorage = self.dlg.Routes_ArriveBy_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_arriveby_value = self.dlg.Routes_ArriveBy.isChecked() # Receiving Value from GUI: QCheckBox
-                    if routes_arriveby_value is not None: # Check if received value is NULL
-                        routes_arriveby_urlstring = '&arriveBy=' + str(routes_arriveby_value) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_arriveby_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_arriveby_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-                #Wheelchair
-                if self.dlg.Routes_Wheelchair_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_Wheelchair_Override.isActive() == True: # Check if override button shall be used
-                        routes_wheelchair_value, irrelevantsuccessstorage = self.dlg.Routes_Wheelchair_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_wheelchair_value = self.dlg.Routes_Wheelchair.isChecked() # Receiving Value from GUI: QCheckBox
-                    if routes_wheelchair_value is not None: # Check if received value is NULL
-                        routes_wheelchair_urlstring = '&wheelchair=' + str(routes_wheelchair_value) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_wheelchair_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_wheelchair_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-                #WaitReluctance
-                if self.dlg.Routes_WaitReluctance_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_WaitReluctance_Override.isActive() == True: # Check if override button shall be used
-                        routes_waitreluctance_value, irrelevantsuccessstorage = self.dlg.Routes_WaitReluctance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_waitreluctance_value = self.dlg.Routes_WaitReluctance.value() # Receiving Value from GUI: QDoubleSpinBox
-                    if routes_waitreluctance_value is not None: # Check if received value is NULL
-                        routes_waitreluctance_float = round(float(routes_waitreluctance_value),2)
-                        routes_waitreluctance_urlstring = '&waitReluctance=' + str(routes_waitreluctance_float) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_waitreluctance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_waitreluctance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-                #MaxTransfers
-                if self.dlg.Routes_MaxTransfers_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_MaxTransfers_Override.isActive() == True: # Check if override button shall be used
-                        routes_maxtransfers_value, irrelevantsuccessstorage = self.dlg.Routes_MaxTransfers_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_maxtransfers_value = self.dlg.Routes_MaxTransfers.value() # Receiving Value from GUI: QSpinBox
-                    if routes_maxtransfers_value is not None: # Check if received value is NULL
-                        routes_maxtransfers_urlstring = '&maxTransfers=' + str(routes_maxtransfers_value) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_maxtransfers_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_maxtransfers_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-             
-                #MaxWalkDistance
-                if self.dlg.Routes_MaxWalkDistance_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_MaxWalkDistance_Override.isActive() == True: # Check if override button shall be used
-                        routes_maxwalkdistance_value, irrelevantsuccessstorage = self.dlg.Routes_MaxWalkDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_maxwalkdistance_value = self.dlg.Routes_MaxWalkDistance.value() # Receiving Value from GUI: QSpinBox
-                    if routes_maxwalkdistance_value is not None: # Check if received value is NULL
-                        routes_maxwalkdistance_urlstring = '&maxWalkDistance=' + str(routes_maxwalkdistance_value) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_maxwalkdistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_maxwalkdistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-             
-                #MaxOffroadDistance
-                if self.dlg.Routes_MaxOffroadDistance_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_MaxOffroadDistance_Override.isActive() == True: # Check if override button shall be used
-                        routes_maxoffroaddistance_value, irrelevantsuccessstorage = self.dlg.Routes_MaxOffroadDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_maxoffroaddistance_value = self.dlg.Routes_MaxOffroadDistance.value() # Receiving Value from GUI: QSpinBox
-                    if routes_maxoffroaddistance_value is not None: # Check if received value is NULL
-                        routes_maxoffroaddistance_urlstring = '&offRoadDistanceMeters=' + str(routes_maxoffroaddistance_value) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_maxoffroaddistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_maxoffroaddistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-
-                #Iterinaries
-                if self.dlg.Routes_Iterinaries_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_Iterinaries_Override.isActive() == True: # Check if override button shall be used
-                        routes_iterinaries_value, irrelevantsuccessstorage = self.dlg.Routes_Iterinaries_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_iterinaries_value = self.dlg.Routes_Iterinaries.value() # Receiving Value from GUI: QSpinBox
-                    if routes_iterinaries_value is not None: # Check if received value is NULL
-                        routes_iterinaries_urlstring = '&numItineraries=' + str(routes_iterinaries_value) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_iterinaries_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_iterinaries_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-
-                #Optimize
-                if self.dlg.Routes_Optimize_Use.isChecked() == True: # Check if option shall be used                
-                    if self.dlg.Routes_Optimize_Override.isActive() == True: # Check if override button shall be used
-                        routes_optimize_value, irrelevantsuccessstorage = self.dlg.Routes_Optimize_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                    else:
-                        routes_optimize_value = self.dlg.Routes_Optimize.currentText() # Receiving Value from GUI: QComboBox
-                    if routes_optimize_value is not None: # Check if received value is NULL
-                        routes_optimize_urlstring = '&optimize=' + str(routes_optimize_value) # Concatenate to URL string if option is used and value is not NULL
-                    else:
-                        routes_optimize_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-                else:
-                    routes_optimize_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                i = 0 # counter to access value in values            
+                for l in target: # loop through list of current value
+                    if self.stoproutesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
+                        self.routes_state = 2
+                        break
+                    progressbar_counter = progressbar_counter + 1
+                    route_relationid += 1 
                     
-                #Transportation Mode
-                if self.dlg.Routes_TransportationMode_Override.isActive() == True:
-                    routes_transportationmode_value, irrelevantsuccessstorage = self.dlg.Routes_TransportationMode_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    routes_transportationmode_value = self.dlg.Routes_TransportationMode.toPlainText() #Receiving Value from GUI: QTextEdit
-                if not routes_transportationmode_value: # Check if it is NULL
-                    routes_transportationmode_value = 'WALK,TRANSIT' # Make sure Mode is not empty because it is a must have parameter
-                routes_transportationmode_urlstring = "&mode=" + routes_transportationmode_value.upper() # Make sure Mode is given as uppercase to prevent possible server errors (not sure how otp handels this exactly)
-                route_total_mode = routes_transportationmode_value
-                
-                #Additional Parameters
-                if self.dlg.Routes_AdditionalParameters_Override.isActive() == True:
-                    routes_additionalparameters_value, irrelevantsuccessstorage = self.dlg.Routes_AdditionalParameters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    routes_additionalparameters_value = self.dlg.Routes_AdditionalParameters.toPlainText() #Receiving Value from GUI: QTextEdit
-                if routes_additionalparameters_value is not None: # If Additional Parameters are filled, use it
-                    routes_additionalparameters_urlstring = str(routes_additionalparameters_value) # Create the string
-                else: # If Additional Parameters are not filled, do not use it
-                    routes_additionalparameters_urlstring = '' # Create the string (Empty, because it is not used, not NULL!!)
-                
-                #Example URL: https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT
-                #https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT
-                #Concat URL and convert to string
-                route_url = (str(serverurl) + "plan?" + # Add Plan request to server url
-                                "fromPlace=" + str(y_source) + "," + str(x_source) + # concatenate x and y coordinates as string
-                                "&toPlace=" + str(y_target) + "," + str(x_target) + 
-                                routes_transportationmode_urlstring + #
-                                routes_walkspeed_urlstring + #
-                                routes_bikespeed_urlstring + #
-                                routes_date_urlstring + #
-                                routes_time_urlstring + #
-                                routes_arriveby_urlstring + #
-                                routes_wheelchair_urlstring + #
-                                routes_waitreluctance_urlstring + #
-                                routes_maxtransfers_urlstring + #
-                                routes_maxwalkdistance_urlstring + #
-                                routes_maxoffroaddistance_urlstring + #
-                                routes_iterinaries_urlstring +
-                                routes_optimize_urlstring +
-                                routes_additionalparameters_urlstring # Additional Parameters entered as OTP-Readable string -> User responsibility
-                                )
-                
-                testurl = 'https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT'
-                route_url = route_url # for testing
-                QgsMessageLog.logMessage(route_url,MESSAGE_CATEGORY,Qgis.Info)
-                route_headers = {"accept":"application/json"} # this plugin only works for json responses
-                
-                route_error = 'Success: No Error'
-                route_error_bool = False
-                route_errorid = None
-                route_errordescription = None
-                route_errormessage = None
-                route_errornopath = None
-                
-                try: # Try to request route
-                    route_request = urllib.request.Request(route_url, headers=route_headers)
-                    try: # Try to receive response
-                        route_response = urllib.request.urlopen(route_request)
-                        try: # Try to read response data
-                            response_data = route_response.read()
-                            encoding = route_response.info().get_content_charset('utf-8')
-                            route_data = json.loads(response_data.decode(encoding))
-                            try: # Check if response says Error
-                                route_error = 'Error: No Route'
-                                route_error_bool = True
-                                route_errorid = route_data['error']['id']
-                                route_errordescription = route_data['error']['msg']
-                                route_errormessage = route_data['error']['message']
-                                route_errornopath = route_data['error']['noPath']
+                    source_fid = source # key of matching dict represents keys of dict_source and therefore featureids of sourcelayer
+                    target_fid = target[i] # values of matching dict represent keys of dict_target and therefore featureids of targetlayer                
+                    sourcelayer_feature = self.gf.routes_selectedlayer_source.getFeature(source_fid)
+                    targetlayer_feature = self.gf.routes_selectedlayer_target.getFeature(target_fid)
+                    
+                    # Override Button
+                    if self.dlg.Routes_DataDefinedLayer_Source.isChecked() == True:
+                        ctx.setFeature(sourcelayer_feature)
+                    elif self.dlg.Routes_DataDefinedLayer_Target.isChecked() == True:
+                        ctx.setFeature(targetlayer_feature)
+                    else:
+                        ctx.setFeature(sourcelayer_feature)
+                    
+                    # Values of current source and target ids
+                    if self.gf.routes_selectedlayer_source.getFeature(source_fid).attribute(sourceidfieldindex) is None: # Prevent error when value is NULL
+                        source_feature_idvalue = None
+                    else:
+                        source_feature_idvalue = self.gf.routes_selectedlayer_source.getFeature(source_fid).attribute(sourceidfieldindex)
+                    if self.gf.routes_selectedlayer_target.getFeature(target_fid).attribute(targetidfieldindex) is None: # Prevent error when value is NULL
+                        target_feature_idvalue = None
+                    else:
+                        target_feature_idvalue = self.gf.routes_selectedlayer_target.getFeature(target_fid).attribute(targetidfieldindex)
+                    
+                    route_from = source_feature_idvalue
+                    route_to = target_feature_idvalue
+                    
+                    geom_source = self.gf.routes_selectedlayer_source.getFeature(source_fid).geometry()
+                    geom_target = self.gf.routes_selectedlayer_target.getFeature(target_fid).geometry()
+                    geom_source.transform(tr1) # Transform geometry to WGS 84
+                    geom_target.transform(tr2) # Transform geometry to WGS 84
+                    pointgeom_source = geom_source.asPoint() #Read Point geometry
+                    pointgeom_target = geom_target.asPoint() #Read Point geometry
+                    x_source = round(pointgeom_source.x(),8)
+                    y_source = round(pointgeom_source.y(),8)
+                    x_target = round(pointgeom_target.x(),8)
+                    y_target = round(pointgeom_target.y(),8)
+                    QgsMessageLog.logMessage("Relation #" + str(route_relationid) + " of " + str(n_totalrelations)  + " total relations.",MESSAGE_CATEGORY,Qgis.Info)
+                    QgsMessageLog.logMessage("Relation from Source '" + str(source_feature_idvalue) + "' (" + str(y_source) + "," + str(x_source) + ") to Target '" + str(target_feature_idvalue) + "' (" + str(y_target) + "," + str(x_target) + ")",MESSAGE_CATEGORY,Qgis.Info)
+                    
+                    #Check where to gather attributes from: GUI or Layer? 
+                    #WalkSpeed
+                    if self.dlg.Routes_WalkSpeed_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_WalkSpeed_Override.isActive() == True: # Check if override button shall be used
+                            routes_walkspeed_value, irrelevantsuccessstorage = self.dlg.Routes_WalkSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_walkspeed_value = self.dlg.Routes_WalkSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
+                        if routes_walkspeed_value is not None: # Check if received value is NULL
+                            routes_walkspeed_ms = float(routes_walkspeed_value) * 0.27777777777778 # Convert float and km/h to m/s
+                            routes_walkspeed_urlstring = '&walkSpeed=' + str(round(routes_walkspeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_walkspeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_walkspeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+     
+                    #BikeSpeed
+                    if self.dlg.Routes_BikeSpeed_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_BikeSpeed_Override.isActive() == True: # Check if override button shall be used
+                            routes_bikespeed_value, irrelevantsuccessstorage = self.dlg.Routes_BikeSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_bikespeed_value = self.dlg.Routes_BikeSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
+                        if routes_bikespeed_value is not None: # Check if received value is NULL
+                            routes_bikespeed_ms = float(routes_bikespeed_value) * 0.27777777777778 # Convert float and km/h to m/s
+                            routes_bikespeed_urlstring = '&bikeSpeed=' + str(round(routes_bikespeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_bikespeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_bikespeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+    
+                    #Date
+                    if self.dlg.Routes_Date_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_Date_Override.isActive() == True: # Check if override button shall be used
+                            routes_date_value, irrelevantsuccessstorage = self.dlg.Routes_Date_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_date_value = self.dlg.Routes_Date.date().toString("yyyy-MM-dd") # Receiving Value from GUI: QDateEdit
+                        if routes_date_value is not None: # Check if received value is NULL
+                            routes_date_urlstring = '&date=' + str(routes_date_value) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_date_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_date_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                    #Time
+                    if self.dlg.Routes_Time_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_Time_Override.isActive() == True: # Check if override button shall be used
+                            routes_time_value, irrelevantsuccessstorage = self.dlg.Routes_Time_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_time_value = self.dlg.Routes_Time.time().toString("HH:mm:ss") # Receiving Value from GUI: QTimeEdit
+                        if routes_time_value is not None: # Check if received value is NULL
+                            routes_time_urlstring = '&time=' + str(routes_time_value) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_time_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_time_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                    #ArriveBy
+                    if self.dlg.Routes_ArriveBy_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_ArriveBy_Override.isActive() == True: # Check if override button shall be used
+                            routes_arriveby_value, irrelevantsuccessstorage = self.dlg.Routes_ArriveBy_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_arriveby_value = self.dlg.Routes_ArriveBy.isChecked() # Receiving Value from GUI: QCheckBox
+                        if routes_arriveby_value is not None: # Check if received value is NULL
+                            routes_arriveby_urlstring = '&arriveBy=' + str(routes_arriveby_value) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_arriveby_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_arriveby_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                    #Wheelchair
+                    if self.dlg.Routes_Wheelchair_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_Wheelchair_Override.isActive() == True: # Check if override button shall be used
+                            routes_wheelchair_value, irrelevantsuccessstorage = self.dlg.Routes_Wheelchair_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_wheelchair_value = self.dlg.Routes_Wheelchair.isChecked() # Receiving Value from GUI: QCheckBox
+                        if routes_wheelchair_value is not None: # Check if received value is NULL
+                            routes_wheelchair_urlstring = '&wheelchair=' + str(routes_wheelchair_value) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_wheelchair_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_wheelchair_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                    #WaitReluctance
+                    if self.dlg.Routes_WaitReluctance_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_WaitReluctance_Override.isActive() == True: # Check if override button shall be used
+                            routes_waitreluctance_value, irrelevantsuccessstorage = self.dlg.Routes_WaitReluctance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_waitreluctance_value = self.dlg.Routes_WaitReluctance.value() # Receiving Value from GUI: QDoubleSpinBox
+                        if routes_waitreluctance_value is not None: # Check if received value is NULL
+                            routes_waitreluctance_float = round(float(routes_waitreluctance_value),2)
+                            routes_waitreluctance_urlstring = '&waitReluctance=' + str(routes_waitreluctance_float) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_waitreluctance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_waitreluctance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                    #MaxTransfers
+                    if self.dlg.Routes_MaxTransfers_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_MaxTransfers_Override.isActive() == True: # Check if override button shall be used
+                            routes_maxtransfers_value, irrelevantsuccessstorage = self.dlg.Routes_MaxTransfers_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_maxtransfers_value = self.dlg.Routes_MaxTransfers.value() # Receiving Value from GUI: QSpinBox
+                        if routes_maxtransfers_value is not None: # Check if received value is NULL
+                            routes_maxtransfers_urlstring = '&maxTransfers=' + str(routes_maxtransfers_value) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_maxtransfers_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_maxtransfers_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                 
+                    #MaxWalkDistance
+                    if self.dlg.Routes_MaxWalkDistance_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_MaxWalkDistance_Override.isActive() == True: # Check if override button shall be used
+                            routes_maxwalkdistance_value, irrelevantsuccessstorage = self.dlg.Routes_MaxWalkDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_maxwalkdistance_value = self.dlg.Routes_MaxWalkDistance.value() # Receiving Value from GUI: QSpinBox
+                        if routes_maxwalkdistance_value is not None: # Check if received value is NULL
+                            routes_maxwalkdistance_urlstring = '&maxWalkDistance=' + str(routes_maxwalkdistance_value) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_maxwalkdistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_maxwalkdistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                 
+                    #MaxOffroadDistance
+                    if self.dlg.Routes_MaxOffroadDistance_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_MaxOffroadDistance_Override.isActive() == True: # Check if override button shall be used
+                            routes_maxoffroaddistance_value, irrelevantsuccessstorage = self.dlg.Routes_MaxOffroadDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_maxoffroaddistance_value = self.dlg.Routes_MaxOffroadDistance.value() # Receiving Value from GUI: QSpinBox
+                        if routes_maxoffroaddistance_value is not None: # Check if received value is NULL
+                            routes_maxoffroaddistance_urlstring = '&offRoadDistanceMeters=' + str(routes_maxoffroaddistance_value) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_maxoffroaddistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_maxoffroaddistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+    
+                    #Iterinaries
+                    if self.dlg.Routes_Iterinaries_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_Iterinaries_Override.isActive() == True: # Check if override button shall be used
+                            routes_iterinaries_value, irrelevantsuccessstorage = self.dlg.Routes_Iterinaries_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_iterinaries_value = self.dlg.Routes_Iterinaries.value() # Receiving Value from GUI: QSpinBox
+                        if routes_iterinaries_value is not None: # Check if received value is NULL
+                            routes_iterinaries_urlstring = '&numItineraries=' + str(routes_iterinaries_value) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_iterinaries_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_iterinaries_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+    
+                    #Optimize
+                    if self.dlg.Routes_Optimize_Use.isChecked() == True: # Check if option shall be used                
+                        if self.dlg.Routes_Optimize_Override.isActive() == True: # Check if override button shall be used
+                            routes_optimize_value, irrelevantsuccessstorage = self.dlg.Routes_Optimize_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                        else:
+                            routes_optimize_value = self.dlg.Routes_Optimize.currentText() # Receiving Value from GUI: QComboBox
+                        if routes_optimize_value is not None: # Check if received value is NULL
+                            routes_optimize_urlstring = '&optimize=' + str(routes_optimize_value) # Concatenate to URL string if option is used and value is not NULL
+                        else:
+                            routes_optimize_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                    else:
+                        routes_optimize_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                        
+                    #Transportation Mode
+                    if self.dlg.Routes_TransportationMode_Override.isActive() == True:
+                        routes_transportationmode_value, irrelevantsuccessstorage = self.dlg.Routes_TransportationMode_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        routes_transportationmode_value = self.dlg.Routes_TransportationMode.toPlainText() #Receiving Value from GUI: QTextEdit
+                    if not routes_transportationmode_value: # Check if it is NULL
+                        routes_transportationmode_value = 'WALK,TRANSIT' # Make sure Mode is not empty because it is a must have parameter
+                    routes_transportationmode_urlstring = "&mode=" + routes_transportationmode_value.upper() # Make sure Mode is given as uppercase to prevent possible server errors (not sure how otp handels this exactly)
+                    route_total_mode = routes_transportationmode_value
+                    
+                    #Additional Parameters
+                    if self.dlg.Routes_AdditionalParameters_Override.isActive() == True:
+                        routes_additionalparameters_value, irrelevantsuccessstorage = self.dlg.Routes_AdditionalParameters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        routes_additionalparameters_value = self.dlg.Routes_AdditionalParameters.toPlainText() #Receiving Value from GUI: QTextEdit
+                    if routes_additionalparameters_value is not None: # If Additional Parameters are filled, use it
+                        routes_additionalparameters_urlstring = str(routes_additionalparameters_value) # Create the string
+                    else: # If Additional Parameters are not filled, do not use it
+                        routes_additionalparameters_urlstring = '' # Create the string (Empty, because it is not used, not NULL!!)
+                    
+                    #Example URL: https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT
+                    #https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT
+                    #Concat URL and convert to string
+                    route_url = (str(serverurl) + "plan?" + # Add Plan request to server url
+                                    "fromPlace=" + str(y_source) + "," + str(x_source) + # concatenate x and y coordinates as string
+                                    "&toPlace=" + str(y_target) + "," + str(x_target) + 
+                                    routes_transportationmode_urlstring + #
+                                    routes_walkspeed_urlstring + #
+                                    routes_bikespeed_urlstring + #
+                                    routes_date_urlstring + #
+                                    routes_time_urlstring + #
+                                    routes_arriveby_urlstring + #
+                                    routes_wheelchair_urlstring + #
+                                    routes_waitreluctance_urlstring + #
+                                    routes_maxtransfers_urlstring + #
+                                    routes_maxwalkdistance_urlstring + #
+                                    routes_maxoffroaddistance_urlstring + #
+                                    routes_iterinaries_urlstring +
+                                    routes_optimize_urlstring +
+                                    routes_additionalparameters_urlstring # Additional Parameters entered as OTP-Readable string -> User responsibility
+                                    )
+                    
+                    #testurl = 'https://api.digitransit.fi/routing/v1/routers/hsl/plan?numIterinaries=5&fromPlace=60.166023,24.97278&toPlace=60.19794,25.04453&mode=WALK,TRANSIT'
+                    route_url = route_url # for testing
+                    QgsMessageLog.logMessage(route_url,MESSAGE_CATEGORY,Qgis.Info)
+                    
+                    route_error = 'Success: No Error'
+                    route_error_bool = False
+                    route_errorid = None
+                    route_errordescription = None
+                    route_errormessage = None
+                    route_errornopath = None
+                    
+                    try: # Try to request route
+                        proxy_support = urllib.request.ProxyHandler(self.gf.proxyhandledict)
+                        opener = urllib.request.build_opener(proxy_support)
+                        urllib.request.install_opener(opener)
+                        route_headers = {"accept":"application/json"} # this plugin only works for json responses
+                        route_request = urllib.request.Request(route_url, headers=route_headers)
+                        try: # Try to receive response
+                            route_response = urllib.request.urlopen(route_request)
+                            try: # Try to read response data
+                                response_data = route_response.read()
+                                encoding = route_response.info().get_content_charset('utf-8')
+                                route_data = json.loads(response_data.decode(encoding))
+                                try: # Check if response says Error
+                                    route_error = 'Error: No Route'
+                                    route_error_bool = True
+                                    route_errorid = route_data['error']['id']
+                                    route_errordescription = route_data['error']['msg']
+                                    route_errormessage = route_data['error']['message']
+                                    route_errornopath = route_data['error']['noPath']
+                                except:
+                                    route_error = 'Success: No Error'
+                                    route_error_bool = False
                             except:
-                                route_error = 'Success: No Error'
-                                route_error_bool = False
+                                route_error = 'Error reading response data'
+                                route_error_bool = True
                         except:
-                            route_error = 'Error reading response data'
+                            route_error = 'Error receiving response'
                             route_error_bool = True
                     except:
-                        route_error = 'Error receiving response'
+                        route_error = 'Error requesting the route'
                         route_error_bool = True
-                except:
-                    route_error = 'Error requesting the route'
-                    route_error_bool = True
-                
-
-                #print(route_data)
-                # Reading response
-                if route_error_bool == False:
-                    # Get general informations. Note that not all are available in all responses: use try/except
-                    try:
-                        route_from_lat = route_data['plan']['from']['lat']
-                        route_from_lon = route_data['plan']['from']['lon']
-                    except:
-                        route_from_lat = notavailableint
-                        route_from_lon = notavailableint                     
-                    try:
-                        route_from_stopid = route_data['plan']['from']['stopId']
-                    except:
-                        route_from_stopid = notavailablestring
-                    try:
-                        route_from_stopcode = route_data['plan']['from']['stopCode']
-                    except:
-                        route_from_stopcode = notavailablestring
-                    try:
-                        route_from_name = route_data['plan']['from']['name']
-                    except:
-                        route_from_name = notavailablestring
-                    try:
-                        route_to_lat = route_data['plan']['to']['lat']
-                        route_to_lon = route_data['plan']['to']['lon']
-                    except:
-                        route_to_lat = notavailableint
-                        route_to_lon = notavailableint                     
-                    try:
-                        route_to_stopid = route_data['plan']['to']['stopId']
-                    except:
-                        route_to_stopid = notavailablestring
-                    try:
-                        route_to_stopcode = route_data['plan']['to']['stopCode']
-                    except:
-                        route_to_stopcode = notavailablestring
-                    try:
-                        route_to_name = route_data['plan']['to']['name']
-                    except:
-                        route_to_name = notavailablestring
                     
-                    # loop through iterinaries    
-                    for iter in route_data['plan']['itineraries']: 
+    
+                    #print(route_data)
+                    # Reading response
+                    if route_error_bool == False:
+                        # Get general informations. Note that not all are available in all responses: use try/except
+                        try:
+                            route_from_lat = route_data['plan']['from']['lat']
+                            route_from_lon = route_data['plan']['from']['lon']
+                        except:
+                            route_from_lat = notavailableint
+                            route_from_lon = notavailableint                     
+                        try:
+                            route_from_stopid = route_data['plan']['from']['stopId']
+                        except:
+                            route_from_stopid = notavailablestring
+                        try:
+                            route_from_stopcode = route_data['plan']['from']['stopCode']
+                        except:
+                            route_from_stopcode = notavailablestring
+                        try:
+                            route_from_name = route_data['plan']['from']['name']
+                        except:
+                            route_from_name = notavailablestring
+                        try:
+                            route_to_lat = route_data['plan']['to']['lat']
+                            route_to_lon = route_data['plan']['to']['lon']
+                        except:
+                            route_to_lat = notavailableint
+                            route_to_lon = notavailableint                     
+                        try:
+                            route_to_stopid = route_data['plan']['to']['stopId']
+                        except:
+                            route_to_stopid = notavailablestring
+                        try:
+                            route_to_stopcode = route_data['plan']['to']['stopCode']
+                        except:
+                            route_to_stopcode = notavailablestring
+                        try:
+                            route_to_name = route_data['plan']['to']['name']
+                        except:
+                            route_to_name = notavailablestring
+                        
+                        # loop through iterinaries    
+                        for iter in route_data['plan']['itineraries']: 
+                            route_routeid += 1
+                            try:
+                                route_from_starttime = iter['startTime']
+                                route_from_starttime = datetime.fromtimestamp(int(route_from_starttime)/1000)
+                                route_from_starttime = QDateTime.fromString(str(route_from_starttime),'yyyy-MM-dd hh:mm:ss')
+                            except:
+                                route_from_starttime = notavailableothers
+                            try:
+                                route_to_endtime = iter['endTime']
+                                route_to_endtime = datetime.fromtimestamp(int(route_to_endtime)/1000)
+                                route_to_endtime = QDateTime.fromString(str(route_to_endtime),'yyyy-MM-dd hh:mm:ss')                            
+                            except:
+                                route_to_endtime = notavailableothers
+                            try:
+                                route_total_duration = iter['duration']
+                            except:
+                                route_total_duration = notavailableint
+                            route_total_distance = 0 # set to 0 on start of each new route, well take the sum of all legs of a route
+                            try:
+                                route_total_transittime = iter['transitTime']
+                            except:
+                                route_total_transittime = notavailableint
+                            try:
+                                route_total_waitingtime = iter['waitingTime']
+                            except:
+                                route_total_waitingtime = notavailableint
+                            try:
+                                route_total_walktime = iter['walkTime']
+                            except:
+                                route_total_walktime = notavailableint
+                            try:
+                                route_total_walkdistance = iter['walkDistance']
+                            except:
+                                route_total_walkdistance = notavailableint
+                            try:
+                                route_total_transfers = iter['transfers']
+                            except:
+                                route_total_transfers = notavailableint
+                            #print('From lat: ' + str(route_total_duration))
+                            
+                            # loop through legs --> they will become the features of our layer
+                            route_leg_totaldistcounter = 0 # set to 0 on start of each new route
+                            for leg in iter['legs']: 
+                                route_legid += 1
+                                feature = QgsFeature()
+                                
+                                try:
+                                    route_leg_starttime = leg['startTime']
+                                    route_leg_starttime = datetime.fromtimestamp(int(route_leg_starttime)/1000)
+                                    route_leg_starttime = QDateTime.fromString(str(route_leg_starttime),'yyyy-MM-dd hh:mm:ss')
+                                except:
+                                    route_leg_starttime = notavailableothers
+                                try:
+                                    route_leg_departuredelay = leg['departureDelay']
+                                except:
+                                    route_leg_departuredelay = notavailableint
+                                try:
+                                    route_leg_endtime = leg['endTime']
+                                    route_leg_endtime = datetime.fromtimestamp(int(route_leg_endtime)/1000)
+                                    route_leg_endtime = QDateTime.fromString(str(route_leg_endtime),'yyyy-MM-dd hh:mm:ss')
+                                except:
+                                    route_leg_endtime = notavailableothers
+                                try:
+                                    route_leg_arrivaldelay = leg['arrivalDelay']
+                                except:
+                                    route_leg_arrivaldelay = notavailableint
+                                try:
+                                    route_leg_duration = leg['duration']
+                                except:
+                                    route_leg_duration = notavailableint
+                                try:
+                                    route_leg_distance = leg['distance']
+                                    route_total_distance += route_leg_distance # Field does not exist in response. Build sum of all legs
+                                except:
+                                    route_leg_distance = notavailableint
+                                    route_total_distance += 0 # Field does not exist in response.....
+                                try:
+                                    route_leg_mode = leg['mode']
+                                except:
+                                    route_leg_mode = notavailablestring
+                                try:
+                                    route_leg_from_lat = leg['from']['lat']
+                                    route_leg_from_lon = leg['from']['lon']
+                                except:
+                                    route_leg_from_lat = notavailableint
+                                    route_leg_from_lon = notavailableint
+                                try:
+                                    route_leg_from_stopid = leg['from']['stopId']
+                                except:
+                                    route_leg_from_stopid = notavailablestring
+                                try:
+                                    route_leg_from_stopcode = leg['from']['stopCode']
+                                except:
+                                    route_leg_from_stopcode = notavailablestring
+                                try:
+                                    route_leg_from_name = leg['from']['name']
+                                except:
+                                    route_leg_from_name = notavailablestring
+                                try:
+                                    route_leg_from_departure = leg['from']['departure']
+                                    route_leg_from_departure = datetime.fromtimestamp(int(route_leg_from_departure)/1000)
+                                    route_leg_from_departure = QDateTime.fromString(str(route_leg_from_departure),'yyyy-MM-dd hh:mm:ss')
+                                except:
+                                    route_leg_from_departure = notavailableothers
+                                try:
+                                    route_leg_to_lat = leg['to']['lat']
+                                    route_leg_to_lon = leg['to']['lon']
+                                except:
+                                    route_leg_to_lat = notavailableint
+                                    route_leg_to_lon = notavailableint
+                                try:
+                                    route_leg_to_stopid = leg['to']['stopId']
+                                except:
+                                    route_leg_to_stopid = notavailablestring
+                                try:
+                                    route_leg_to_stopcode = leg['to']['stopCode']
+                                except:
+                                    route_leg_to_stopcode = notavailablestring
+                                try:
+                                    route_leg_to_name = leg['to']['name']
+                                except:
+                                    route_leg_to_name = notavailablestring
+                                try:
+                                    route_leg_to_arrival = leg['to']['arrival']
+                                    route_leg_to_arrival = datetime.fromtimestamp(int(route_leg_to_arrival)/1000)
+                                    route_leg_to_arrival = QDateTime.fromString(str(route_leg_to_arrival),'yyyy-MM-dd hh:mm:ss')
+                                except:
+                                    route_leg_to_arrival = notavailableothers
+                                
+                                try:
+                                    route_leg_encodedpolylinestring = leg['legGeometry']['points']
+                                    route_leg_decodedpolylinestring_aspointlist = self.decode_polyline(route_leg_encodedpolylinestring)
+                                    feature.setGeometry(QgsGeometry.fromPolyline(route_leg_decodedpolylinestring_aspointlist))
+                                except:
+                                    feature.setGeometry(QgsGeometry.fromPolyline(errorlinegeom))
+                                    route_error = 'Error decoding route geometry'
+                                
+                                # Create the feature
+                                routes_memorylayer_pr.addFeature(feature)
+                                # Adding the attributes to resultlayer
+                                for key, value in fieldindexdict.items(): # keys contain the fieldindex, values the variablename which is the same as the fieldname, just in lowercase
+                                    fieldindex = key
+                                    #fieldvalue = getattr(self, value, 'default') # vars need to be named self.abc.. better use locals()
+                                    fieldvalue = locals()[value] # variables are named exactly as the fieldnames, just lowercase, we adjusted that before
+                                    attrs_leg = { fieldindex : fieldvalue }
+                                    routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_leg }) # change attribute values of new layer to the just set ones  
+                                fieldindex_source = 0 # fieldindex in sourcelayer
+                                for key, value in fieldindexdict_source.items(): # loop through fields of sourcelayer
+                                    fieldindex_new = key # fieldindex in resultlayer
+                                    fieldvalue = self.gf.routes_selectedlayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
+                                    attrs_source = { fieldindex_new : fieldvalue } # prepare attributes
+                                    routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_source }) # copy over value of sourcelayer to resultlayer
+                                    fieldindex_source += 1 # go to next field of sourcelayer
+                                fieldindex_target = 0
+                                for key, value in fieldindexdict_target.items():
+                                    fieldindex_new = key
+                                    fieldvalue = self.gf.routes_selectedlayer_target.getFeature(target_fid).attribute(fieldindex_target)
+                                    attrs_target = { fieldindex_new : fieldvalue }
+                                    routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_target })
+                                    fieldindex_target += 1
+                                route_leg_totaldistcounter += 1 # counting the number of legs of a route
+                                # END OF LOOP legs
+                            
+                            # Update total distance here since it is the sum of all legs and not available in response jsons
+                            attr_totaldistance = { fieldindex_position_of_routetotaldistance : route_total_distance } # only change totaldistance field, we get its position while building the dict
+                            current_featureid_totaldistance = feature.id() # the current featureid of a route, needed to count later in loop
+                            last_featureid_totaldistance = feature.id() # the last featureid of a route
+                            first_featureid_totaldistance = last_featureid_totaldistance - route_leg_totaldistcounter + 1 # the first featureid of a route
+                            for features_before in range(first_featureid_totaldistance,last_featureid_totaldistance): # loop through all legs of the current route
+                                routes_memorylayer_pr.changeAttributeValues({ features_before : attr_totaldistance }) # add the leg-sum of all legs of a route as totaldistance
+                                current_featureid_totaldistance += 1
+                                
+                            # END OF LOOP iterinaries
+                        # END OF if route_error_bool == False
+                    else: # Create error-dummyfeature if no route has been returned
                         route_routeid += 1
+                        route_legid += 1
+                        feature = QgsFeature()
+                        route_error = 'Error: No Route'
                         try:
-                            route_from_starttime = iter['startTime']
-                            route_from_starttime = datetime.fromtimestamp(int(route_from_starttime)/1000)
-                            route_from_starttime = QDateTime.fromString(str(route_from_starttime),'yyyy-MM-dd hh:mm:ss')
+                            route_errorid = route_data['error']['id']
                         except:
-                            route_from_starttime = notavailableothers
+                            route_errorid = notavailableint
                         try:
-                            route_to_endtime = iter['endTime']
-                            route_to_endtime = datetime.fromtimestamp(int(route_to_endtime)/1000)
-                            route_to_endtime = QDateTime.fromString(str(route_to_endtime),'yyyy-MM-dd hh:mm:ss')                            
+                            route_errordescription = route_data['error']['msg']
                         except:
-                            route_to_endtime = notavailableothers
+                            route_errordescription = notavailablestring
                         try:
-                            route_total_duration = iter['duration']
+                            route_errormessage = route_data['error']['message']
                         except:
-                            route_total_duration = notavailableint
-                        route_total_distance = 0 # set to 0 on start of each new route, well take the sum of all legs of a route
+                            route_errormessage = notavailablestring
                         try:
-                            route_total_transittime = iter['transitTime']
+                            route_errornopath = route_data['error']['noPath']
                         except:
-                            route_total_transittime = notavailableint
-                        try:
-                            route_total_waitingtime = iter['waitingTime']
-                        except:
-                            route_total_waitingtime = notavailableint
-                        try:
-                            route_total_walktime = iter['walkTime']
-                        except:
-                            route_total_walktime = notavailableint
-                        try:
-                            route_total_walkdistance = iter['walkDistance']
-                        except:
-                            route_total_walkdistance = notavailableint
-                        try:
-                            route_total_transfers = iter['transfers']
-                        except:
-                            route_total_transfers = notavailableint
-                        #print('From lat: ' + str(route_total_duration))
+                            route_errornopath = notavailablestring
                         
-                        # loop through legs --> they will become the features of our layer
-                        route_leg_totaldistcounter = 0 # set to 0 on start of each new route
-                        for leg in iter['legs']: 
-                            route_legid += 1
-                            feature = QgsFeature()
-                            
+                        # Create dummy-geometry
+                        feature.setGeometry(QgsGeometry.fromPolyline(errorlinegeom))
+                        
+                        # Create the feature
+                        routes_memorylayer_pr.addFeature(feature)
+                        # Adding the attributes to resultlayer
+                        for key, value in fieldindexdict.items(): # keys contain the fieldindex, values the variablename which is the same as the fieldname, just in lowercase
+                            fieldindex = key
+                            #fieldvalue = getattr(self, value, 'default') # vars need to be named self.abc.. better use locals()
                             try:
-                                route_leg_starttime = leg['startTime']
-                                route_leg_starttime = datetime.fromtimestamp(int(route_leg_starttime)/1000)
-                                route_leg_starttime = QDateTime.fromString(str(route_leg_starttime),'yyyy-MM-dd hh:mm:ss')
-                            except:
-                                route_leg_starttime = notavailableothers
-                            try:
-                                route_leg_departuredelay = leg['departureDelay']
-                            except:
-                                route_leg_departuredelay = notavailableint
-                            try:
-                                route_leg_endtime = leg['endTime']
-                                route_leg_endtime = datetime.fromtimestamp(int(route_leg_endtime)/1000)
-                                route_leg_endtime = QDateTime.fromString(str(route_leg_endtime),'yyyy-MM-dd hh:mm:ss')
-                            except:
-                                route_leg_endtime = notavailableothers
-                            try:
-                                route_leg_arrivaldelay = leg['arrivalDelay']
-                            except:
-                                route_leg_arrivaldelay = notavailableint
-                            try:
-                                route_leg_duration = leg['duration']
-                            except:
-                                route_leg_duration = notavailableint
-                            try:
-                                route_leg_distance = leg['distance']
-                                route_total_distance += route_leg_distance # Field does not exist in response. Build sum of all legs
-                            except:
-                                route_leg_distance = notavailableint
-                                route_total_distance += 0 # Field does not exist in response.....
-                            try:
-                                route_leg_mode = leg['mode']
-                            except:
-                                route_leg_mode = notavailablestring
-                            try:
-                                route_leg_from_lat = leg['from']['lat']
-                                route_leg_from_lon = leg['from']['lon']
-                            except:
-                                route_leg_from_lat = notavailableint
-                                route_leg_from_lon = notavailableint
-                            try:
-                                route_leg_from_stopid = leg['from']['stopId']
-                            except:
-                                route_leg_from_stopid = notavailablestring
-                            try:
-                                route_leg_from_stopcode = leg['from']['stopCode']
-                            except:
-                                route_leg_from_stopcode = notavailablestring
-                            try:
-                                route_leg_from_name = leg['from']['name']
-                            except:
-                                route_leg_from_name = notavailablestring
-                            try:
-                                route_leg_from_departure = leg['from']['departure']
-                                route_leg_from_departure = datetime.fromtimestamp(int(route_leg_from_departure)/1000)
-                                route_leg_from_departure = QDateTime.fromString(str(route_leg_from_departure),'yyyy-MM-dd hh:mm:ss')
-                            except:
-                                route_leg_from_departure = notavailableothers
-                            try:
-                                route_leg_to_lat = leg['to']['lat']
-                                route_leg_to_lon = leg['to']['lon']
-                            except:
-                                route_leg_to_lat = notavailableint
-                                route_leg_to_lon = notavailableint
-                            try:
-                                route_leg_to_stopid = leg['to']['stopId']
-                            except:
-                                route_leg_to_stopid = notavailablestring
-                            try:
-                                route_leg_to_stopcode = leg['to']['stopCode']
-                            except:
-                                route_leg_to_stopcode = notavailablestring
-                            try:
-                                route_leg_to_name = leg['to']['name']
-                            except:
-                                route_leg_to_name = notavailablestring
-                            try:
-                                route_leg_to_arrival = leg['to']['arrival']
-                                route_leg_to_arrival = datetime.fromtimestamp(int(route_leg_to_arrival)/1000)
-                                route_leg_to_arrival = QDateTime.fromString(str(route_leg_to_arrival),'yyyy-MM-dd hh:mm:ss')
-                            except:
-                                route_leg_to_arrival = notavailableothers
-                            
-                            try:
-                                route_leg_encodedpolylinestring = leg['legGeometry']['points']
-                                route_leg_decodedpolylinestring_aspointlist = self.decode_polyline(route_leg_encodedpolylinestring)
-                                feature.setGeometry(QgsGeometry.fromPolyline(route_leg_decodedpolylinestring_aspointlist))
-                            except:
-                                feature.setGeometry(QgsGeometry.fromPolyline(errorlinegeom))
-                                route_error = 'Error decoding route geometry'
-                            
-                            # Create the feature
-                            routes_memorylayer_pr.addFeature(feature)
-                            # Adding the attributes to resultlayer
-                            for key, value in fieldindexdict.items(): # keys contain the fieldindex, values the variablename which is the same as the fieldname, just in lowercase
-                                fieldindex = key
-                                #fieldvalue = getattr(self, value, 'default') # vars need to be named self.abc.. better use locals()
                                 fieldvalue = locals()[value] # variables are named exactly as the fieldnames, just lowercase, we adjusted that before
+                            except:
+                                fieldvalue = None # In case there is no value for it yet (happens if the first request returns an error). Otherwise we will get a key error
+                            if fieldindex <= fieldindex_position_of_last_alwaysneededfield: # Only fill the first fields on error
                                 attrs_leg = { fieldindex : fieldvalue }
-                                routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_leg }) # change attribute values of new layer to the just set ones  
-                            fieldindex_source = 0 # fieldindex in sourcelayer
-                            for key, value in fieldindexdict_source.items(): # loop through fields of sourcelayer
-                                fieldindex_new = key # fieldindex in resultlayer
-                                fieldvalue = self.gf.routes_selectedlayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
-                                attrs_source = { fieldindex_new : fieldvalue } # prepare attributes
-                                routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_source }) # copy over value of sourcelayer to resultlayer
-                                fieldindex_source += 1 # go to next field of sourcelayer
-                            fieldindex_target = 0
-                            for key, value in fieldindexdict_target.items():
-                                fieldindex_new = key
-                                fieldvalue = self.gf.routes_selectedlayer_target.getFeature(target_fid).attribute(fieldindex_target)
-                                attrs_target = { fieldindex_new : fieldvalue }
-                                routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_target })
-                                fieldindex_target += 1
-                            route_leg_totaldistcounter += 1 # counting the number of legs of a route
-                            # END OF LOOP legs
-                        
-                        # Update total distance here since it is the sum of all legs and not available in response jsons
-                        attr_totaldistance = { fieldindex_position_of_routetotaldistance : route_total_distance } # only change totaldistance field, we get its position while building the dict
-                        current_featureid_totaldistance = feature.id() # the current featureid of a route, needed to count later in loop
-                        last_featureid_totaldistance = feature.id() # the last featureid of a route
-                        first_featureid_totaldistance = last_featureid_totaldistance - route_leg_totaldistcounter + 1 # the first featureid of a route
-                        for features_before in range(first_featureid_totaldistance,last_featureid_totaldistance): # loop through all legs of the current route
-                            routes_memorylayer_pr.changeAttributeValues({ features_before : attr_totaldistance }) # add the leg-sum of all legs of a route as totaldistance
-                            current_featureid_totaldistance += 1
-                            
-                        # END OF LOOP iterinaries
-                    # END OF if route_error_bool == False
-                else: # Create error-dummyfeature if no route has been returned
-                    route_routeid += 1
-                    route_legid += 1
-                    feature = QgsFeature()
-                    route_error = 'Error: No Route'
-                    try:
-                        route_errorid = route_data['error']['id']
-                    except:
-                        route_errorid = notavailableint
-                    try:
-                        route_errordescription = route_data['error']['msg']
-                    except:
-                        route_errordescription = notavailablestring
-                    try:
-                        route_errormessage = route_data['error']['message']
-                    except:
-                        route_errormessage = notavailablestring
-                    try:
-                        route_errornopath = route_data['error']['noPath']
-                    except:
-                        route_errornopath = notavailablestring
+                            else: # Leave the others empty as there is no data available
+                                attrs_leg = { fieldindex : None }
+                            routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_leg }) # change attribute values of new layer to the just set ones  
+                        fieldindex_source = 0 # fieldindex in sourcelayer
+                        for key, value in fieldindexdict_source.items(): # loop through fields of sourcelayer
+                            fieldindex_new = key # fieldindex in resultlayer
+                            fieldvalue = self.gf.routes_selectedlayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
+                            attrs_source = { fieldindex_new : fieldvalue } # prepare attributes
+                            routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_source }) # copy over value of sourcelayer to resultlayer
+                            fieldindex_source += 1 # go to next field of sourcelayer
+                        fieldindex_target = 0
+                        for key, value in fieldindexdict_target.items():
+                            fieldindex_new = key
+                            fieldvalue = self.gf.routes_selectedlayer_target.getFeature(target_fid).attribute(fieldindex_target)
+                            attrs_target = { fieldindex_new : fieldvalue }
+                            routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_target })
+                            fieldindex_target += 1
+                        # END OF errorroutecreation
+                    i += 1
+                    routes_memorylayer_vl.updateFields()
+                    routes_memorylayer_vl.updateExtents()
+                    #routes_memorylayer_vl.commitChanges() # Commit changes                
+                    if route_error != 'Success: No Error':
+                        QgsMessageLog.logMessage(str(route_error) + ' - ErrorID: ' + str(route_errorid) + ' - ErrorDSC: ' + str(route_errordescription),MESSAGE_CATEGORY,Qgis.Warning)
+                    QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
+                    QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
+                    QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
                     
-                    # Create dummy-geometry
-                    feature.setGeometry(QgsGeometry.fromPolyline(errorlinegeom))
-                    
-                    # Create the feature
-                    routes_memorylayer_pr.addFeature(feature)
-                    # Adding the attributes to resultlayer
-                    for key, value in fieldindexdict.items(): # keys contain the fieldindex, values the variablename which is the same as the fieldname, just in lowercase
-                        fieldindex = key
-                        #fieldvalue = getattr(self, value, 'default') # vars need to be named self.abc.. better use locals()
-                        try:
-                            fieldvalue = locals()[value] # variables are named exactly as the fieldnames, just lowercase, we adjusted that before
-                        except:
-                            fieldvalue = None # In case there is no value for it yet (happens if the first request returns an error). Otherwise we will get a key error
-                        if fieldindex <= fieldindex_position_of_last_alwaysneededfield: # Only fill the first fields on error
-                            attrs_leg = { fieldindex : fieldvalue }
-                        else: # Leave the others empty as there is no data available
-                            attrs_leg = { fieldindex : None }
-                        routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_leg }) # change attribute values of new layer to the just set ones  
-                    fieldindex_source = 0 # fieldindex in sourcelayer
-                    for key, value in fieldindexdict_source.items(): # loop through fields of sourcelayer
-                        fieldindex_new = key # fieldindex in resultlayer
-                        fieldvalue = self.gf.routes_selectedlayer_source.getFeature(source_fid).attribute(fieldindex_source) # get value of sourcelayer
-                        attrs_source = { fieldindex_new : fieldvalue } # prepare attributes
-                        routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_source }) # copy over value of sourcelayer to resultlayer
-                        fieldindex_source += 1 # go to next field of sourcelayer
-                    fieldindex_target = 0
-                    for key, value in fieldindexdict_target.items():
-                        fieldindex_new = key
-                        fieldvalue = self.gf.routes_selectedlayer_target.getFeature(target_fid).attribute(fieldindex_target)
-                        attrs_target = { fieldindex_new : fieldvalue }
-                        routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_target })
-                        fieldindex_target += 1
-                    # END OF errorroutecreation
-                i += 1
-                routes_memorylayer_vl.updateFields()
-                routes_memorylayer_vl.updateExtents()
-                routes_memorylayer_vl.commitChanges() # Commit changes                
-                if route_error != 'Success: No Error':
-                    QgsMessageLog.logMessage(str(route_error) + ' - ErrorID: ' + str(route_errorid) + ' - ErrorDSC: ' + str(route_errordescription),MESSAGE_CATEGORY,Qgis.Warning)
-                QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
-                QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
-                QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
+                    # Update Progressbar
+                    progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
+                    self.routes_progress.emit(int(progressbar_percent))
+                    # END OF LOOP through list of current value in matching dictionary
                 
-                # Update Progressbar
-                progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
-                self.routes_progress.emit(int(progressbar_percent))
-                # END OF LOOP through list of current value in matching dictionary
-            
-        # Finalizing resultlayer
-        routes_memorylayer_vl.updateFields()
-        routes_memorylayer_vl.updateExtents()
-        routes_memorylayer_vl.commitChanges() # Commit changes
+            # Finalizing resultlayer
+            routes_memorylayer_vl.updateFields()
+            routes_memorylayer_vl.updateExtents()
+            #routes_memorylayer_vl.commitChanges() # Commit changes
         
         #self.iface.messageBar().pushMessage("Done!", " Routes job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3) # Will crash QGIS when doing from thread. Just do it on the MainThread's routeFinished method
         routes_endtime = datetime.now()

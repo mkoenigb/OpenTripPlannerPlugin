@@ -56,18 +56,70 @@ class OpenTripPlannerPluginGeneralFunctions(object):
     # https://docs.qgis.org/testing/en/docs/pyqgis_developer_cookbook/settings.html and https://gis.stackexchange.com/questions/114527/qgis-plugin-with-save-settings-dialog
     def store_general_variables(self):
         s = QgsSettings()
+        
+        # Server URL
         self.serverurl = self.dlg.GeneralSettings_ServerURL.toPlainText() # read from textbox
         s.setValue("otp_plugin/GeneralSettings_ServerURL", self.serverurl) # store as variable via QgsSettings
+        
+        # Custom TEMP-Folder
+        self.customtempfolder = self.dlg.GeneralSettings_CustomTempFolder.toPlainText()
+        s.setValue("otp_plugin/GeneralSettings_CustomTempFolder", self.customtempfolder)
+        self.customtempfolder_use = int(self.dlg.GeneralSettings_CustomTempFolder_Use.isChecked())
+        s.setValue("otp_plugin/GeneralSettings_CustomTempFolder_Use", self.customtempfolder_use)
+        
+        # Proxy-Settings
+        self.proxy_use = int(self.dlg.GeneralSettings_Proxy_Use.isChecked())
+        s.setValue("otp_plugin/GeneralSettings_Proxy_Use", self.proxy_use)
+        
+        # Communicate with user
         self.iface.messageBar().pushMessage("Success", "General settings stored! ServerURL: " + self.serverurl, MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         QgsMessageLog.logMessage("General settings stored! ServerURL: " + self.serverurl,MESSAGE_CATEGORY,Qgis.Info)
         
     def read_general_variables(self):
         s = QgsSettings()
-        #ServerURL = s.value("myplugin/mytext", "http://localhost:8080/otp/routers/test/")
+        
+        # Server URL
         self.serverurl = s.value("otp_plugin/GeneralSettings_ServerURL", "") # read from variable via QgsSettings
         if isinstance(self.serverurl, str): self.dlg.GeneralSettings_ServerURL.setText(self.serverurl) # set textbox text to variable from QgsSettings
-        #self.iface.messageBar().pushMessage("Success", "Function read_general_variables running! Var: " + self.serverurl, level=Qgis.Success, duration=3)
-
+        
+        # Custom TEMP-Folder
+        self.customtempfolder = s.value("otp_plugin/GeneralSettings_CustomTempFolder", "")
+        if isinstance(self.customtempfolder, str): self.dlg.GeneralSettings_CustomTempFolder.setText(self.customtempfolder)        
+        self.customtempfolder_use = int(s.value("otp_plugin/GeneralSettings_CustomTempFolder_Use", 0))
+        self.dlg.GeneralSettings_CustomTempFolder_Use.setChecked(self.customtempfolder_use)
+        if self.customtempfolder_use == 0:
+            self.otp_plugin_location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) #Read path of this plugin
+            self.tmp_save_location = os.path.join(self.otp_plugin_location, 'temp_files\\')  #Concat path of this plugin to save location of temporary shapefiles
+        else:
+            self.tmp_save_location = self.customtempfolder
+        
+        # Proxy-Settings
+        self.proxy_use = int(s.value("otp_plugin/GeneralSettings_Proxy_Use", 0))
+        self.dlg.GeneralSettings_Proxy_Use.setChecked(self.proxy_use)
+        self.read_proxy_settings()
+           
+    def restore_general_variables(self):
+        s = QgsSettings()
+        
+        # Server URL
+        self.serverurl = 'http://localhost:8080/otp/routers/default/'
+        if isinstance(self.serverurl, str): self.dlg.GeneralSettings_ServerURL.setText(self.serverurl) # set textbox text to variable from QgsSettings
+        
+        # Custom TEMP-Folder
+        self.customtempfolder = ""
+        if isinstance(self.customtempfolder, str): self.dlg.GeneralSettings_CustomTempFolder.setText(self.customtempfolder)   
+        self.customtempfolder_use = int(0)
+        self.dlg.GeneralSettings_CustomTempFolder_Use.setChecked(self.customtempfolder_use)     
+        
+        # Proxy-Settings
+        self.proxy_use = int(1)
+        self.dlg.GeneralSettings_Proxy_Use.setChecked(self.proxy_use)
+        
+        # Communicate with user
+        self.iface.messageBar().pushMessage("Success", "Default general settings restored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+        QgsMessageLog.logMessage("Default general settings restored!",MESSAGE_CATEGORY,Qgis.Info)
+        self.store_general_variables()
+        
     def store_route_variables(self):
         s = QgsSettings()
         
@@ -350,6 +402,7 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         
         self.iface.messageBar().pushMessage("Success", "Default route settings restored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         QgsMessageLog.logMessage("Default route settings restored!",MESSAGE_CATEGORY,Qgis.Info)
+        self.store_route_variables()
         
     def store_isochrone_variables(self):
         s = QgsSettings()
@@ -605,18 +658,15 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         
         self.iface.messageBar().pushMessage("Success", "Default isochrone settings restored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         QgsMessageLog.logMessage("Default isochrone settings restored!",MESSAGE_CATEGORY,Qgis.Info)
+        self.store_isochrone_variables()
         
         
     def check_server_status(self):
-        #foldername, _filter = QFileDialog.getExistingDirectory(self.dlg, "Open Directory","",ShowDirsOnly)
-        #filename, _filter = QFileDialog.getSaveFileName(self.dlg, "Select output file ","", '*.*')
-        #self.dlg.GeneralSettings_SavePath.setText(filename)
-        #print(self.serverurl)
-        
-        #Run Store-Variables-Function and Read-Stored-Variables-Function before so users do not have to click save button before checking status
-        self.store_general_variables()
-        self.read_general_variables()
-        servercheckrequest = urllib.request.Request(str(self.serverurl))
+        self.read_proxy_settings()
+        proxy_support = urllib.request.ProxyHandler(self.proxyhandledict)
+        opener = urllib.request.build_opener(proxy_support)
+        urllib.request.install_opener(opener)
+        servercheckrequest = urllib.request.Request(str(self.dlg.GeneralSettings_ServerURL.toPlainText()))
         try:
             urllib.request.urlopen(servercheckrequest)
             self.dlg.GeneralSettings_ServerStatusResult.setText("Server is Online :)")
@@ -628,7 +678,25 @@ class OpenTripPlannerPluginGeneralFunctions(object):
             self.dlg.GeneralSettings_ServerStatusResult.setText("Error: " + str(httperror.code))
             self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: red; color: white ")
         
+    def read_proxy_settings(self):
+        s = QSettings()
+        self.proxyEnabled = s.value("proxy/proxyEnabled", "")
+        self.proxyType = s.value("proxy/proxyType", "" )
+        self.proxyHost = s.value("proxy/proxyHost", "" )
+        self.proxyPort = s.value("proxy/proxyPort", "" )
+        self.proxyUser = s.value("proxy/proxyUser", "" )
+        self.proxyPassword = s.value("proxy/proxyPassword", "" )
         
+        self.proxyConcat = self.proxyUser + ':' + self.proxyPassword + '@' + self.proxyHost + ':' + self.proxyPort
+        
+        try:
+            if self.proxyEnabled is True:
+                self.proxyhandledict = {'http':self.proxyConcat}
+            else:
+                self.proxyhandledict = {}
+        except:
+            self.proxyhandledict = {}
+            
     def isochrones_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
         layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers
         self.dlg.Isochrones_SelectInputLayer.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers

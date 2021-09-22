@@ -2,7 +2,7 @@
 name=OpenTripPlanner Plugin
 qgisMinimumVersion=3.0
 description=This plugin makes OpenTripPlanner functionalities accessible from within QGIS
-version=0.4
+version=0.5
 author=Mario Koenigbauer
 email=mkoenigb@gmx.de
 
@@ -16,7 +16,8 @@ repository=https://github.com/mkoenigb/OpenTripPlannerPlugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=0.4 Implemented QThreads to keep GUI responsive on heavy load, added ability to cancel the process, complete restructure of code, minor other improvements
+changelog=0.5 Bugfixing and codeimprovements, added ability to choose a custom folder to store isochrone tempfiles at in case users do not have write permissions on plugin folder location, added proxy-support
+    0.4 Implemented QThreads to keep GUI responsive on heavy load, added ability to cancel the process, complete restructure of code, minor other improvements
     0.3 Added calculated field for totalroute-distance and totalroute-mode, minor code and general improvements, python-naming-conventions
     0.2 Functionality for Routes added and minor optimizations
     0.1 First experimental version, able to work with Isochrones

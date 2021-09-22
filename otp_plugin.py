@@ -315,6 +315,7 @@ class OpenTripPlannerPlugin():
             # Calling Functions on button click
             self.dlg.GeneralSettings_CheckServerStatus.clicked.connect(self.gf.check_server_status)
             self.dlg.GeneralSettings_Save.clicked.connect(self.gf.store_general_variables) #Call store_general_variables function when clicking on save button
+            self.dlg.GeneralSettings_Restore.clicked.connect(self.gf.restore_general_variables)
             self.dlg.Isochrones_SaveSettings.clicked.connect(self.gf.store_isochrone_variables)
             self.dlg.Isochrones_RestoreDefaultSettings.clicked.connect(self.gf.restore_isochrone_variables)
             self.dlg.Routes_SaveSettings.clicked.connect(self.gf.store_route_variables)

@@ -57,6 +57,8 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         self.stopisochronesworker = False
         self.isochrones_memorylayer_vl = resultlayer
         self.isochrones_state = 0
+        self.gf.read_general_variables()
+        self.gf.read_isochrone_variables()
     
     def stop(self):
         self.stopisochronesworker = True
@@ -87,381 +89,380 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         inputlayer_features = self.gf.isochrones_selectedlayer.getFeatures()
         
         # Create the Output-Vectorlayer
-        #isochrones_memorylayer_vl = QgsVectorLayer("MultiPolygon?crs=epsg:4326", "Isochrones", "memory") # Create temporary polygon layer (output file)
-        isochrones_memorylayer_pr = isochrones_memorylayer_vl.dataProvider()
-        isochrones_memorylayer_vl.startEditing() # Enter editing mode
-        isochrones_memorylayer_pr.addAttributes([
-                                          QgsField("Isochrone_Time",QVariant.Int),
-                                          QgsField("Isochrone_UID", QVariant.Int),
-                                          QgsField("Isochrone_ID", QVariant.Int),
-                                          QgsField("Isochrone_Error", QVariant.String),
-                                          QgsField("Isochrone_URL", QVariant.String)
-                                          ]) # Add Error and URL Field to outputlayer
-        isochrones_memorylayer_pr.addAttributes(self.gf.isochrones_selectedlayer.fields()) # Copy all fieldnames of inputlayer to outputlayer  
-        inputlayer_numberoffields = self.gf.isochrones_selectedlayer.fields().count() # count number of fields in inputlayer
-        inputlayer_outfeat = QgsFeature() # set QgsFeature
-        
-        # Savelocation
-        otp_plugin_location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) #Read path of this plugin
-        tmp_save_location = os.path.join(otp_plugin_location, 'temp_files\\')  #Concat path of this plugin to save location of temporary shapefiles
-
-        # General Settings
-        serverurl = self.gf.serverurl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()        
- 
-        # Preparing Transformation to WGS 84
-        sourcecrs = QgsCoordinateReferenceSystem(self.gf.isochrones_selectedlayer.crs().authid()) # Read CRS of input layer
-        destcrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
-        tr = QgsCoordinateTransform(sourcecrs, destcrs, QgsProject.instance()) # Setting up transformation
-        
-        # Preparing Progressbar
-        progressbar_featurecount = self.gf.isochrones_selectedlayer.featureCount()
-        progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
-        progressbar_counter = 0
-        self.isochrones_progress.emit(int(progressbar_percent))
-        
-        if progressbar_featurecount == 0:
-            self.isochrones_state = 3
-            QgsMessageLog.logMessage("Warning! No Isochrones to create. Inputlayer is empty.",MESSAGE_CATEGORY,Qgis.Warning)
-            self.isochrones_progress.emit(int(0))
-
+        with edit(isochrones_memorylayer_vl):
+            isochrones_memorylayer_pr = isochrones_memorylayer_vl.dataProvider()
+            isochrones_memorylayer_pr.addAttributes([
+                                              QgsField("Isochrone_Time",QVariant.Int),
+                                              QgsField("Isochrone_UID", QVariant.Int),
+                                              QgsField("Isochrone_ID", QVariant.Int),
+                                              QgsField("Isochrone_Error", QVariant.String),
+                                              QgsField("Isochrone_URL", QVariant.String)
+                                              ]) # Add Error and URL Field to outputlayer
+            isochrones_memorylayer_pr.addAttributes(self.gf.isochrones_selectedlayer.fields()) # Copy all fieldnames of inputlayer to outputlayer  
+            inputlayer_numberoffields = self.gf.isochrones_selectedlayer.fields().count() # count number of fields in inputlayer
+            inputlayer_outfeat = QgsFeature() # set QgsFeature
             
-        for inputlayer_feature in inputlayer_features:
-            if self.stopisochronesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
-                self.isochrones_state = 2
-                break
-            # Initial Variables
-            isochrones_error = 'Success: No Error' # Empty the error var
-            progressbar_counter = progressbar_counter + 1
-                
-            # retrieve every feature with its geometry and attributes
-            QgsMessageLog.logMessage("Feature ID: " + str(inputlayer_feature.id()),MESSAGE_CATEGORY,Qgis.Info)
+            # Savelocation
+            tmp_save_location = self.gf.tmp_save_location
+    
+            # General Settings
+            serverurl = self.gf.serverurl #'https://api.digitransit.fi/routing/v1/routers/hsl/' #self.dlg.GeneralSettings_ServerURL.toPlainText()        
+     
+            # Preparing Transformation to WGS 84
+            sourcecrs = QgsCoordinateReferenceSystem(self.gf.isochrones_selectedlayer.crs().authid()) # Read CRS of input layer
+            destcrs = QgsCoordinateReferenceSystem("EPSG:4326") # and set destination CRS to WGS 84 (OTP can only understand EPSG:4326) 
+            tr = QgsCoordinateTransform(sourcecrs, destcrs, QgsProject.instance()) # Setting up transformation
             
-            # Override Button Feature
-            ctx.setFeature(inputlayer_feature) #Setting context to current feature
-            
-            # Feature Geometry
-            geom = inputlayer_feature.geometry() # fetch geometry of current feature
-            geom.transform(tr) # Transform geometry to WGS 84 (We prepared this outside the loop)
-            pointgeom = geom.asPoint() #Read Point geometry
-            x = round(pointgeom.x(),8) #Read X-Value
-            y = round(pointgeom.y(),8) #Read Y-Value
-            QgsMessageLog.logMessage("PointX: " + str(x) + " | PointY: " + str(y),MESSAGE_CATEGORY,Qgis.Info)
-            
-            # Feature Attributes
-            Inputlayer_Attributes = inputlayer_feature.attributes() # fetch attributes
-            #print(str(Inputlayer_Attributes)) # attrs is a list. It contains all the attribute values of this feature
-            
-            # Copy Attributes to outputlayer
-            inputlayer_outfeat.setAttributes(inputlayer_feature.attributes()) # set the attributes
-            #print (Inputlayer_Attributes[0])
-            
-            #Check where to gather attributes from: GUI or Layer? 
-            #WalkSpeed
-            if self.dlg.Isochrones_WalkSpeed_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_WalkSpeed_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_walkspeed_value, irrelevantsuccessstorage = self.dlg.Isochrones_WalkSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_walkspeed_value = self.dlg.Isochrones_WalkSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
-                if isochrones_walkspeed_value is not None: # Check if received value is NULL
-                    isochrones_walkspeed_ms = float(isochrones_walkspeed_value) * 0.27777777777778 # Convert float and km/h to m/s
-                    isochrones_walkspeed_urlstring = '&walkSpeed=' + str(round(isochrones_walkspeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_walkspeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_walkspeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
- 
-            #BikeSpeed
-            if self.dlg.Isochrones_BikeSpeed_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_BikeSpeed_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_bikespeed_value, irrelevantsuccessstorage = self.dlg.Isochrones_BikeSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_bikespeed_value = self.dlg.Isochrones_BikeSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
-                if isochrones_bikespeed_value is not None: # Check if received value is NULL
-                    isochrones_bikespeed_ms = float(isochrones_bikespeed_value) * 0.27777777777778 # Convert float and km/h to m/s
-                    isochrones_bikespeed_urlstring = '&bikeSpeed=' + str(round(isochrones_bikespeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_bikespeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_bikespeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-
-            #Date
-            if self.dlg.Isochrones_Date_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_Date_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_date_value, irrelevantsuccessstorage = self.dlg.Isochrones_Date_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_date_value = self.dlg.Isochrones_Date.date().toString("yyyy-MM-dd") # Receiving Value from GUI: QDateEdit
-                if isochrones_date_value is not None: # Check if received value is NULL
-                    isochrones_date_urlstring = '&date=' + str(isochrones_date_value) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_date_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_date_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-            #Time
-            if self.dlg.Isochrones_Time_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_Time_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_time_value, irrelevantsuccessstorage = self.dlg.Isochrones_Time_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_time_value = self.dlg.Isochrones_Time.time().toString("HH:mm:ss") # Receiving Value from GUI: QTimeEdit
-                if isochrones_time_value is not None: # Check if received value is NULL
-                    isochrones_time_urlstring = '&time=' + str(isochrones_time_value) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_time_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_time_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-            #ArriveBy
-            if self.dlg.Isochrones_ArriveBy_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_ArriveBy_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_arriveby_value, irrelevantsuccessstorage = self.dlg.Isochrones_ArriveBy_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_arriveby_value = self.dlg.Isochrones_ArriveBy.isChecked() # Receiving Value from GUI: QCheckBox
-                if isochrones_arriveby_value is not None: # Check if received value is NULL
-                    isochrones_arriveby_urlstring = '&arriveBy=' + str(isochrones_arriveby_value) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_arriveby_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_arriveby_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-            #Wheelchair
-            if self.dlg.Isochrones_Wheelchair_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_Wheelchair_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_wheelchair_value, irrelevantsuccessstorage = self.dlg.Isochrones_Wheelchair_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_wheelchair_value = self.dlg.Isochrones_Wheelchair.isChecked() # Receiving Value from GUI: QCheckBox
-                if isochrones_wheelchair_value is not None: # Check if received value is NULL
-                    isochrones_wheelchair_urlstring = '&wheelchair=' + str(isochrones_wheelchair_value) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_wheelchair_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_wheelchair_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-            #WaitReluctance
-            if self.dlg.Isochrones_WaitReluctance_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_WaitReluctance_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_waitreluctance_value, irrelevantsuccessstorage = self.dlg.Isochrones_WaitReluctance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_waitreluctance_value = self.dlg.Isochrones_WaitReluctance.value() # Receiving Value from GUI: QDoubleSpinBox
-                if isochrones_waitreluctance_value is not None: # Check if received value is NULL
-                    isochrones_waitreluctance_float = round(float(isochrones_waitreluctance_value),2)
-                    isochrones_waitreluctance_urlstring = '&waitReluctance=' + str(isochrones_waitreluctance_float) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_waitreluctance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_waitreluctance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-                
-            #MaxTransfers
-            if self.dlg.Isochrones_MaxTransfers_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_MaxTransfers_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_maxtransfers_value, irrelevantsuccessstorage = self.dlg.Isochrones_MaxTransfers_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_maxtransfers_value = self.dlg.Isochrones_MaxTransfers.value() # Receiving Value from GUI: QSpinBox
-                if isochrones_maxtransfers_value is not None: # Check if received value is NULL
-                    isochrones_maxtransfers_urlstring = '&maxTransfers=' + str(isochrones_maxtransfers_value) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_maxtransfers_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_maxtransfers_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-             
-            #MaxWalkDistance
-            if self.dlg.Isochrones_MaxWalkDistance_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_MaxWalkDistance_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_maxwalkdistance_value, irrelevantsuccessstorage = self.dlg.Isochrones_MaxWalkDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_maxwalkdistance_value = self.dlg.Isochrones_MaxWalkDistance.value() # Receiving Value from GUI: QSpinBox
-                if isochrones_maxwalkdistance_value is not None: # Check if received value is NULL
-                    isochrones_maxwalkdistance_urlstring = '&maxWalkDistance=' + str(isochrones_maxwalkdistance_value) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_maxwalkdistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_maxwalkdistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-             
-            #MaxOffroadDistance
-            if self.dlg.Isochrones_MaxOffroadDistance_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_MaxOffroadDistance_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_maxoffroaddistance_value, irrelevantsuccessstorage = self.dlg.Isochrones_MaxOffroadDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_maxoffroaddistance_value = self.dlg.Isochrones_MaxOffroadDistance.value() # Receiving Value from GUI: QSpinBox
-                if isochrones_maxoffroaddistance_value is not None: # Check if received value is NULL
-                    isochrones_maxoffroaddistance_urlstring = '&offRoadDistanceMeters=' + str(isochrones_maxoffroaddistance_value) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_maxoffroaddistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_maxoffroaddistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
-             
-            #PrecisionMeters
-            if self.dlg.Isochrones_PrecisionMeters_Use.isChecked() == True: # Check if option shall be used                
-                if self.dlg.Isochrones_PrecisionMeters_Override.isActive() == True: # Check if override button shall be used
-                    isochrones_precisionmeters_value, irrelevantsuccessstorage = self.dlg.Isochrones_PrecisionMeters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-                else:
-                    isochrones_precisionmeters_value = self.dlg.Isochrones_PrecisionMeters.value() # Receiving Value from GUI: QSpinBox
-                if isochrones_precisionmeters_value is not None: # Check if received value is NULL
-                    isochrones_precisionmeters_urlstring = '&precisionMeters=' + str(isochrones_precisionmeters_value) # Concatenate to URL string if option is used and value is not NULL
-                else:
-                    isochrones_precisionmeters_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
-            else:
-                isochrones_precisionmeters_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)                   
-
-            #Isochrones Interval
-            if self.dlg.Isochrones_Interval_Override.isActive() == True:
-                isochrones_interval_value, irrelevantsuccessstorage = self.dlg.Isochrones_Interval_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-            else:
-                isochrones_interval_value = self.dlg.Isochrones_Interval.toPlainText() #Receiving Value from GUI: QTextEdit
-            if not isochrones_interval_value: # Check if it is NULL
-                isochrones_interval_value = '300,600,900' # Make sure cutoffSec is not empty because it is a must have parameter   
-            isochrones_interval_value = isochrones_interval_value.replace(" ", "")  # Remove whitespaces in case user entered them              
-            interval_list = list(isochrones_interval_value.split(",")) # Split given Integers (as string) separated by comma into a list
-            isochrones_interval_urlstring = "&cutoffSec=".join(interval_list) #Join the list to a string and add leading "&cutoffSec=" to each Integer. The first item of the list will get no leading "&cutoffSec=", we will add this later
-
-            #Transportation Mode
-            if self.dlg.Isochrones_TransportationMode_Override.isActive() == True:
-                isochrones_transportationmode_value, irrelevantsuccessstorage = self.dlg.Isochrones_TransportationMode_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-            else:
-                isochrones_transportationmode_value = self.dlg.Isochrones_TransportationMode.toPlainText() #Receiving Value from GUI: QTextEdit
-            if not isochrones_transportationmode_value: # Check if it is NULL
-                isochrones_transportationmode_value = 'WALK,TRANSIT' # Make sure Mode is not empty because it is a must have parameter
-            isochrones_transportationmode_urlstring = "&mode=" + isochrones_transportationmode_value.upper() # Make sure Mode is given as uppercase to prevent possible server errors (not sure how otp handels this exactly)
-            
-            #Additional Parameters
-            if self.dlg.Isochrones_AdditionalParameters_Override.isActive() == True:
-                isochrones_additionalparameters_value, irrelevantsuccessstorage = self.dlg.Isochrones_AdditionalParameters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
-            else:
-                isochrones_additionalparameters_value = self.dlg.Isochrones_AdditionalParameters.toPlainText() #Receiving Value from GUI: QTextEdit
-            if isochrones_additionalparameters_value is not None: # If Additional Parameters are filled, use it
-                isochrones_additionalparameters_urlstring = str(isochrones_additionalparameters_value) # Create the string
-            else: # If Additional Parameters are not filled, do not use it
-                isochrones_additionalparameters_urlstring = '' # Create the string (Empty, because it is not used, not NULL!!)
-                
-            #Example URL: http://localhost:8080/otp/routers/ttc/isochrone?fromPlace=43.637,-79.434&mode=WALK,TRANSIT&date=11-14-2017&time=8:00am&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
-            #https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=11-14-2017&time=8:00am&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
-            #Concat URL and convert to string
-            isochrone_url = (str(serverurl) + "isochrone?algorithm=accSampling" + # Add Isochrones request and algorithm to server url
-                            "&fromPlace=" + str(y) + "," + str(x) + # concatenate x and y coordinates as string
-                            isochrones_transportationmode_urlstring + #
-                            isochrones_walkspeed_urlstring + #
-                            isochrones_bikespeed_urlstring + #
-                            isochrones_date_urlstring + #
-                            isochrones_time_urlstring + #
-                            isochrones_arriveby_urlstring + #
-                            isochrones_wheelchair_urlstring + #
-                            isochrones_waitreluctance_urlstring + #
-                            isochrones_maxtransfers_urlstring + #
-                            isochrones_maxwalkdistance_urlstring + #
-                            isochrones_maxoffroaddistance_urlstring + #
-                            isochrones_precisionmeters_urlstring + #
-                            isochrones_additionalparameters_urlstring + # Additional Parameters entered as OTP-Readable string -> User responsibility
-                            "&cutoffSec=" + str(isochrones_interval_urlstring) # Interval-Integers are taken as comma separated string, then split into list and then joined to string with leading "&cutoffSec=". The first interval therefore has no leading "&cutoffSec=" thats why we add it here
-                            )
-                          
-            #create url
-            #Working example: https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=2019-11-01&time=08:00:00&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
-            isochrone_url = isochrone_url #'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql'
-            QgsMessageLog.logMessage(str(isochrone_url),MESSAGE_CATEGORY,Qgis.Info)
-            debug_info = "Feature ID: " + str(inputlayer_feature.id()) + ' of Layer: ' + str(self.gf.isochrones_selectedlayer) + ' at: ' + str(y) + ',' + str(x) + ' with URL: ' + str(isochrone_url) + '\n'
-            
-            #use lokal shp for testing to avoid bombing the server with requests :)
-            #request and download file
-            try:
-                # someone who knows how to use QGIS proxy settings, please insert here :)
-                isochrone_headers = {"accept":"application/x-zip-compressed"}
-                isochrone_request = urllib.request.Request(isochrone_url, headers=isochrone_headers)
-                isochrone_response = urllib.request.urlopen(isochrone_request)
-                #r = requests.get(isochrone_url, headers={"accept":"application/x-zip-compressed"}, proxies=urllib.request.getproxies()) # Sending request to server. Using shapefiles to avoid invalid geometries on high level of detail + geojson throwback seems to be limited to 4 decimals. # Using urllib instead of requests to avoid prerequesites installation fails
-            #save file
-                try:                
-                    with open(tmp_save_location + 'isochrones.zip', 'wb') as f: # Write shapefile to temp location
-                        f.write(isochrone_response.read())
-                        #f.write(r.content) # write zip content
-            #unzip file
-                    try:
-                        with zipfile.ZipFile(tmp_save_location + 'isochrones.zip', 'r') as zip_ref:
-                            zip_ref.extractall(tmp_save_location) 
-            #load file
-                        try:
-                            isochrone_responseLayer = QgsVectorLayer(tmp_save_location + "null.shp", "null", "ogr") # load just downloaded file as vector layer
-                            isochrone_responseLayer.updateExtents()
-                        except:
-                            isochrones_error = 'Error: loading response failed'
-                            QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-                    except:
-                        isochrones_error = 'Error: response file not valid'
-                        QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-                except:
-                    isochrones_error = 'Error: writing response to harddrive failed'
-                    QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-            except:
-                isochrones_error = 'Error: request failed' 
-                QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-
-
-                
-            # Check Validity of Responselayer
-            try:
-                if (not isochrone_responseLayer.isValid()) or (isochrone_responseLayer.extent().yMaximum() == 0.0) or (isochrone_responseLayer.extent().xMaximum() == 0.0) or (isochrone_responseLayer.extent().yMinimum() == 0.0) or (isochrone_responseLayer.extent().xMinimum() == 0.0):
-                    isochrones_error = 'Error: response layer is not valid'
-                    QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-            except:
-                isochrones_error = 'Error: response layer is not valid'
-                QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-            
-            # Create Dummylayer on Error to prevent errors in code or broken result layer
-            if isochrones_error != 'Success: No Error':
-                isochrone_responseLayer = QgsVectorLayer("MultiPolygon?crs=epsg:4326","Errorlayer","memory")
-                isochrone_responseLayer_pr = isochrone_responseLayer.dataProvider()
-                isochrone_responseLayer.startEditing()
-                error_feature = QgsFeature()
-                error_feature.setGeometry(QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))"))
-                isochrone_responseLayer_pr.addAttributes([QgsField("time",QVariant.Int)])
-                for j in interval_list:
-                    isochrone_responseLayer_pr.addFeatures([error_feature])
-                isochrone_responseLayer.commitChanges()
-                isochrone_responseLayer.updateExtents()
-                isochrones_error = isochrones_error + ' - Dummyfeature created to prevent entire result from beeing broken'
-                
-            # Throw back final status on this one
-            if (isochrones_error != 'Success: No Error'):
-                QgsMessageLog.logMessage('Final Status: ' + str(isochrones_error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...',MESSAGE_CATEGORY,Qgis.Warning)
-            
-            #get features of file
-            isochrone_features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
-            
-            #iterate trough isochrone
-            isochrone_id_counter = isochrone_id_counter + 1
-            for isochrone_feature in isochrone_features:
-                isochrone_uid_counter = isochrone_uid_counter + 1
-                isochrones_memorylayer_pr.addFeature(isochrone_feature) # copy features of responselayer including geometry and attributes (it is always only one attribute) to new layer  
-                attrs_isochrone = { 1 : isochrone_uid_counter, 2 : isochrone_id_counter, 3 : isochrones_error , 4 : isochrone_url } # set further generic attributes    
-                isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_isochrone }) # change attribute values of new layer to the just set ones  
-                for i in range(0, inputlayer_numberoffields): # iterate over new layer as many fields as the input layer has                
-                    attrs_inputlayer = { i + 5 : Inputlayer_Attributes[i] } # set attributes of inputlayer (+5 because we added 5 new fields before)
-                    isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_inputlayer }) # change attribute values of new layer to the ones from inputlayer 
-                    if isochrones_error != 'Success: No Error': # change stuff to null/dummy if isochrone is not valid
-                        err_attrs_isochrone = { 0 : 0 } # set time field to 0 on error
-                        isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : err_attrs_isochrone }) # set time field to 0 on error
-                        nullgeom = QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))") # create pseudopolygon
-                        #nullgeom = QgsGeometry.fromWkt('') #causes issues with layer. Just stick to pseudopolygon
-                        isochrones_memorylayer_pr.changeGeometryValues({ isochrone_feature.id() : nullgeom }) # set geometry of feature to null on error 
-                isochrones_memorylayer_vl.updateFields() # make sure to fetch changes from the provider
-                isochrones_memorylayer_vl.updateExtents()
-            
-            isochrones_memorylayer_vl.updateFields()
-            isochrones_memorylayer_vl.updateExtents()
-            isochrones_memorylayer_vl.commitChanges() # Commit changes
-            
-            # Update Progressbar
-            progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
+            # Preparing Progressbar
+            progressbar_featurecount = self.gf.isochrones_selectedlayer.featureCount()
+            progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
+            progressbar_counter = 0
             self.isochrones_progress.emit(int(progressbar_percent))
             
-            QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
-            QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
-            QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+            if progressbar_featurecount == 0:
+                self.isochrones_state = 3
+                QgsMessageLog.logMessage("Warning! No Isochrones to create. Inputlayer is empty.",MESSAGE_CATEGORY,Qgis.Warning)
+                self.isochrones_progress.emit(int(0))
+    
+                
+            for inputlayer_feature in inputlayer_features:
+                if self.stopisochronesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
+                    self.isochrones_state = 2
+                    break
+                # Initial Variables
+                isochrones_error = 'Success: No Error' # Empty the error var
+                progressbar_counter = progressbar_counter + 1
+                    
+                # retrieve every feature with its geometry and attributes
+                QgsMessageLog.logMessage("Feature ID: " + str(inputlayer_feature.id()),MESSAGE_CATEGORY,Qgis.Info)
+                
+                # Override Button Feature
+                ctx.setFeature(inputlayer_feature) #Setting context to current feature
+                
+                # Feature Geometry
+                geom = inputlayer_feature.geometry() # fetch geometry of current feature
+                geom.transform(tr) # Transform geometry to WGS 84 (We prepared this outside the loop)
+                pointgeom = geom.asPoint() #Read Point geometry
+                x = round(pointgeom.x(),8) #Read X-Value
+                y = round(pointgeom.y(),8) #Read Y-Value
+                QgsMessageLog.logMessage("PointX: " + str(x) + " | PointY: " + str(y),MESSAGE_CATEGORY,Qgis.Info)
+                
+                # Feature Attributes
+                Inputlayer_Attributes = inputlayer_feature.attributes() # fetch attributes
+                #print(str(Inputlayer_Attributes)) # attrs is a list. It contains all the attribute values of this feature
+                
+                # Copy Attributes to outputlayer
+                inputlayer_outfeat.setAttributes(inputlayer_feature.attributes()) # set the attributes
+                #print (Inputlayer_Attributes[0])
+                
+                #Check where to gather attributes from: GUI or Layer? 
+                #WalkSpeed
+                if self.dlg.Isochrones_WalkSpeed_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_WalkSpeed_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_walkspeed_value, irrelevantsuccessstorage = self.dlg.Isochrones_WalkSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_walkspeed_value = self.dlg.Isochrones_WalkSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
+                    if isochrones_walkspeed_value is not None: # Check if received value is NULL
+                        isochrones_walkspeed_ms = float(isochrones_walkspeed_value) * 0.27777777777778 # Convert float and km/h to m/s
+                        isochrones_walkspeed_urlstring = '&walkSpeed=' + str(round(isochrones_walkspeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_walkspeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_walkspeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+     
+                #BikeSpeed
+                if self.dlg.Isochrones_BikeSpeed_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_BikeSpeed_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_bikespeed_value, irrelevantsuccessstorage = self.dlg.Isochrones_BikeSpeed_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_bikespeed_value = self.dlg.Isochrones_BikeSpeed.value() # Receiving Value from GUI: QDoubleSpinBox
+                    if isochrones_bikespeed_value is not None: # Check if received value is NULL
+                        isochrones_bikespeed_ms = float(isochrones_bikespeed_value) * 0.27777777777778 # Convert float and km/h to m/s
+                        isochrones_bikespeed_urlstring = '&bikeSpeed=' + str(round(isochrones_bikespeed_ms,6)) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_bikespeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_bikespeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+    
+                #Date
+                if self.dlg.Isochrones_Date_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_Date_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_date_value, irrelevantsuccessstorage = self.dlg.Isochrones_Date_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_date_value = self.dlg.Isochrones_Date.date().toString("yyyy-MM-dd") # Receiving Value from GUI: QDateEdit
+                    if isochrones_date_value is not None: # Check if received value is NULL
+                        isochrones_date_urlstring = '&date=' + str(isochrones_date_value) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_date_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_date_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                #Time
+                if self.dlg.Isochrones_Time_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_Time_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_time_value, irrelevantsuccessstorage = self.dlg.Isochrones_Time_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_time_value = self.dlg.Isochrones_Time.time().toString("HH:mm:ss") # Receiving Value from GUI: QTimeEdit
+                    if isochrones_time_value is not None: # Check if received value is NULL
+                        isochrones_time_urlstring = '&time=' + str(isochrones_time_value) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_time_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_time_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                #ArriveBy
+                if self.dlg.Isochrones_ArriveBy_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_ArriveBy_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_arriveby_value, irrelevantsuccessstorage = self.dlg.Isochrones_ArriveBy_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_arriveby_value = self.dlg.Isochrones_ArriveBy.isChecked() # Receiving Value from GUI: QCheckBox
+                    if isochrones_arriveby_value is not None: # Check if received value is NULL
+                        isochrones_arriveby_urlstring = '&arriveBy=' + str(isochrones_arriveby_value) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_arriveby_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_arriveby_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                #Wheelchair
+                if self.dlg.Isochrones_Wheelchair_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_Wheelchair_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_wheelchair_value, irrelevantsuccessstorage = self.dlg.Isochrones_Wheelchair_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_wheelchair_value = self.dlg.Isochrones_Wheelchair.isChecked() # Receiving Value from GUI: QCheckBox
+                    if isochrones_wheelchair_value is not None: # Check if received value is NULL
+                        isochrones_wheelchair_urlstring = '&wheelchair=' + str(isochrones_wheelchair_value) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_wheelchair_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_wheelchair_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                #WaitReluctance
+                if self.dlg.Isochrones_WaitReluctance_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_WaitReluctance_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_waitreluctance_value, irrelevantsuccessstorage = self.dlg.Isochrones_WaitReluctance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_waitreluctance_value = self.dlg.Isochrones_WaitReluctance.value() # Receiving Value from GUI: QDoubleSpinBox
+                    if isochrones_waitreluctance_value is not None: # Check if received value is NULL
+                        isochrones_waitreluctance_float = round(float(isochrones_waitreluctance_value),2)
+                        isochrones_waitreluctance_urlstring = '&waitReluctance=' + str(isochrones_waitreluctance_float) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_waitreluctance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_waitreluctance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                #MaxTransfers
+                if self.dlg.Isochrones_MaxTransfers_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_MaxTransfers_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_maxtransfers_value, irrelevantsuccessstorage = self.dlg.Isochrones_MaxTransfers_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_maxtransfers_value = self.dlg.Isochrones_MaxTransfers.value() # Receiving Value from GUI: QSpinBox
+                    if isochrones_maxtransfers_value is not None: # Check if received value is NULL
+                        isochrones_maxtransfers_urlstring = '&maxTransfers=' + str(isochrones_maxtransfers_value) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_maxtransfers_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_maxtransfers_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                 
+                #MaxWalkDistance
+                if self.dlg.Isochrones_MaxWalkDistance_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_MaxWalkDistance_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_maxwalkdistance_value, irrelevantsuccessstorage = self.dlg.Isochrones_MaxWalkDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_maxwalkdistance_value = self.dlg.Isochrones_MaxWalkDistance.value() # Receiving Value from GUI: QSpinBox
+                    if isochrones_maxwalkdistance_value is not None: # Check if received value is NULL
+                        isochrones_maxwalkdistance_urlstring = '&maxWalkDistance=' + str(isochrones_maxwalkdistance_value) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_maxwalkdistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_maxwalkdistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                 
+                #MaxOffroadDistance
+                if self.dlg.Isochrones_MaxOffroadDistance_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_MaxOffroadDistance_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_maxoffroaddistance_value, irrelevantsuccessstorage = self.dlg.Isochrones_MaxOffroadDistance_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_maxoffroaddistance_value = self.dlg.Isochrones_MaxOffroadDistance.value() # Receiving Value from GUI: QSpinBox
+                    if isochrones_maxoffroaddistance_value is not None: # Check if received value is NULL
+                        isochrones_maxoffroaddistance_urlstring = '&offRoadDistanceMeters=' + str(isochrones_maxoffroaddistance_value) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_maxoffroaddistance_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_maxoffroaddistance_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                 
+                #PrecisionMeters
+                if self.dlg.Isochrones_PrecisionMeters_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.Isochrones_PrecisionMeters_Override.isActive() == True: # Check if override button shall be used
+                        isochrones_precisionmeters_value, irrelevantsuccessstorage = self.dlg.Isochrones_PrecisionMeters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        isochrones_precisionmeters_value = self.dlg.Isochrones_PrecisionMeters.value() # Receiving Value from GUI: QSpinBox
+                    if isochrones_precisionmeters_value is not None: # Check if received value is NULL
+                        isochrones_precisionmeters_urlstring = '&precisionMeters=' + str(isochrones_precisionmeters_value) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        isochrones_precisionmeters_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    isochrones_precisionmeters_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)                   
+    
+                #Isochrones Interval
+                if self.dlg.Isochrones_Interval_Override.isActive() == True:
+                    isochrones_interval_value, irrelevantsuccessstorage = self.dlg.Isochrones_Interval_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                else:
+                    isochrones_interval_value = self.dlg.Isochrones_Interval.toPlainText() #Receiving Value from GUI: QTextEdit
+                if not isochrones_interval_value: # Check if it is NULL
+                    isochrones_interval_value = '300,600,900' # Make sure cutoffSec is not empty because it is a must have parameter   
+                isochrones_interval_value = isochrones_interval_value.replace(" ", "")  # Remove whitespaces in case user entered them              
+                interval_list = list(isochrones_interval_value.split(",")) # Split given Integers (as string) separated by comma into a list
+                isochrones_interval_urlstring = "&cutoffSec=".join(interval_list) #Join the list to a string and add leading "&cutoffSec=" to each Integer. The first item of the list will get no leading "&cutoffSec=", we will add this later
+    
+                #Transportation Mode
+                if self.dlg.Isochrones_TransportationMode_Override.isActive() == True:
+                    isochrones_transportationmode_value, irrelevantsuccessstorage = self.dlg.Isochrones_TransportationMode_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                else:
+                    isochrones_transportationmode_value = self.dlg.Isochrones_TransportationMode.toPlainText() #Receiving Value from GUI: QTextEdit
+                if not isochrones_transportationmode_value: # Check if it is NULL
+                    isochrones_transportationmode_value = 'WALK,TRANSIT' # Make sure Mode is not empty because it is a must have parameter
+                isochrones_transportationmode_urlstring = "&mode=" + isochrones_transportationmode_value.upper() # Make sure Mode is given as uppercase to prevent possible server errors (not sure how otp handels this exactly)
+                
+                #Additional Parameters
+                if self.dlg.Isochrones_AdditionalParameters_Override.isActive() == True:
+                    isochrones_additionalparameters_value, irrelevantsuccessstorage = self.dlg.Isochrones_AdditionalParameters_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                else:
+                    isochrones_additionalparameters_value = self.dlg.Isochrones_AdditionalParameters.toPlainText() #Receiving Value from GUI: QTextEdit
+                if isochrones_additionalparameters_value is not None: # If Additional Parameters are filled, use it
+                    isochrones_additionalparameters_urlstring = str(isochrones_additionalparameters_value) # Create the string
+                else: # If Additional Parameters are not filled, do not use it
+                    isochrones_additionalparameters_urlstring = '' # Create the string (Empty, because it is not used, not NULL!!)
+                    
+                #Example URL: http://localhost:8080/otp/routers/ttc/isochrone?fromPlace=43.637,-79.434&mode=WALK,TRANSIT&date=11-14-2017&time=8:00am&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
+                #https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=11-14-2017&time=8:00am&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
+                #Concat URL and convert to string
+                isochrone_url = (str(serverurl) + "isochrone?algorithm=accSampling" + # Add Isochrones request and algorithm to server url
+                                "&fromPlace=" + str(y) + "," + str(x) + # concatenate x and y coordinates as string
+                                isochrones_transportationmode_urlstring + #
+                                isochrones_walkspeed_urlstring + #
+                                isochrones_bikespeed_urlstring + #
+                                isochrones_date_urlstring + #
+                                isochrones_time_urlstring + #
+                                isochrones_arriveby_urlstring + #
+                                isochrones_wheelchair_urlstring + #
+                                isochrones_waitreluctance_urlstring + #
+                                isochrones_maxtransfers_urlstring + #
+                                isochrones_maxwalkdistance_urlstring + #
+                                isochrones_maxoffroaddistance_urlstring + #
+                                isochrones_precisionmeters_urlstring + #
+                                isochrones_additionalparameters_urlstring + # Additional Parameters entered as OTP-Readable string -> User responsibility
+                                "&cutoffSec=" + str(isochrones_interval_urlstring) # Interval-Integers are taken as comma separated string, then split into list and then joined to string with leading "&cutoffSec=". The first interval therefore has no leading "&cutoffSec=" thats why we add it here
+                                )
+                              
+                #create url
+                #Working example: https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=2019-11-01&time=08:00:00&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
+                isochrone_url = isochrone_url #'https://api.digitransit.fi/routing/v1/routers/hsl/index/graphql'
+                QgsMessageLog.logMessage(str(isochrone_url),MESSAGE_CATEGORY,Qgis.Info)
+                debug_info = "Feature ID: " + str(inputlayer_feature.id()) + ' of Layer: ' + str(self.gf.isochrones_selectedlayer) + ' at: ' + str(y) + ',' + str(x) + ' with URL: ' + str(isochrone_url) + '\n'
+                
+                #request and download file
+                try:
+                    proxy_support = urllib.request.ProxyHandler(self.gf.proxyhandledict)
+                    opener = urllib.request.build_opener(proxy_support)
+                    urllib.request.install_opener(opener)
+                    isochrone_headers = {"accept":"application/x-zip-compressed"}
+                    isochrone_request = urllib.request.Request(isochrone_url, headers=isochrone_headers)
+                    isochrone_response = urllib.request.urlopen(isochrone_request)
+                    #r = requests.get(isochrone_url, headers={"accept":"application/x-zip-compressed"}, proxies=urllib.request.getproxies()) # Sending request to server. Using shapefiles to avoid invalid geometries on high level of detail + geojson throwback seems to be limited to 4 decimals. # Using urllib instead of requests to avoid prerequesites installation fails
+                #save file
+                    try:                
+                        with open(tmp_save_location + 'isochrones.zip', 'wb') as f: # Write shapefile to temp location
+                            f.write(isochrone_response.read())
+                            #f.write(r.content) # write zip content
+                #unzip file
+                        try:
+                            with zipfile.ZipFile(tmp_save_location + 'isochrones.zip', 'r') as zip_ref:
+                                zip_ref.extractall(tmp_save_location) 
+                #load file
+                            try:
+                                isochrone_responseLayer = QgsVectorLayer(tmp_save_location + "null.shp", "null", "ogr") # load just downloaded file as vector layer
+                                isochrone_responseLayer.updateExtents()
+                            except:
+                                isochrones_error = 'Error: loading response failed'
+                                QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
+                        except:
+                            isochrones_error = 'Error: response file not valid'
+                            QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
+                    except:
+                        isochrones_error = 'Error: writing response to harddrive failed'
+                        QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
+                except:
+                    isochrones_error = 'Error: request failed' 
+                    QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
+    
+    
+                    
+                # Check Validity of Responselayer
+                try:
+                    if (not isochrone_responseLayer.isValid()) or (isochrone_responseLayer.extent().yMaximum() == 0.0) or (isochrone_responseLayer.extent().xMaximum() == 0.0) or (isochrone_responseLayer.extent().yMinimum() == 0.0) or (isochrone_responseLayer.extent().xMinimum() == 0.0):
+                        isochrones_error = 'Error: response layer is not valid'
+                        QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
+                except:
+                    isochrones_error = 'Error: response layer is not valid'
+                    QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
+                
+                # Create Dummylayer on Error to prevent errors in code or broken result layer
+                if isochrones_error != 'Success: No Error':
+                    isochrone_responseLayer = QgsVectorLayer("MultiPolygon?crs=epsg:4326","Errorlayer","memory")
+                    isochrone_responseLayer_pr = isochrone_responseLayer.dataProvider()
+                    isochrone_responseLayer.startEditing()
+                    error_feature = QgsFeature()
+                    error_feature.setGeometry(QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))"))
+                    isochrone_responseLayer_pr.addAttributes([QgsField("time",QVariant.Int)])
+                    for j in interval_list:
+                        isochrone_responseLayer_pr.addFeatures([error_feature])
+                    isochrone_responseLayer.commitChanges()
+                    isochrone_responseLayer.updateExtents()
+                    isochrones_error = isochrones_error + ' - Dummyfeature created to prevent entire result from beeing broken'
+                    
+                # Throw back final status on this one
+                if (isochrones_error != 'Success: No Error'):
+                    QgsMessageLog.logMessage('Final Status: ' + str(isochrones_error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...',MESSAGE_CATEGORY,Qgis.Warning)
+                
+                #get features of file
+                isochrone_features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
+                
+                #iterate trough isochrone
+                isochrone_id_counter = isochrone_id_counter + 1
+                for isochrone_feature in isochrone_features:
+                    isochrone_uid_counter = isochrone_uid_counter + 1
+                    isochrones_memorylayer_pr.addFeature(isochrone_feature) # copy features of responselayer including geometry and attributes (it is always only one attribute) to new layer  
+                    attrs_isochrone = { 1 : isochrone_uid_counter, 2 : isochrone_id_counter, 3 : isochrones_error , 4 : isochrone_url } # set further generic attributes    
+                    isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_isochrone }) # change attribute values of new layer to the just set ones  
+                    for i in range(0, inputlayer_numberoffields): # iterate over new layer as many fields as the input layer has                
+                        attrs_inputlayer = { i + 5 : Inputlayer_Attributes[i] } # set attributes of inputlayer (+5 because we added 5 new fields before)
+                        isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_inputlayer }) # change attribute values of new layer to the ones from inputlayer 
+                        if isochrones_error != 'Success: No Error': # change stuff to null/dummy if isochrone is not valid
+                            err_attrs_isochrone = { 0 : 0 } # set time field to 0 on error
+                            isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : err_attrs_isochrone }) # set time field to 0 on error
+                            nullgeom = QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))") # create pseudopolygon
+                            #nullgeom = QgsGeometry.fromWkt('') #causes issues with layer. Just stick to pseudopolygon
+                            isochrones_memorylayer_pr.changeGeometryValues({ isochrone_feature.id() : nullgeom }) # set geometry of feature to null on error 
+                    isochrones_memorylayer_vl.updateFields() # make sure to fetch changes from the provider
+                    isochrones_memorylayer_vl.updateExtents()
+                
+                isochrones_memorylayer_vl.updateFields()
+                isochrones_memorylayer_vl.updateExtents()
+                #isochrones_memorylayer_vl.commitChanges() # Commit changes
+                
+                # Update Progressbar
+                progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
+                self.isochrones_progress.emit(int(progressbar_percent))
+                
+                QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+                QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
+                QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
+                
+            #END OF LOOP
             
-        #END OF LOOP
-        
-        # Isochrones Memory VectorLayer
-        isochrones_memorylayer_vl.updateFields()
-        isochrones_memorylayer_vl.updateExtents()
-        isochrones_memorylayer_vl.commitChanges() # Commit changes
+            # Isochrones Memory VectorLayer
+            isochrones_memorylayer_vl.updateFields()
+            isochrones_memorylayer_vl.updateExtents()
+            #isochrones_memorylayer_vl.commitChanges() # Commit changes
 
         #self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         isochrones_endtime = datetime.now()
