@@ -311,7 +311,14 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                     isochrones_interval_value = '300,600,900' # Make sure cutoffSec is not empty because it is a must have parameter   
                 isochrones_interval_value = isochrones_interval_value.replace(" ", "")  # Remove whitespaces in case user entered them              
                 interval_list = list(isochrones_interval_value.split(",")) # Split given Integers (as string) separated by comma into a list
-                isochrones_interval_urlstring = "&cutoffSec=".join(interval_list) #Join the list to a string and add leading "&cutoffSec=" to each Integer. The first item of the list will get no leading "&cutoffSec=", we will add this later
+                interval_list_new = []
+                for entry in interval_list:
+                    if entry.lower().endswith('m'):
+                        entry = str(int(entry.lower().replace('m',''))*60)
+                    elif entry.lower().endswith('h'):
+                        entry = str(int(entry.lower().replace('h',''))*3600)
+                    interval_list_new.append(entry)
+                isochrones_interval_urlstring = "&cutoffSec=".join(interval_list_new) #Join the list to a string and add leading "&cutoffSec=" to each Integer. The first item of the list will get no leading "&cutoffSec=", we will add this later
     
                 #Transportation Mode
                 if self.dlg.Isochrones_TransportationMode_Override.isActive() == True:

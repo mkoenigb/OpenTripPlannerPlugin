@@ -180,7 +180,7 @@
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>80</y>
+       <y>40</y>
        <width>291</width>
        <height>21</height>
       </rect>
@@ -394,13 +394,16 @@
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>100</y>
+       <y>60</y>
        <width>291</width>
-       <height>21</height>
+       <height>61</height>
       </rect>
      </property>
      <property name="text">
-      <string>(Integer values separated by comma):</string>
+	<string>(Integer values separated by comma. Units "m" and "h" are allowed e.g. "60,2m" are 60sec. and 120sec.)</string>
+     </property>
+     <property name="wordWrap">
+        <bool>true</bool>
      </property>
     </widget>
     <widget class="QTextEdit" name="Isochrones_Interval">
