@@ -180,7 +180,7 @@
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>90</y>
+       <y>80</y>
        <width>291</width>
        <height>21</height>
       </rect>
@@ -977,6 +977,19 @@ Do not use an option if it is not compatible with the selected Mode. For example
      </property>
      <property name="text">
       <string>Cancel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_20">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>100</y>
+       <width>291</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>(Integer values separated by comma):</string>
      </property>
     </widget>
    </widget>
