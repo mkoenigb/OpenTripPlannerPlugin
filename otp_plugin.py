@@ -234,10 +234,12 @@ class OpenTripPlannerPlugin():
     def isochronesReportProgress(self, n): # method to report the progress to gui
         self.dlg.Isochrones_ProgressBar.setValue(n) # set the current progress in progress bar
 
-    def isochronesFinished(self, isochrones_resultlayer, isochrones_state): # method to interact with gui when thread is finished or canceled
+    def isochronesFinished(self, isochrones_resultlayer, isochrones_state, message=""): # method to interact with gui when thread is finished or canceled
         QgsProject.instance().addMapLayer(isochrones_resultlayer) # Show resultlayer in project
         # isochrones_state is indicating different states of the thread/result as integer
-        if isochrones_state == 0:
+        if message:
+            self.iface.messageBar().pushMessage("Warning", " Error occurred " + message, MESSAGE_CATEGORY, level=Qgis.Critical, duration=30)
+        elif isochrones_state == 0:
             self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         elif isochrones_state == 1:
             self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)

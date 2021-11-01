@@ -46,7 +46,7 @@ import json
 MESSAGE_CATEGORY = 'OpenTripPlanner PlugIn'
 
 class OpenTripPlannerPluginIsochronesWorker(QThread):
-    isochrones_finished = pyqtSignal(object, int)
+    isochrones_finished = pyqtSignal(object, int, str)
     isochrones_progress = pyqtSignal(int)
 
     def __init__(self, dialog, iface, otpgf, resultlayer):
@@ -68,7 +68,7 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         # clear and initialize vars and stuff
         self.isochrones_state = 1
         isochrone_url = None
-        isochrones_error = None
+        isochrones_errors = []
         r = None
         inputlayer_outfeat = None
         debug_info = None
@@ -130,7 +130,7 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                     self.isochrones_state = 2
                     break
                 # Initial Variables
-                isochrones_error = 'Success: No Error' # Empty the error var
+                isochrones_error = None # Empty the error var
                 progressbar_counter = progressbar_counter + 1
                     
                 # retrieve every feature with its geometry and attributes
@@ -311,7 +311,14 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                     isochrones_interval_value = '300,600,900' # Make sure cutoffSec is not empty because it is a must have parameter   
                 isochrones_interval_value = isochrones_interval_value.replace(" ", "")  # Remove whitespaces in case user entered them              
                 interval_list = list(isochrones_interval_value.split(",")) # Split given Integers (as string) separated by comma into a list
-                isochrones_interval_urlstring = "&cutoffSec=".join(interval_list) #Join the list to a string and add leading "&cutoffSec=" to each Integer. The first item of the list will get no leading "&cutoffSec=", we will add this later
+                interval_list_new = []
+                for entry in interval_list:
+                    if entry.lower().endswith('m'):
+                        entry = str(int(entry.lower().replace('m',''))*60)
+                    elif entry.lower().endswith('h'):
+                        entry = str(int(entry.lower().replace('h',''))*3600)
+                    interval_list_new.append(entry)
+                isochrones_interval_urlstring = "&cutoffSec=".join(interval_list_new) #Join the list to a string and add leading "&cutoffSec=" to each Integer. The first item of the list will get no leading "&cutoffSec=", we will add this later
     
                 #Transportation Mode
                 if self.dlg.Isochrones_TransportationMode_Override.isActive() == True:
@@ -402,12 +409,12 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                     if (not isochrone_responseLayer.isValid()) or (isochrone_responseLayer.extent().yMaximum() == 0.0) or (isochrone_responseLayer.extent().xMaximum() == 0.0) or (isochrone_responseLayer.extent().yMinimum() == 0.0) or (isochrone_responseLayer.extent().xMinimum() == 0.0):
                         isochrones_error = 'Error: response layer is not valid'
                         QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-                except:
-                    isochrones_error = 'Error: response layer is not valid'
+                except Exception as e:
+                    isochrones_error = f'Error: response layer is not valid, exception {e}'
                     QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
                 
                 # Create Dummylayer on Error to prevent errors in code or broken result layer
-                if isochrones_error != 'Success: No Error':
+                if isochrones_error:
                     isochrone_responseLayer = QgsVectorLayer("MultiPolygon?crs=epsg:4326","Errorlayer","memory")
                     isochrone_responseLayer_pr = isochrone_responseLayer.dataProvider()
                     isochrone_responseLayer.startEditing()
@@ -421,8 +428,9 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                     isochrones_error = isochrones_error + ' - Dummyfeature created to prevent entire result from beeing broken'
                     
                 # Throw back final status on this one
-                if (isochrones_error != 'Success: No Error'):
+                if isochrones_error:
                     QgsMessageLog.logMessage('Final Status: ' + str(isochrones_error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...',MESSAGE_CATEGORY,Qgis.Warning)
+                    isochrones_errors.append(isochrones_error)
                 
                 #get features of file
                 isochrone_features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
@@ -432,12 +440,15 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                 for isochrone_feature in isochrone_features:
                     isochrone_uid_counter = isochrone_uid_counter + 1
                     isochrones_memorylayer_pr.addFeature(isochrone_feature) # copy features of responselayer including geometry and attributes (it is always only one attribute) to new layer  
-                    attrs_isochrone = { 1 : isochrone_uid_counter, 2 : isochrone_id_counter, 3 : isochrones_error , 4 : isochrone_url } # set further generic attributes    
+                    attrs_isochrone = { 1 : isochrone_uid_counter,
+                                        2 : isochrone_id_counter,
+                                        3 : isochrones_error if isochrones_error else "Success: No Error",
+                                        4 : isochrone_url } # set further generic attributes
                     isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_isochrone }) # change attribute values of new layer to the just set ones  
                     for i in range(0, inputlayer_numberoffields): # iterate over new layer as many fields as the input layer has                
                         attrs_inputlayer = { i + 5 : Inputlayer_Attributes[i] } # set attributes of inputlayer (+5 because we added 5 new fields before)
                         isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_inputlayer }) # change attribute values of new layer to the ones from inputlayer 
-                        if isochrones_error != 'Success: No Error': # change stuff to null/dummy if isochrone is not valid
+                        if isochrones_error: # change stuff to null/dummy if isochrone is not valid
                             err_attrs_isochrone = { 0 : 0 } # set time field to 0 on error
                             isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : err_attrs_isochrone }) # set time field to 0 on error
                             nullgeom = QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))") # create pseudopolygon
@@ -475,4 +486,5 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
-        self.isochrones_finished.emit(isochrones_memorylayer_vl,self.isochrones_state)
+
+        self.isochrones_finished.emit(isochrones_memorylayer_vl,self.isochrones_state, "; ".join(isochrones_errors))

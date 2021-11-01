@@ -89,7 +89,7 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.dlg.GeneralSettings_CustomTempFolder_Use.setChecked(self.customtempfolder_use)
         if self.customtempfolder_use == 0:
             self.otp_plugin_location = os.path.realpath(os.path.join(os.getcwd(), os.path.dirname(__file__))) #Read path of this plugin
-            self.tmp_save_location = os.path.join(self.otp_plugin_location, 'temp_files\\')  #Concat path of this plugin to save location of temporary shapefiles
+            self.tmp_save_location = os.path.join(self.otp_plugin_location, 'temp_files') + os.sep  #Concat path of this plugin to save location of temporary shapefiles
         else:
             self.tmp_save_location = self.customtempfolder
         
