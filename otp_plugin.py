@@ -238,7 +238,7 @@ class OpenTripPlannerPlugin():
         QgsProject.instance().addMapLayer(isochrones_resultlayer) # Show resultlayer in project
         # isochrones_state is indicating different states of the thread/result as integer
         if message:
-            self.iface.messageBar().pushMessage("Warning", " Error occurred " + message, MESSAGE_CATEGORY, level=Qgis.Critical, duration=30)
+            self.iface.messageBar().pushMessage("Warning", " Error occurred " + message, MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         elif isochrones_state == 0:
             self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         elif isochrones_state == 1:

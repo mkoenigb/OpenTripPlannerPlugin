@@ -180,7 +180,7 @@
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>40</y>
+       <y>90</y>
        <width>291</width>
        <height>21</height>
       </rect>
@@ -390,22 +390,6 @@
       </rect>
      </property>
     </widget>
-    <widget class="QLabel" name="label_15">
-     <property name="geometry">
-      <rect>
-       <x>410</x>
-       <y>60</y>
-       <width>291</width>
-       <height>61</height>
-      </rect>
-     </property>
-     <property name="text">
-	<string>(Integer values separated by comma. Units "m" and "h" are allowed e.g. "60,2m" are 60sec. and 120sec.)</string>
-     </property>
-     <property name="wordWrap">
-        <bool>true</bool>
-     </property>
-    </widget>
     <widget class="QTextEdit" name="Isochrones_Interval">
      <property name="geometry">
       <rect>
@@ -416,7 +400,7 @@
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter isochrone intervals in seconds (Integer) separated by comma --&amp;gt; String.&lt;/p&gt;&lt;p&gt;For example:&lt;br/&gt;60 or 60,180,300&lt;/p&gt;&lt;p&gt;Default if nothing is specified: 300,600,900&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter isochrone intervals in seconds (Integer) separated by comma --&amp;gt; String.&lt;/p&gt;&lt;p&gt;For example:&lt;br/&gt;60 or 60,180,300&lt;/p&gt;&lt;p&gt;Also units &amp;quot;m&amp;quot; and &amp;quot;h&amp;quot; are allowed e.g. &amp;quot;60,2m&amp;quot; are 60sec. and 120sec.&lt;/p&gt;&lt;p&gt;Default if nothing is specified: 300,600,900&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="autoFormatting">
       <set>QTextEdit::AutoNone</set>
@@ -2351,7 +2335,7 @@ to save temporary isochrone files</string>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 0.5&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 0.5.1&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
