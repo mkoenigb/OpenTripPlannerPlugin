@@ -41,9 +41,6 @@
        <height>31</height>
       </rect>
      </property>
-     <property name="locale">
-      <locale language="English" country="UnitedStates"/>
-     </property>
      <property name="value">
       <number>0</number>
      </property>
@@ -973,7 +970,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>Request isochrones and store as polygon layer.</string>
+      <string>Cancel the execution of creating/requesting isochrones</string>
      </property>
      <property name="text">
       <string>Cancel</string>
@@ -1102,9 +1099,6 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <width>561</width>
        <height>31</height>
       </rect>
-     </property>
-     <property name="locale">
-      <locale language="English" country="UnitedStates"/>
      </property>
      <property name="value">
       <number>0</number>
@@ -1949,7 +1943,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose your preference for routefinding.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose your preference for routefinding.&lt;/p&gt;&lt;p&gt;Note that some options require additional parameters. Enter them in &amp;quot;Additional Parameters as String&amp;quot;. Lookup in OTP-API-Docs if you are unsure about which option needs which parameters.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <item>
       <property name="text">
@@ -2029,7 +2023,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If checked:&lt;/span&gt;&lt;br/&gt;Create only routes from source points to target points, if the chosen field of both layers match.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If not checked:&lt;/span&gt;&lt;br/&gt;Create routes from all source points each to all target points each (nroutes = nsourcefeats * ntargetfeats)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;To create a matrix:&lt;/span&gt;&lt;br/&gt;Uncheck this box and select the same layer as Source and Target and the same field as matching field.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If checked:&lt;/span&gt;&lt;br/&gt;Create only routes from source points to target points, if the values of the chosen fields of both layers match.&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;If not checked:&lt;/span&gt;&lt;br/&gt;Create routes from all source points each to all target points each (Nroutes = Nsourcefeats * Ntargetfeats)&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-weight:600;&quot;&gt;To create a matrix:&lt;/span&gt;&lt;br/&gt;Uncheck this box and select the same layer as Source and Target and the same field as matching field.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Create only Routes for matching Fields</string>
@@ -2111,7 +2105,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>Request isochrones and store as polygon layer.</string>
+      <string>Cancel the execution of creating/requesting routes</string>
      </property>
      <property name="text">
       <string>Cancel</string>
@@ -2159,6 +2153,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <height>41</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Save the general settings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Save settings</string>
      </property>
@@ -2173,7 +2170,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Server URL including path to OTP-Router, ending with a slash. For example: https://api.digitransit.fi/routing/v1/routers/hsl/&lt;/p&gt;&lt;p&gt;Note that Proxies are currently not supported. Neither QGIS-Internal-Proxy-Settings, nor OS-Proxy-Settings. The Server must be accessible without a proxy.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Server URL including path to OTP-Router, ending with a slash. For example: https://api.digitransit.fi/routing/v1/routers/hsl/&lt;/p&gt;&lt;p&gt;Note that QGIS-Proxy-Settings are currently not supported. The Server must be accessible without a proxy.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="tabStopWidth">
       <number>80</number>
@@ -2195,7 +2192,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Don't forget to save settings when status is OK&lt;/p&gt;&lt;p&gt;Consider that the saved proxy settings are used, not the one you see!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Check the status of the server without doing a heavy request.&lt;/p&gt;&lt;p&gt;Consider that the url you currently see is used, which may not be the one you saved, so don't forget to save settings when status is OK!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="text">
       <string>Check Server Status</string>
@@ -2301,6 +2298,9 @@ to save temporary isochrone files</string>
        <height>41</height>
       </rect>
      </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Restore the default general settings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
      <property name="text">
       <string>Restore default settings</string>
      </property>
@@ -2342,13 +2342,13 @@ to save temporary isochrone files</string>
      <property name="geometry">
       <rect>
        <x>16</x>
-       <y>70</y>
+       <y>10</y>
        <width>691</width>
-       <height>321</height>
+       <height>501</height>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 0.5.1&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 1.0&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;Please report bugs and issues on &lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>

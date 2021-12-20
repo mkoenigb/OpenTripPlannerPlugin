@@ -46,7 +46,7 @@ import json
 MESSAGE_CATEGORY = 'OpenTripPlanner PlugIn'
 
 class OpenTripPlannerPluginIsochronesWorker(QThread):
-    isochrones_finished = pyqtSignal(object, int, str)
+    isochrones_finished = pyqtSignal(object, int, str, str)
     isochrones_progress = pyqtSignal(int)
 
     def __init__(self, dialog, iface, otpgf, resultlayer):
@@ -68,7 +68,9 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         # clear and initialize vars and stuff
         self.isochrones_state = 1
         isochrone_url = None
-        isochrones_errors = []
+        isochrone_error = None
+        isochrone_errors = []
+        unique_errors = []
         r = None
         inputlayer_outfeat = None
         debug_info = None
@@ -81,6 +83,12 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         QgsMessageLog.logMessage("##### Isochrones job starting @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         isochrones_starttime = datetime.now()
+        
+        if not self.gf.isochrones_selectedlayer:
+            QgsMessageLog.logMessage("Warning! No inputlayer selected. Choose an inputlayer and try again.",MESSAGE_CATEGORY,Qgis.Critical)
+            self.isochrones_state = 5
+            self.isochrones_finished.emit(isochrones_memorylayer_vl, self.isochrones_state, "; ".join(isochrone_errors), str(datetime.now() - isochrones_starttime))
+            return
         
         # Setting up Override Button context
         ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.gf.isochrones_selectedlayer)) #This context will be able to evaluate global, project, and layer variables
@@ -123,14 +131,17 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                 self.isochrones_state = 3
                 QgsMessageLog.logMessage("Warning! No Isochrones to create. Inputlayer is empty.",MESSAGE_CATEGORY,Qgis.Warning)
                 self.isochrones_progress.emit(int(0))
-    
                 
             for inputlayer_feature in inputlayer_features:
                 if self.stopisochronesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
                     self.isochrones_state = 2
                     break
                 # Initial Variables
-                isochrones_error = None # Empty the error var
+                # Empty the error vars
+                isochrone_error = None
+                isochrone_errors = []
+                isochrone_unique_errors = []
+                
                 progressbar_counter = progressbar_counter + 1
                     
                 # retrieve every feature with its geometry and attributes
@@ -367,6 +378,7 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                 debug_info = "Feature ID: " + str(inputlayer_feature.id()) + ' of Layer: ' + str(self.gf.isochrones_selectedlayer) + ' at: ' + str(y) + ',' + str(x) + ' with URL: ' + str(isochrone_url) + '\n'
                 
                 #request and download file
+                isochrone_responseLayer = None
                 try:
                     #Proxy not working properly, maybe I'll implement this someday...
                     #proxy_support = urllib.request.ProxyHandler(self.gf.proxyhandledict)
@@ -389,32 +401,35 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                             try:
                                 isochrone_responseLayer = QgsVectorLayer(tmp_save_location + "null.shp", "null", "ogr") # load just downloaded file as vector layer
                                 isochrone_responseLayer.updateExtents()
-                            except:
-                                isochrones_error = 'Error: loading response failed'
-                                QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-                        except:
-                            isochrones_error = 'Error: response file not valid'
-                            QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-                    except:
-                        isochrones_error = 'Error: writing response to harddrive failed'
-                        QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
-                except:
-                    isochrones_error = 'Error: request failed' 
-                    QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
+                            except Exception as e:
+                                isochrone_error = f'Error: loading response failed (Exception {e})'
+                                isochrone_errors.append(isochrone_error)
+                        except Exception as e:
+                            isochrone_error = f'Error: response file not valid (Exception {e})'
+                            isochrone_errors.append(isochrone_error)
+                    except Exception as e:
+                        isochrone_error = f'Error: writing response to harddrive failed (Exception {e})'
+                        isochrone_errors.append(isochrone_error)
+                except Exception as e:
+                    isochrone_error = f'Error: request failed (Exception {e})' 
+                    isochrone_errors.append(isochrone_error)
     
     
                     
                 # Check Validity of Responselayer
                 try:
-                    if (not isochrone_responseLayer.isValid()) or (isochrone_responseLayer.extent().yMaximum() == 0.0) or (isochrone_responseLayer.extent().xMaximum() == 0.0) or (isochrone_responseLayer.extent().yMinimum() == 0.0) or (isochrone_responseLayer.extent().xMinimum() == 0.0):
-                        isochrones_error = 'Error: response layer is not valid'
-                        QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
+                    if not isochrone_responseLayer:
+                        isochrone_error = 'Error: response layer does not exist'
+                        isochrone_errors.append(isochrone_error)
+                    elif (not isochrone_responseLayer.isValid()) or (isochrone_responseLayer.extent().yMaximum() == 0.0) or (isochrone_responseLayer.extent().xMaximum() == 0.0) or (isochrone_responseLayer.extent().yMinimum() == 0.0) or (isochrone_responseLayer.extent().xMinimum() == 0.0):
+                        isochrone_error = 'Error: response layer is not valid'
+                        isochrone_errors.append(isochrone_error)
                 except Exception as e:
-                    isochrones_error = f'Error: response layer is not valid, exception {e}'
-                    QgsMessageLog.logMessage(isochrones_error,MESSAGE_CATEGORY,Qgis.Warning)
+                    isochrone_error = f'Error: response layer is not valid (Exception {e})'
+                    isochrone_errors.append(isochrone_error)
                 
                 # Create Dummylayer on Error to prevent errors in code or broken result layer
-                if isochrones_error:
+                if isochrone_errors:
                     isochrone_responseLayer = QgsVectorLayer("MultiPolygon?crs=epsg:4326","Errorlayer","memory")
                     isochrone_responseLayer_pr = isochrone_responseLayer.dataProvider()
                     isochrone_responseLayer.startEditing()
@@ -425,12 +440,15 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                         isochrone_responseLayer_pr.addFeatures([error_feature])
                     isochrone_responseLayer.commitChanges()
                     isochrone_responseLayer.updateExtents()
-                    isochrones_error = isochrones_error + ' - Dummyfeature created to prevent entire result from beeing broken'
+                    #isochrone_error = isochrone_error + ' - Dummyfeature created to prevent entire result from beeing broken'
+                    #isochrone_errors.append(isochrone_error)
                     
                 # Throw back final status on this one
-                if isochrones_error:
-                    QgsMessageLog.logMessage('Final Status: ' + str(isochrones_error) + ' -> maybe try other settings like lower detail, other mode, ... or other coordinates, or ...',MESSAGE_CATEGORY,Qgis.Warning)
-                    isochrones_errors.append(isochrones_error)
+                if isochrone_errors:
+                    isochrone_unique_errors = set(isochrone_errors)
+                    isochrone_unique_errors = list(isochrone_unique_errors)
+                    unique_errors.extend(isochrone_unique_errors)
+                    QgsMessageLog.logMessage('Isochrone Errors: ' + str("; ".join(isochrone_unique_errors)),MESSAGE_CATEGORY,Qgis.Warning)
                 
                 #get features of file
                 isochrone_features = isochrone_responseLayer.getFeatures() # get features of just downloaded isochrone 
@@ -442,13 +460,13 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                     isochrones_memorylayer_pr.addFeature(isochrone_feature) # copy features of responselayer including geometry and attributes (it is always only one attribute) to new layer  
                     attrs_isochrone = { 1 : isochrone_uid_counter,
                                         2 : isochrone_id_counter,
-                                        3 : isochrones_error if isochrones_error else "Success: No Error",
+                                        3 : str("; ".join(isochrone_unique_errors)) if isochrone_errors else None,
                                         4 : isochrone_url } # set further generic attributes
                     isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_isochrone }) # change attribute values of new layer to the just set ones  
                     for i in range(0, inputlayer_numberoffields): # iterate over new layer as many fields as the input layer has                
                         attrs_inputlayer = { i + 5 : Inputlayer_Attributes[i] } # set attributes of inputlayer (+5 because we added 5 new fields before)
                         isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : attrs_inputlayer }) # change attribute values of new layer to the ones from inputlayer 
-                        if isochrones_error: # change stuff to null/dummy if isochrone is not valid
+                        if isochrone_error: # change stuff to null/dummy if isochrone is not valid
                             err_attrs_isochrone = { 0 : 0 } # set time field to 0 on error
                             isochrones_memorylayer_pr.changeAttributeValues({ isochrone_feature.id() : err_attrs_isochrone }) # set time field to 0 on error
                             nullgeom = QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))") # create pseudopolygon
@@ -477,6 +495,9 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
             #isochrones_memorylayer_vl.commitChanges() # Commit changes
 
         #self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+        unique_errors = set(unique_errors)
+        unique_errors = list(unique_errors)
+        unique_errors = '; '.join(unique_errors)
         isochrones_endtime = datetime.now()
         isochrones_runtime = isochrones_endtime - isochrones_starttime
         if self.stopisochronesworker == True:
@@ -487,4 +508,4 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
 
-        self.isochrones_finished.emit(isochrones_memorylayer_vl,self.isochrones_state, "; ".join(isochrones_errors))
+        self.isochrones_finished.emit(isochrones_memorylayer_vl, self.isochrones_state, unique_errors, str(isochrones_runtime))

@@ -234,19 +234,23 @@ class OpenTripPlannerPlugin():
     def isochronesReportProgress(self, n): # method to report the progress to gui
         self.dlg.Isochrones_ProgressBar.setValue(n) # set the current progress in progress bar
 
-    def isochronesFinished(self, isochrones_resultlayer, isochrones_state, message=""): # method to interact with gui when thread is finished or canceled
+    def isochronesFinished(self, isochrones_resultlayer, isochrones_state, unique_errors="", runtime="00:00:00 (unknown)"): # method to interact with gui when thread is finished or canceled
         QgsProject.instance().addMapLayer(isochrones_resultlayer) # Show resultlayer in project
         # isochrones_state is indicating different states of the thread/result as integer
-        if message:
-            self.iface.messageBar().pushMessage("Warning", " Error occurred " + message, MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
-        elif isochrones_state == 0:
+        if unique_errors:
+            self.iface.messageBar().pushMessage("Warning", " Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors, MESSAGE_CATEGORY, level=Qgis.Warning, duration=10)
+        if isochrones_state == 0:
             self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         elif isochrones_state == 1:
-            self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+            self.iface.messageBar().pushMessage("Done!", " Isochrones job finished after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         elif isochrones_state == 2:
-            self.iface.messageBar().pushMessage("Done!", " Isochrones job canceled", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+            self.iface.messageBar().pushMessage("Done!", " Isochrones job canceled after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         elif isochrones_state == 3:
             self.iface.messageBar().pushMessage("Warning", " No Isochrones to create - Check your settings and retry", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)
+        elif isochrones_state == 4: # Error state 4 (no fields in inputlayer) does not exist for isochrones. To avoid different states for isochrones and routes just leave it empty, it will never happen.
+            self.iface.messageBar().pushMessage("Warning", "", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)            
+        elif isochrones_state == 5:
+            self.iface.messageBar().pushMessage("Warning", " No inputlayer selected. Choose an inputlayer and try again.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)             
         else:
             self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
 
@@ -289,19 +293,23 @@ class OpenTripPlannerPlugin():
     def routesReportProgress(self, n): # method to report the progress to gui
         self.dlg.Routes_ProgressBar.setValue(n) # set the current progress in progress bar
 
-    def routesFinished(self, routes_resultlayer, routes_state): # method to interact with gui when thread is finished or canceled
+    def routesFinished(self, routes_resultlayer, routes_state, unique_errors="", runtime="00:00:00 (unknown)"): # method to interact with gui when thread is finished or canceled
         QgsProject.instance().addMapLayer(routes_resultlayer) # Show resultlayer in project
         # routes_state is indicating different states of the thread/result as integer
+        if unique_errors:
+            self.iface.messageBar().pushMessage("Warning", " Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors, MESSAGE_CATEGORY, level=Qgis.Warning, duration=10)
         if routes_state == 0:
             self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         elif routes_state == 1:
-            self.iface.messageBar().pushMessage("Done!", " Routes job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
+            self.iface.messageBar().pushMessage("Done!", " Routes job finished after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
         elif routes_state == 2:
-            self.iface.messageBar().pushMessage("Done!", " Routes job canceled", MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
+            self.iface.messageBar().pushMessage("Done!", " Routes job canceled after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
         elif routes_state == 3:
             self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes - Check your settings and retry", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)
         elif routes_state == 4:
-            self.iface.messageBar().pushMessage("Warning", " Inputlayer has no fields - Add at least a dummy-id field", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)        
+            self.iface.messageBar().pushMessage("Warning", " Inputlayer has no fields - Add at least a dummy-id field", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6) 
+        elif routes_state == 5:
+            self.iface.messageBar().pushMessage("Warning", " No sourcelayer or no targetlayer selected. Choose your inputlayers and try again", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6) 
         else:
             self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         
@@ -362,4 +370,4 @@ class OpenTripPlannerPlugin():
             # Do something useful here - delete the line containing pass and
             # substitute with your code. 
             QgsMessageLog.logMessage("OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.",MESSAGE_CATEGORY,Qgis.Warning)
-            self.iface.messageBar().pushMessage("Error", "OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.",MESSAGE_CATEGORY,level=Qgis.Critical, duration=3)
+            self.iface.messageBar().pushMessage("Error", "OpenTripPlanner Plugin is already running! Close it before, if you wish to restart it.",MESSAGE_CATEGORY,level=Qgis.Warning, duration=6)

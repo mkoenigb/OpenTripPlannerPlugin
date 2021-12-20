@@ -46,7 +46,7 @@ import json
 MESSAGE_CATEGORY = 'OpenTripPlanner PlugIn'
 
 class OpenTripPlannerPluginRoutesWorker(QThread):   
-    routes_finished = pyqtSignal(object, int)
+    routes_finished = pyqtSignal(object, int, str, str)
     routes_progress = pyqtSignal(int)
 
     def __init__(self, dialog, iface, otpgf, resultlayer):
@@ -105,6 +105,8 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         # clear and initialize vars and stuff
         route_url = None
         route_error = None
+        route_errors = []
+        unique_errors = []
         self.routes_state = 1
         r = None
         inputlayer_outfeat = None
@@ -120,10 +122,16 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         routes_starttime = datetime.now()
         
+        if not self.gf.routes_selectedlayer_source or not self.gf.routes_selectedlayer_target:
+            QgsMessageLog.logMessage("Warning! No inputlayer selected. Choose your inputlayers and try again.",MESSAGE_CATEGORY,Qgis.Critical)
+            self.routes_state = 5
+            self.routes_finished.emit(routes_memorylayer_vl,self.routes_state, "; ".join(route_errors), str(datetime.now() - routes_starttime))
+            return
+        
         if self.gf.routes_selectedlayer_source.fields().count() == 0 or self.gf.routes_selectedlayer_target.fields().count() == 0:
-            QgsMessageLog.logMessage("Warning! Inputlayer has no fields. Script wont work until you add at least one dummy ID-Field.",MESSAGE_CATEGORY,Qgis.Warning)
+            QgsMessageLog.logMessage("Warning! Inputlayer has no fields. Script wont work until you add at least one dummy ID-Field.",MESSAGE_CATEGORY,Qgis.Critical)
             self.routes_state = 4
-            self.routes_finished.emit(routes_memorylayer_vl,self.routes_state)
+            self.routes_finished.emit(routes_memorylayer_vl,self.routes_state, "; ".join(route_errors), str(datetime.now() - routes_starttime))
             return
             
         # Getting fieldtypes and names of selected matchingfields
@@ -336,6 +344,16 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                         break
                     progressbar_counter = progressbar_counter + 1
                     route_relationid += 1 
+                    
+                    # reset error vars for current route
+                    route_error = None
+                    route_errors = []
+                    route_error_bool = False
+                    route_errorid = None
+                    route_errordescription = None
+                    route_errormessage = None
+                    route_errornopath = None
+                    route_unique_errors = []
                     
                     source_fid = source # key of matching dict represents keys of dict_source and therefore featureids of sourcelayer
                     target_fid = target[i] # values of matching dict represent keys of dict_target and therefore featureids of targetlayer                
@@ -582,12 +600,6 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                     route_url = route_url # for testing
                     QgsMessageLog.logMessage(route_url,MESSAGE_CATEGORY,Qgis.Info)
                     
-                    route_error = 'Success: No Error'
-                    route_error_bool = False
-                    route_errorid = None
-                    route_errordescription = None
-                    route_errormessage = None
-                    route_errornopath = None
                     
                     try: # Try to request route
                         #Proxy not working properly, maybe I'll implement this someday...
@@ -603,26 +615,30 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                                 encoding = route_response.info().get_content_charset('utf-8')
                                 route_data = json.loads(response_data.decode(encoding))
                                 try: # Check if response says Error
-                                    route_error = 'Error: No Route'
-                                    route_error_bool = True
                                     route_errorid = route_data['error']['id']
                                     route_errordescription = route_data['error']['msg']
                                     route_errormessage = route_data['error']['message']
                                     route_errornopath = route_data['error']['noPath']
+                                    route_error = 'Error: No Route'
+                                    route_error_bool = True
+                                    route_errors.append(route_error)
                                 except:
-                                    route_error = 'Success: No Error'
+                                    route_error = None
                                     route_error_bool = False
-                            except:
-                                route_error = 'Error reading response data'
+                            except Exception as e:
+                                route_error = f'Error reading response data (Exception {e})'
                                 route_error_bool = True
-                        except:
-                            route_error = 'Error receiving response'
+                                route_errors.append(route_error)
+                        except Exception as e:
+                            route_error = f'Error receiving response (Exception {e})'
                             route_error_bool = True
-                    except:
-                        route_error = 'Error requesting the route'
+                            route_errors.append(route_error)
+                    except Exception as e:
+                        route_error = f'Error requesting the route (Exception {e})'
                         route_error_bool = True
+                        route_errors.append(route_error)
+                        
                     
-    
                     #print(route_data)
                     # Reading response
                     if route_error_bool == False:
@@ -799,9 +815,11 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                                     route_leg_encodedpolylinestring = leg['legGeometry']['points']
                                     route_leg_decodedpolylinestring_aspointlist = self.decode_polyline(route_leg_encodedpolylinestring)
                                     feature.setGeometry(QgsGeometry.fromPolyline(route_leg_decodedpolylinestring_aspointlist))
-                                except:
+                                except Exception as e:
                                     feature.setGeometry(QgsGeometry.fromPolyline(errorlinegeom))
-                                    route_error = 'Error decoding route geometry'
+                                    route_error = f'Error decoding route geometry (Exception {e})'
+                                    route_error_bool = True
+                                    route_errors.append(route_error)
                                 
                                 # Create the feature
                                 routes_memorylayer_pr.addFeature(feature)
@@ -844,7 +862,6 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                         route_routeid += 1
                         route_legid += 1
                         feature = QgsFeature()
-                        route_error = 'Error: No Route'
                         try:
                             route_errorid = route_data['error']['id']
                         except:
@@ -895,12 +912,16 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                             routes_memorylayer_pr.changeAttributeValues({ feature.id() : attrs_target })
                             fieldindex_target += 1
                         # END OF errorroutecreation
+                    
                     i += 1
                     routes_memorylayer_vl.updateFields()
                     routes_memorylayer_vl.updateExtents()
                     #routes_memorylayer_vl.commitChanges() # Commit changes                
-                    if route_error != 'Success: No Error':
-                        QgsMessageLog.logMessage(str(route_error) + ' - ErrorID: ' + str(route_errorid) + ' - ErrorDSC: ' + str(route_errordescription),MESSAGE_CATEGORY,Qgis.Warning)
+                    if route_errors:
+                        route_unique_errors = set(route_errors)
+                        route_unique_errors = list(route_unique_errors)
+                        unique_errors.extend(route_unique_errors)
+                        QgsMessageLog.logMessage('Route Errors: ' + str("; ".join(route_unique_errors)),MESSAGE_CATEGORY,Qgis.Warning)
                     QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
                     QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
                     QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info) # adding a space to separate from next relation
@@ -916,6 +937,9 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
             #routes_memorylayer_vl.commitChanges() # Commit changes
         
         #self.iface.messageBar().pushMessage("Done!", " Routes job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3) # Will crash QGIS when doing from thread. Just do it on the MainThread's routeFinished method
+        unique_errors = set(unique_errors)
+        unique_errors = list(unique_errors)
+        unique_errors = '; '.join(unique_errors)
         routes_endtime = datetime.now()
         routes_runtime = routes_endtime - routes_starttime
         if self.stoproutesworker == True:
@@ -925,5 +949,5 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
-        self.routes_finished.emit(routes_memorylayer_vl,self.routes_state)
+        self.routes_finished.emit(routes_memorylayer_vl,self.routes_state,unique_errors, str(routes_runtime))
         

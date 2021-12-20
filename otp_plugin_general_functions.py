@@ -682,7 +682,8 @@ class OpenTripPlannerPluginGeneralFunctions(object):
     def read_proxy_settings(self):
         pass
         """
-        # not working properly.... maybe I'll implement this someday...
+        # not working properly.... maybe I'll implement this someday... feel free to make a pull request ;)
+        # https://gis.stackexchange.com/questions/372294/sending-requests-including-headers-via-pyqgis-by-using-qgis-proxysettings
         s = QSettings()
         self.proxyEnabled = s.value("proxy/proxyEnabled", "")
         self.proxyType = s.value("proxy/proxyType", "" )
@@ -703,11 +704,11 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         """
             
     def isochrones_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
-        layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers
         self.dlg.Isochrones_SelectInputLayer.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
         self.isochrones_selectedlayer = self.dlg.Isochrones_SelectInputLayer.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
-        if self.isochrones_selectedlayer is not None: # prevents showing python error when no point-layer is available
-            self.isochrones_inputlayer_fieldnames = [field.name() for field in self.isochrones_selectedlayer.fields()] # Receive Isochrones_Inputlayer_Fieldnames from selected layer
+        if not self.isochrones_selectedlayer: # cancel if no pointlayer available
+            return
+        self.isochrones_inputlayer_fieldnames = [field.name() for field in self.isochrones_selectedlayer.fields()] # Receive Isochrones_Inputlayer_Fieldnames from selected layer
         
         # Setting up QgsOverrideButtons (Reference: https://gis.stackexchange.com/a/350993/107424). Has to be done here, so they get updated when the layer selection has changed...
         #WalkSpeed
@@ -755,15 +756,14 @@ class OpenTripPlannerPluginGeneralFunctions(object):
 
         
     def routes_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
-        layers = QgsProject.instance().layerTreeRoot().children() # Fetch available layers
         self.dlg.Routes_SelectInputLayer_Source.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
         self.routes_selectedlayer_source = self.dlg.Routes_SelectInputLayer_Source.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
         self.dlg.Routes_SelectInputLayer_Target.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
-        self.routes_selectedlayer_target = self.dlg.Routes_SelectInputLayer_Target.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer         
-        if self.routes_selectedlayer_source is not None: # prevents showing python error when no point-layer is available
-            self.routes_inputlayer_source_fieldnames = [field.name() for field in self.routes_selectedlayer_source.fields()] # Receive Inputlayer_Fieldnames from selected layer
-        if self.routes_selectedlayer_target is not None: # prevents showing python error when no point-layer is available
-            self.routes_inputlayer_target_fieldnames = [field.name() for field in self.routes_selectedlayer_target.fields()] # Receive Inputlayer_Fieldnames from selected layer
+        self.routes_selectedlayer_target = self.dlg.Routes_SelectInputLayer_Target.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
+        if not self.routes_selectedlayer_source or not self.routes_selectedlayer_target: # cancel if no pointlayer available
+            return
+        self.routes_inputlayer_source_fieldnames = [field.name() for field in self.routes_selectedlayer_source.fields()] # Receive Inputlayer_Fieldnames from selected layer
+        self.routes_inputlayer_target_fieldnames = [field.name() for field in self.routes_selectedlayer_target.fields()] # Receive Inputlayer_Fieldnames from selected layer
         self.routes_uidfield_source = self.dlg.Routes_SelectInputField_Source.setLayer(self.routes_selectedlayer_source) # Reference fieldselection to layer
         self.routes_uidfield_target = self.dlg.Routes_SelectInputField_Target.setLayer(self.routes_selectedlayer_target) # Reference fieldselection to layer
         try: # setup default selected fields
