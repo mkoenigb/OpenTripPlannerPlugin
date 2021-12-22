@@ -397,16 +397,16 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                                 isochrone_responseLayer = QgsVectorLayer(tmp_save_location + "null.shp", "null", "ogr") # load just downloaded file as vector layer
                                 isochrone_responseLayer.updateExtents()
                             except Exception as e:
-                                isochrone_error = f'Error: loading response failed (Exception {e})'
+                                isochrone_error = f'Error: loading response failed (Exception {str(e)})'
                                 isochrone_errors.append(isochrone_error)
                         except Exception as e:
-                            isochrone_error = f'Error: response file not valid (Exception {e})'
+                            isochrone_error = f'Error: response file not valid (Exception {str(e)})'
                             isochrone_errors.append(isochrone_error)
                     except Exception as e:
-                        isochrone_error = f'Error: writing response to harddrive failed (Exception {e})'
+                        isochrone_error = f'Error: writing response to harddrive failed (Exception {str(e)})'
                         isochrone_errors.append(isochrone_error)
                 except Exception as e:
-                    isochrone_error = f'Error: request failed (Exception {e})' 
+                    isochrone_error = f'Error: request failed (Exception {str(e)})' 
                     isochrone_errors.append(isochrone_error)
     
     
@@ -420,7 +420,7 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                         isochrone_error = 'Error: response layer is not valid'
                         isochrone_errors.append(isochrone_error)
                 except Exception as e:
-                    isochrone_error = f'Error: response layer is not valid (Exception {e})'
+                    isochrone_error = f'Error: response layer is not valid (Exception {str(e)})'
                     isochrone_errors.append(isochrone_error)
                 
                 # Create Dummylayer on Error to prevent errors in code or broken result layer
@@ -503,4 +503,4 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
 
-        self.isochrones_finished.emit(isochrones_memorylayer_vl, self.isochrones_state, unique_errors, str(isochrones_runtime))
+        self.isochrones_finished.emit(isochrones_memorylayer_vl, self.isochrones_state, str(unique_errors), str(isochrones_runtime))

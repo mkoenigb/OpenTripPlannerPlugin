@@ -615,15 +615,15 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                                     route_error = None
                                     route_error_bool = False
                             except Exception as e:
-                                route_error = f'Error reading response data (Exception {e})'
+                                route_error = f'Error reading response data (Exception {str(e)})'
                                 route_error_bool = True
                                 route_errors.append(route_error)
                         except Exception as e:
-                            route_error = f'Error receiving response (Exception {e})'
+                            route_error = f'Error receiving response (Exception {str(e)})'
                             route_error_bool = True
                             route_errors.append(route_error)
                     except Exception as e:
-                        route_error = f'Error requesting the route (Exception {e})'
+                        route_error = f'Error requesting the route (Exception {str(e)})'
                         route_error_bool = True
                         route_errors.append(route_error)
                         
@@ -806,7 +806,7 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                                     feature.setGeometry(QgsGeometry.fromPolyline(route_leg_decodedpolylinestring_aspointlist))
                                 except Exception as e:
                                     feature.setGeometry(QgsGeometry.fromPolyline(errorlinegeom))
-                                    route_error = f'Error decoding route geometry (Exception {e})'
+                                    route_error = f'Error decoding route geometry (Exception {str(e)})'
                                     route_error_bool = True
                                     route_errors.append(route_error)
                                 
@@ -938,5 +938,5 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
-        self.routes_finished.emit(routes_memorylayer_vl,self.routes_state,unique_errors, str(routes_runtime))
+        self.routes_finished.emit(routes_memorylayer_vl, self.routes_state, str(unique_errors), str(routes_runtime))
         
