@@ -123,6 +123,10 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.proxy_use = int(0)
         self.dlg.GeneralSettings_Proxy_Use.setChecked(self.proxy_use)
         
+        # Timeout
+        self.timeout_setting = float(10.00)
+        self.dlg.GeneralSettings_Timeout.setValue(self.timeout_setting)
+        
         # Communicate with user
         self.iface.messageBar().pushMessage("Success", "Default general settings restored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         QgsMessageLog.logMessage("Default general settings restored!",MESSAGE_CATEGORY,Qgis.Info)
