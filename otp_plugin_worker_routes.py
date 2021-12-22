@@ -122,17 +122,6 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         routes_starttime = datetime.now()
         
-        if not self.gf.routes_selectedlayer_source or not self.gf.routes_selectedlayer_target:
-            QgsMessageLog.logMessage("Warning! No inputlayer selected. Choose your inputlayers and try again.",MESSAGE_CATEGORY,Qgis.Critical)
-            self.routes_state = 5
-            self.routes_finished.emit(routes_memorylayer_vl,self.routes_state, "; ".join(route_errors), str(datetime.now() - routes_starttime))
-            return
-        
-        if self.gf.routes_selectedlayer_source.fields().count() == 0 or self.gf.routes_selectedlayer_target.fields().count() == 0:
-            QgsMessageLog.logMessage("Warning! Inputlayer has no fields. Script wont work until you add at least one dummy ID-Field.",MESSAGE_CATEGORY,Qgis.Critical)
-            self.routes_state = 4
-            self.routes_finished.emit(routes_memorylayer_vl,self.routes_state, "; ".join(route_errors), str(datetime.now() - routes_starttime))
-            return
             
         # Getting fieldtypes and names of selected matchingfields
         sourceidfieldname = self.dlg.Routes_SelectInputField_Source.currentField()
@@ -609,7 +598,7 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                         route_headers = {"accept":"application/json"} # this plugin only works for json responses
                         route_request = urllib.request.Request(route_url, headers=route_headers)
                         try: # Try to receive response
-                            route_response = urllib.request.urlopen(route_request)
+                            route_response = urllib.request.urlopen(route_request, timeout=self.gf.timeout_setting)
                             try: # Try to read response data
                                 response_data = route_response.read()
                                 encoding = route_response.info().get_content_charset('utf-8')

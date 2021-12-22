@@ -197,6 +197,14 @@ class OpenTripPlannerPlugin():
 
         
     def isochronesStartWorker(self): # method to start the worker thread
+        if not self.gf.isochrones_selectedlayer: # dont execute if no layer is selected
+            QgsMessageLog.logMessage("Warning! No inputlayer selected. Choose an inputlayer and try again.",MESSAGE_CATEGORY,Qgis.Critical)
+            self.iface.messageBar().pushMessage("Warning", " No inputlayer selected. Choose an inputlayer and try again.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6) 
+            return
+        if self.gf.isochrones_selectedlayer.featureCount() == 0:
+            QgsMessageLog.logMessage("Warning! Inputlayer is empty. Add some features and try again.",MESSAGE_CATEGORY,Qgis.Critical)
+            self.iface.messageBar().pushMessage("Warning", " Inputlayer is empty. Add some features and try again.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            return
         isochrones_memorylayer_vl = QgsVectorLayer("MultiPolygon?crs=epsg:4326", "Isochrones", "memory") # Create temporary polygon layer (output file)
         self.isochrones_thread = QThread()
         self.isochrones_worker = OpenTripPlannerPluginIsochronesWorker(self.dlg, self.iface, self.gf, isochrones_memorylayer_vl)
@@ -238,24 +246,33 @@ class OpenTripPlannerPlugin():
         QgsProject.instance().addMapLayer(isochrones_resultlayer) # Show resultlayer in project
         # isochrones_state is indicating different states of the thread/result as integer
         if unique_errors:
-            self.iface.messageBar().pushMessage("Warning", " Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors, MESSAGE_CATEGORY, level=Qgis.Warning, duration=10)
+            self.iface.messageBar().pushMessage("Warning", " Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors + " - Created dummy geometries at coordinate 0,0 on error features", MESSAGE_CATEGORY, level=Qgis.Warning, duration=12)
+            QgsMessageLog.logMessage("Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors + " - Created dummy geometries at coordinate 0,0 on error features",MESSAGE_CATEGORY,Qgis.Warning)
         if isochrones_state == 0:
-            self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         elif isochrones_state == 1:
-            self.iface.messageBar().pushMessage("Done!", " Isochrones job finished after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+            self.iface.messageBar().pushMessage("Done!", " Isochrones job finished after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=6)
         elif isochrones_state == 2:
-            self.iface.messageBar().pushMessage("Done!", " Isochrones job canceled after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+            self.iface.messageBar().pushMessage("Done!", " Isochrones job canceled after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=6)
         elif isochrones_state == 3:
-            self.iface.messageBar().pushMessage("Warning", " No Isochrones to create - Check your settings and retry", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)
-        elif isochrones_state == 4: # Error state 4 (no fields in inputlayer) does not exist for isochrones. To avoid different states for isochrones and routes just leave it empty, it will never happen.
-            self.iface.messageBar().pushMessage("Warning", "", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)            
-        elif isochrones_state == 5:
-            self.iface.messageBar().pushMessage("Warning", " No inputlayer selected. Choose an inputlayer and try again.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)             
+            self.iface.messageBar().pushMessage("Warning", " No Isochrones to create - Check your settings and retry.", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)  
         else:
-            self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
 
 
     def routesStartWorker(self): # method to start the worker thread
+        if not self.gf.routes_selectedlayer_source or not self.gf.routes_selectedlayer_target:
+            QgsMessageLog.logMessage("Warning! No inputlayer selected. Choose your inputlayers and try again.",MESSAGE_CATEGORY,Qgis.Critical)
+            self.iface.messageBar().pushMessage("Warning", " No sourcelayer or no targetlayer selected. Choose your inputlayers and try again.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            return
+        if self.gf.routes_selectedlayer_source.fields().count() == 0 or self.gf.routes_selectedlayer_target.fields().count() == 0:
+            QgsMessageLog.logMessage("Warning! Inputlayer has no fields. Script wont work until you add at least one dummy ID-Field.",MESSAGE_CATEGORY,Qgis.Critical)
+            self.iface.messageBar().pushMessage("Warning", " Inputlayer has no fields - Add at least a dummy-id field.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            return
+        if self.gf.routes_selectedlayer_source.featureCount() == 0 or self.gf.routes_selectedlayer_target.featureCount() == 0:
+            QgsMessageLog.logMessage("Warning! One or both inputlayers are empty. Add some features and try again.",MESSAGE_CATEGORY,Qgis.Critical)
+            self.iface.messageBar().pushMessage("Warning", " One or both inputlayers are empty. Add some features and try again.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            return
         routes_memorylayer_vl = QgsVectorLayer("LineString?crs=epsg:4326", "Routes", "memory") # Create temporary polygon layer (output file)
         self.routes_thread = QThread()
         self.routes_worker = OpenTripPlannerPluginRoutesWorker(self.dlg, self.iface, self.gf, routes_memorylayer_vl)
@@ -297,21 +314,18 @@ class OpenTripPlannerPlugin():
         QgsProject.instance().addMapLayer(routes_resultlayer) # Show resultlayer in project
         # routes_state is indicating different states of the thread/result as integer
         if unique_errors:
-            self.iface.messageBar().pushMessage("Warning", " Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors, MESSAGE_CATEGORY, level=Qgis.Warning, duration=10)
+            self.iface.messageBar().pushMessage("Warning", " Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors + " - Created dummy geometries at coordinate 0,0 on error features", MESSAGE_CATEGORY, level=Qgis.Warning, duration=12)
+            QgsMessageLog.logMessage("Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors + " - Created dummy geometries at coordinate 0,0 on error features",MESSAGE_CATEGORY,Qgis.Warning)
         if routes_state == 0:
-            self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         elif routes_state == 1:
-            self.iface.messageBar().pushMessage("Done!", " Routes job finished after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
+            self.iface.messageBar().pushMessage("Done!", " Routes job finished after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=6) 
         elif routes_state == 2:
-            self.iface.messageBar().pushMessage("Done!", " Routes job canceled after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
+            self.iface.messageBar().pushMessage("Done!", " Routes job canceled after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=6) 
         elif routes_state == 3:
-            self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes - Check your settings and retry", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)
-        elif routes_state == 4:
-            self.iface.messageBar().pushMessage("Warning", " Inputlayer has no fields - Add at least a dummy-id field", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6) 
-        elif routes_state == 5:
-            self.iface.messageBar().pushMessage("Warning", " No sourcelayer or no targetlayer selected. Choose your inputlayers and try again", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6) 
+            self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes - Check your settings and retry.", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)
         else:
-            self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         
     def run(self):
         """Run method that performs all the real work"""

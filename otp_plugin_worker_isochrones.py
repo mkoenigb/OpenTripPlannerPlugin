@@ -84,11 +84,6 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         isochrones_starttime = datetime.now()
         
-        if not self.gf.isochrones_selectedlayer:
-            QgsMessageLog.logMessage("Warning! No inputlayer selected. Choose an inputlayer and try again.",MESSAGE_CATEGORY,Qgis.Critical)
-            self.isochrones_state = 5
-            self.isochrones_finished.emit(isochrones_memorylayer_vl, self.isochrones_state, "; ".join(isochrone_errors), str(datetime.now() - isochrones_starttime))
-            return
         
         # Setting up Override Button context
         ctx = QgsExpressionContext(QgsExpressionContextUtils.globalProjectLayerScopes(self.gf.isochrones_selectedlayer)) #This context will be able to evaluate global, project, and layer variables
@@ -386,7 +381,7 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                     #urllib.request.install_opener(opener)
                     isochrone_headers = {"accept":"application/x-zip-compressed"}
                     isochrone_request = urllib.request.Request(isochrone_url, headers=isochrone_headers)
-                    isochrone_response = urllib.request.urlopen(isochrone_request)
+                    isochrone_response = urllib.request.urlopen(isochrone_request, timeout=self.gf.timeout_setting)
                     # Sending request to server. Using shapefiles to avoid invalid geometries on high level of detail + geojson throwback seems to be limited to 4 decimals. # Using urllib instead of requests to avoid prerequesites installation fails
                 #save file
                     try:                

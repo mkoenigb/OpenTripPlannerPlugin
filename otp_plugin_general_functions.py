@@ -71,6 +71,10 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.proxy_use = int(self.dlg.GeneralSettings_Proxy_Use.isChecked())
         s.setValue("otp_plugin/GeneralSettings_Proxy_Use", self.proxy_use)
         
+        # Timeout
+        self.timeout_setting = float(self.dlg.GeneralSettings_Timeout.value())
+        s.setValue("otp_plugin/GeneralSettings_Timeout", self.timeout_setting)
+        
         # Communicate with user
         self.iface.messageBar().pushMessage("Success", "General settings stored! ServerURL: " + self.serverurl, MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         QgsMessageLog.logMessage("General settings stored! ServerURL: " + self.serverurl,MESSAGE_CATEGORY,Qgis.Info)
@@ -97,6 +101,10 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.proxy_use = int(s.value("otp_plugin/GeneralSettings_Proxy_Use", 0))
         self.dlg.GeneralSettings_Proxy_Use.setChecked(self.proxy_use)
         self.read_proxy_settings()
+        
+        # Timeout
+        self.timeout_setting = float(s.value("otp_plugin/GeneralSettings_Timeout", 10.00))
+        self.dlg.GeneralSettings_Timeout.setValue(self.timeout_setting)
            
     def restore_general_variables(self):
         s = QgsSettings()
@@ -669,7 +677,7 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         #urllib.request.install_opener(opener)
         servercheckrequest = urllib.request.Request(str(self.dlg.GeneralSettings_ServerURL.toPlainText()))
         try:
-            urllib.request.urlopen(servercheckrequest)
+            urllib.request.urlopen(servercheckrequest, timeout=float(self.dlg.GeneralSettings_Timeout.value()))
             self.dlg.GeneralSettings_ServerStatusResult.setText("Server is Online :)")
             self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: green; color: white ")
         except urllib.error.URLError as urlerror:
