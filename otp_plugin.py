@@ -35,6 +35,7 @@ from qgis.utils import *
 from .resources import *
 from .otp_plugin_worker_routes import *
 from .otp_plugin_worker_isochrones import *
+from .otp_plugin_worker_maxisochrones import *
 from .otp_plugin_general_functions import *
 # Import the code for the dialog
 from .otp_plugin_dialog import OpenTripPlannerPluginDialog
@@ -260,6 +261,73 @@ class OpenTripPlannerPlugin():
             self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
 
 
+
+    def maxisochronesStartWorker(self): # method to start the worker thread
+        if not self.gf.maxisochrones_selectedlayer: # dont execute if no layer is selected
+            QgsMessageLog.logMessage("Warning! No inputlayer selected. Choose an inputlayer and try again.",MESSAGE_CATEGORY,Qgis.Critical)
+            self.iface.messageBar().pushMessage("Warning", " No inputlayer selected. Choose an inputlayer and try again.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6) 
+            return
+        if self.gf.maxisochrones_selectedlayer.featureCount() == 0:
+            QgsMessageLog.logMessage("Warning! Inputlayer is empty. Add some features and try again.",MESSAGE_CATEGORY,Qgis.Critical)
+            self.iface.messageBar().pushMessage("Warning", " Inputlayer is empty. Add some features and try again.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            return
+        maxisochrones_memorylayer_vl = QgsVectorLayer("MultiPolygon?crs=epsg:4326", "MaxIsochrones", "memory") # Create temporary polygon layer (output file)
+        self.maxisochrones_thread = QThread()
+        self.maxisochrones_worker = OpenTripPlannerPluginMaxIsochronesWorker(self.dlg, self.iface, self.gf, maxisochrones_memorylayer_vl)
+        # see https://realpython.com/python-pyqt-qthread/#using-qthread-to-prevent-freezing-guis
+        # and https://doc.qt.io/qtforpython/PySide6/QtCore/QThread.html
+        self.maxisochrones_worker.moveToThread(self.maxisochrones_thread) # move Worker-Class to a thread
+        # Connect signals and slots:
+        self.maxisochrones_thread.started.connect(self.maxisochrones_worker.run)
+        self.maxisochrones_worker.maxisochrones_finished.connect(self.maxisochrones_thread.quit)
+        self.maxisochrones_worker.maxisochrones_finished.connect(self.maxisochrones_worker.deleteLater)
+        self.maxisochrones_thread.finished.connect(self.maxisochrones_thread.deleteLater)
+        self.maxisochrones_worker.maxisochrones_progress.connect(self.maxisochronesReportProgress)
+        self.maxisochrones_worker.maxisochrones_finished.connect(self.maxisochronesFinished)
+        self.maxisochrones_thread.start() # finally start the thread
+        # Disable/Enable GUI elements to prevent them from beeing used while worker threads are running and accidentially changing settings during progress
+        self.gf.disableMaxIsochronesGui() 
+        self.gf.disableGeneralSettingsGui() 
+        self.maxisochrones_thread.finished.connect(lambda: self.gf.enableMaxIsochronesGui())
+        self.maxisochrones_thread.finished.connect(lambda: self.gf.enableGeneralSettingsGui())
+        
+    def maxisochronesKillWorker(self): # method to kill/cancel the worker thread
+        # print('pushed cancel') # debugging
+        # see https://doc.qt.io/qtforpython/PySide6/QtCore/QThread.html
+        try: # to prevent a Python error when the cancel button has been clicked but no thread is running use try/except
+            self.maxisochrones_worker.stop() # call the stop method in worker class to break the work-loop so we can quit the thread
+            if self.maxisochrones_thread.isRunning(): # check if a thread is running
+                # print('pushed cancel, thread is running, trying to cancel') # debugging
+                self.maxisochrones_thread.requestInterruption()
+                self.maxisochrones_thread.exit() # Tells the thread’s event loop to exit with a return code.
+                self.maxisochrones_thread.quit() # Tells the thread’s event loop to exit with return code 0 (success). Equivalent to calling exit (0).
+                self.maxisochrones_thread.wait() # Blocks the thread until https://doc.qt.io/qtforpython/PySide6/QtCore/QThread.html#PySide6.QtCore.PySide6.QtCore.QThread.wait
+        except:
+            pass
+       
+    def maxisochronesReportProgress(self, n): # method to report the progress to gui
+        self.dlg.MaxIsochrones_ProgressBar.setValue(n) # set the current progress in progress bar
+
+    def maxisochronesFinished(self, maxisochrones_resultlayer, maxisochrones_state, unique_errors="", runtime="00:00:00 (unknown)"): # method to interact with gui when thread is finished or canceled
+        QgsProject.instance().addMapLayer(maxisochrones_resultlayer) # Show resultlayer in project
+        # maxisochrones_state is indicating different states of the thread/result as integer
+        if unique_errors:
+            self.iface.messageBar().pushMessage("Warning", " Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors + " - Created dummy geometries at coordinate 0,0 on error features", MESSAGE_CATEGORY, level=Qgis.Warning, duration=12)
+            QgsMessageLog.logMessage("Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors + " - Created dummy geometries at coordinate 0,0 on error features",MESSAGE_CATEGORY,Qgis.Warning)
+        if maxisochrones_state == 0:
+            self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+        elif maxisochrones_state == 1:
+            self.iface.messageBar().pushMessage("Done!", " Isochrones job finished after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=6)
+        elif maxisochrones_state == 2:
+            self.iface.messageBar().pushMessage("Done!", " Isochrones job canceled after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=6)
+        elif maxisochrones_state == 3:
+            self.iface.messageBar().pushMessage("Warning", " No Isochrones to create - Check your settings and retry.", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6) 
+        elif maxisochrones_state == 4:
+            self.iface.messageBar().pushMessage("Warning", " There is something wrong with your DateTime-Settings, check them and try again.", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6) 
+        else:
+            self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
+            
+            
     def routesStartWorker(self): # method to start the worker thread
         if not self.gf.routes_selectedlayer_source or not self.gf.routes_selectedlayer_target:
             QgsMessageLog.logMessage("Warning! No inputlayer selected. Choose your inputlayers and try again.",MESSAGE_CATEGORY,Qgis.Critical)
@@ -337,10 +405,13 @@ class OpenTripPlannerPlugin():
             self.gf = OpenTripPlannerPluginGeneralFunctions(self.dlg, self.iface)
             # Calling maplayer selection on first startup to load layers into QgsMapLayerComboBox and initialize QgsOverrideButton stuff so selections can be done without actually using the QgsMapLayerComboBox (related to currentIndexChanged.connect(self.isochrones_maplayerselection) below) 
             self.gf.routes_maplayerselection()
-            self.gf.isochrones_maplayerselection() 
+            self.gf.isochrones_maplayerselection()
+            self.gf.maxisochrones_maplayerselection() 
             # Execute Main-Functions on Click: Placing them here prevents them from beeing executed multiple times, see https://gis.stackexchange.com/a/137161/107424
             self.dlg.Isochrones_RequestIsochrones.clicked.connect(lambda: self.isochronesStartWorker()) #Call the start worker method
             self.dlg.Isochrones_Cancel.clicked.connect(lambda: self.isochronesKillWorker())
+            self.dlg.MaxIsochrones_RequestIsochrones.clicked.connect(lambda: self.maxisochronesStartWorker()) #Call the start worker method
+            self.dlg.MaxIsochrones_Cancel.clicked.connect(lambda: self.maxisochronesKillWorker())
             self.dlg.Routes_RequestRoutes.clicked.connect(lambda: self.routesStartWorker())
             self.dlg.Routes_Cancel.clicked.connect(lambda: self.routesKillWorker())
             
@@ -350,11 +421,14 @@ class OpenTripPlannerPlugin():
             self.dlg.GeneralSettings_Restore.clicked.connect(self.gf.restore_general_variables)
             self.dlg.Isochrones_SaveSettings.clicked.connect(self.gf.store_isochrone_variables)
             self.dlg.Isochrones_RestoreDefaultSettings.clicked.connect(self.gf.restore_isochrone_variables)
+            self.dlg.MaxIsochrones_SaveSettings.clicked.connect(self.gf.store_maxisochrone_variables)
+            self.dlg.MaxIsochrones_RestoreDefaultSettings.clicked.connect(self.gf.restore_maxisochrone_variables)
             self.dlg.Routes_SaveSettings.clicked.connect(self.gf.store_route_variables)
             self.dlg.Routes_RestoreDefaultSettings.clicked.connect(self.gf.restore_route_variables)
             
             # Calling Functions to update layer stuff when layerselection has changed
             self.dlg.Isochrones_SelectInputLayer.currentIndexChanged.connect(self.gf.isochrones_maplayerselection) # Call function isochrones_maplayerselection to update all selection related stuff when selection has been changed
+            self.dlg.MaxIsochrones_SelectInputLayer.currentIndexChanged.connect(self.gf.maxisochrones_maplayerselection)
             self.dlg.Routes_SelectInputLayer_Source.currentIndexChanged.connect(self.gf.routes_maplayerselection)
             self.dlg.Routes_SelectInputLayer_Target.currentIndexChanged.connect(self.gf.routes_maplayerselection)
             self.dlg.Routes_SelectInputField_Source.currentIndexChanged.connect(self.gf.routes_maplayerselection) # or "fieldChanged"?
@@ -364,8 +438,11 @@ class OpenTripPlannerPlugin():
             
         # Setting GUI stuff for startup every time the plugin is opened
         self.dlg.Isochrones_Date.setDateTime(QtCore.QDateTime.currentDateTime()) # Set Dateselection to today on restart or firststart, only functional if never used save settings, otherwise overwritten by read_route_variables()
+        self.dlg.MaxIsochrones_FromDateTime.setDateTime(QtCore.QDateTime.currentDateTime())
+        self.dlg.MaxIsochrones_ToDateTime.setDateTime(QtCore.QDateTime.currentDateTime())
         self.dlg.Routes_Date.setDateTime(QtCore.QDateTime.currentDateTime())
         self.dlg.Isochrones_ProgressBar.setValue(0) # Set Progressbar to 0 on restart or first start
+        self.dlg.MaxIsochrones_ProgressBar.setValue(0)
         self.dlg.Routes_ProgressBar.setValue(0)
         self.dlg.GeneralSettings_ServerStatusResult.setText("Serverstatus Unknown")
         self.dlg.GeneralSettings_ServerStatusResult.setStyleSheet("background-color: white; color: black ")
@@ -373,6 +450,7 @@ class OpenTripPlannerPlugin():
         # Functions to execute every time the plugin is opened
         self.gf.read_general_variables() #Run Read-Stored-Variables-Function on every start
         self.gf.read_isochrone_variables()
+        self.gf.read_maxisochrone_variables()
         self.gf.read_route_variables()
         
         # show the dialog

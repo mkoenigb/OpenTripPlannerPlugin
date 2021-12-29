@@ -35,6 +35,7 @@ from qgis.utils import *
 from .resources import *
 from .otp_plugin_worker_routes import *
 from .otp_plugin_worker_isochrones import *
+from .otp_plugin_worker_maxisochrones import *
 # Import the code for the dialog
 from .otp_plugin_dialog import OpenTripPlannerPluginDialog
 from osgeo import ogr
@@ -574,7 +575,7 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.dlg.Isochrones_PrecisionMeters.setValue(self.isochrones_precisionmeters_setting)
         
         # Cutoff Sec
-        self.isochrones_interval = s.value("otp_plugin/Isochrones_Interval", "60,120,180,240,300")
+        self.isochrones_interval = s.value("otp_plugin/Isochrones_Interval", "300,600,900")
         if isinstance(self.isochrones_interval, str): self.dlg.Isochrones_Interval.setText(self.isochrones_interval)
         
         # Mode
@@ -673,6 +674,257 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.store_isochrone_variables()
         
         
+    def store_maxisochrone_variables(self):
+        s = QgsSettings()
+        
+        # Walk Speed
+        self.maxisochrones_walkspeed_use_setting = int(self.dlg.MaxIsochrones_WalkSpeed_Use.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_WalkSpeed_Use", self.maxisochrones_walkspeed_use_setting)
+        self.maxisochrones_walkspeed_setting = float(self.dlg.MaxIsochrones_WalkSpeed.value())
+        s.setValue("otp_plugin/MaxIsochrones_WalkSpeed", self.maxisochrones_walkspeed_setting)
+        
+        # Bike Speed
+        self.maxisochrones_bikespeed_use_setting = int(self.dlg.MaxIsochrones_BikeSpeed_Use.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_BikeSpeed_Use", self.maxisochrones_bikespeed_use_setting)
+        self.maxisochrones_bikespeed_setting = float(self.dlg.MaxIsochrones_BikeSpeed.value())
+        s.setValue("otp_plugin/MaxIsochrones_BikeSpeed", self.maxisochrones_bikespeed_setting)
+        
+        # ArriveBy
+        self.maxisochrones_arriveby_use_setting = int(self.dlg.MaxIsochrones_ArriveBy_Use.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_ArriveBy_Use", self.maxisochrones_arriveby_use_setting)
+        self.maxisochrones_arriveby_setting = int(self.dlg.MaxIsochrones_ArriveBy.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_ArriveBy", self.maxisochrones_arriveby_setting)
+        
+        # Wheelchair
+        self.maxisochrones_wheelchair_use_setting = int(self.dlg.MaxIsochrones_Wheelchair_Use.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_Wheelchair_Use", self.maxisochrones_wheelchair_use_setting)
+        self.maxisochrones_wheelchair_setting = int(self.dlg.MaxIsochrones_Wheelchair.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_Wheelchair", self.maxisochrones_wheelchair_setting)
+        
+        # Wait Reluctance
+        self.maxisochrones_waitreluctance_use_setting = int(self.dlg.MaxIsochrones_WaitReluctance_Use.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_WaitReluctance_Use", self.maxisochrones_waitreluctance_use_setting)
+        self.maxisochrones_waitreluctance_setting = float(self.dlg.MaxIsochrones_WaitReluctance.value())
+        s.setValue("otp_plugin/MaxIsochrones_WaitReluctance", self.maxisochrones_waitreluctance_setting)
+        
+        # Max Transfers
+        self.maxisochrones_maxtransfers_use_setting = int(self.dlg.MaxIsochrones_MaxTransfers_Use.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_MaxTransfers_Use", self.maxisochrones_maxtransfers_use_setting)
+        self.maxisochrones_maxtransfers_setting = int(self.dlg.MaxIsochrones_MaxTransfers.value())
+        s.setValue("otp_plugin/MaxIsochrones_MaxTransfers", self.maxisochrones_maxtransfers_setting)
+        
+        # Max Walkdistance
+        self.maxisochrones_maxwalkdistance_use_setting = int(self.dlg.MaxIsochrones_MaxWalkDistance_Use.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_MaxWalkDistance_Use", self.maxisochrones_maxwalkdistance_use_setting)
+        self.maxisochrones_maxwalkdistance_setting = int(self.dlg.MaxIsochrones_MaxWalkDistance.value())
+        s.setValue("otp_plugin/MaxIsochrones_MaxWalkDistance", self.maxisochrones_maxwalkdistance_setting)
+        
+        # Max Offroaddistance
+        self.maxisochrones_maxoffroaddistance_use_setting = int(self.dlg.MaxIsochrones_MaxOffroadDistance_Use.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_MaxOffroadDistance_Use", self.maxisochrones_maxoffroaddistance_use_setting)
+        self.maxisochrones_maxoffroaddistance_setting = int(self.dlg.MaxIsochrones_MaxOffroadDistance.value())
+        s.setValue("otp_plugin/MaxIsochrones_MaxOffroadDistance", self.maxisochrones_maxoffroaddistance_setting)
+        
+        # Precision Meters
+        self.maxisochrones_precisionmeters_use_setting = int(self.dlg.MaxIsochrones_PrecisionMeters_Use.isChecked())
+        s.setValue("otp_plugin/MaxIsochrones_PrecisionMeters_Use", self.maxisochrones_precisionmeters_use_setting)
+        self.maxisochrones_precisionmeters_setting = int(self.dlg.MaxIsochrones_PrecisionMeters.value())
+        s.setValue("otp_plugin/MaxIsochrones_PrecisionMeters", self.maxisochrones_precisionmeters_setting)
+        
+        # Cutoff Secs
+        self.maxisochrones_interval_setting = self.dlg.MaxIsochrones_Interval.toPlainText()
+        s.setValue("otp_plugin/MaxIsochrones_Interval", self.maxisochrones_interval_setting)
+        
+        # Mode
+        self.maxisochrones_transportationmode_setting = self.dlg.MaxIsochrones_TransportationMode.toPlainText()
+        s.setValue("otp_plugin/MaxIsochrones_TransportationMode", self.maxisochrones_transportationmode_setting)
+        
+        # Additional Parameters
+        self.maxisochrones_additionalparameters_setting = self.dlg.MaxIsochrones_AdditionalParameters.toPlainText()
+        s.setValue("otp_plugin/MaxIsochrones_AdditionalParameters", self.maxisochrones_additionalparameters_setting)
+        
+        # FromDateTime
+        self.maxisochrones_fromdatetime_setting = self.dlg.MaxIsochrones_FromDateTime.datetime()
+        s.setValue("otp_plugin/MaxIsochrones_FromDateTime", self.maxisochrones_fromdatetime_setting)
+        
+        # ToDateTime
+        self.maxisochrones_todatetime_setting = self.dlg.MaxIsochrones_ToDateTime.datetime()
+        s.setValue("otp_plugin/MaxIsochrones_ToDateTime", self.maxisochrones_todatetime_setting)
+        
+        # Request-Interval
+        self.maxisochrones_requestinterval_setting = int(self.dlg.MaxIsochrones_RequestInterval.value())
+        s.setValue("otp_plugin/MaxIsochrones_RequestInterval", self.maxisochrones_requestinterval_setting)
+        
+        self.iface.messageBar().pushMessage("Success", "MaxIsochrone settings stored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3) 
+        QgsMessageLog.logMessage("MaxIsochrone settings stored!",MESSAGE_CATEGORY,Qgis.Info)
+        
+    def read_maxisochrone_variables(self):
+        s = QgsSettings()
+        
+        # Walk Speed
+        self.maxisochrones_walkspeed_use_setting = int(s.value("otp_plugin/MaxIsochrones_WalkSpeed_Use", 0))
+        self.dlg.MaxIsochrones_WalkSpeed_Use.setChecked(self.maxisochrones_walkspeed_use_setting)
+        self.maxisochrones_walkspeed_setting = float(s.value("otp_plugin/MaxIsochrones_WalkSpeed", 4.828032))
+        self.dlg.MaxIsochrones_WalkSpeed.setValue(self.maxisochrones_walkspeed_setting)
+        
+        # Bike Speed
+        self.maxisochrones_bikespeed_use_setting = int(s.value("otp_plugin/MaxIsochrones_BikeSpeed_Use", 0))
+        self.dlg.MaxIsochrones_BikeSpeed_Use.setChecked(self.maxisochrones_bikespeed_use_setting)
+        self.maxisochrones_bikespeed_setting = float(s.value("otp_plugin/MaxIsochrones_BikeSpeed", 17.7))
+        self.dlg.MaxIsochrones_BikeSpeed.setValue(self.maxisochrones_bikespeed_setting)
+        
+        # Arrive By
+        self.maxisochrones_arriveby_use_setting = int(s.value("otp_plugin/MaxIsochrones_ArriveBy_Use", 0))
+        self.dlg.MaxIsochrones_ArriveBy_Use.setChecked(self.maxisochrones_arriveby_use_setting)
+        self.maxisochrones_arriveby_setting = int(s.value("otp_plugin/MaxIsochrones_ArriveBy", 0))
+        self.dlg.MaxIsochrones_ArriveBy.setChecked(self.maxisochrones_arriveby_setting)
+        
+        # Wheelchair
+        self.maxisochrones_wheelchair_use_setting = int(s.value("otp_plugin/MaxIsochrones_Wheelchair_Use", 0))
+        self.dlg.MaxIsochrones_Wheelchair_Use.setChecked(self.maxisochrones_wheelchair_use_setting)
+        self.maxisochrones_wheelchair_setting = int(s.value("otp_plugin/MaxIsochrones_Wheelchair", 0))
+        self.dlg.MaxIsochrones_Wheelchair.setChecked(self.maxisochrones_wheelchair_setting)
+        
+        # Wait Reluctance
+        self.maxisochrones_waitreluctance_use_setting = int(s.value("otp_plugin/MaxIsochrones_WaitReluctance_Use", 0))
+        self.dlg.MaxIsochrones_WaitReluctance_Use.setChecked(self.maxisochrones_waitreluctance_use_setting)
+        self.maxisochrones_waitreluctance_setting = float(s.value("otp_plugin/MaxIsochrones_WaitReluctance", 0.95))
+        self.dlg.MaxIsochrones_WaitReluctance.setValue(self.maxisochrones_waitreluctance_setting)
+        
+        # Max Transfers
+        self.maxisochrones_maxtransfers_use_setting = int(s.value("otp_plugin/MaxIsochrones_MaxTransfers_Use", 0))
+        self.dlg.MaxIsochrones_MaxTransfers_Use.setChecked(self.maxisochrones_maxtransfers_use_setting)
+        self.maxisochrones_maxtransfers_setting = int(s.value("otp_plugin/MaxIsochrones_MaxTransfers", 5))
+        self.dlg.MaxIsochrones_MaxTransfers.setValue(self.maxisochrones_maxtransfers_setting)
+        
+        # Max WalkDistance
+        self.maxisochrones_maxwalkdistance_use_setting = int(s.value("otp_plugin/MaxIsochrones_MaxWalkDistance_Use", 0))
+        self.dlg.MaxIsochrones_MaxWalkDistance_Use.setChecked(self.maxisochrones_maxwalkdistance_use_setting)
+        self.maxisochrones_maxwalkdistance_setting = int(s.value("otp_plugin/MaxIsochrones_MaxWalkDistance", 1000))
+        self.dlg.MaxIsochrones_MaxWalkDistance.setValue(self.maxisochrones_maxwalkdistance_setting)
+        
+        # Max OffRoadDistance
+        self.maxisochrones_maxoffroaddistance_use_setting = int(s.value("otp_plugin/MaxIsochrones_MaxOffroadDistance_Use", 0))
+        self.dlg.MaxIsochrones_MaxOffroadDistance_Use.setChecked(self.maxisochrones_maxoffroaddistance_use_setting)
+        self.maxisochrones_maxoffroaddistance_setting = int(s.value("otp_plugin/MaxIsochrones_MaxOffroadDistance", 150))
+        self.dlg.MaxIsochrones_MaxOffroadDistance.setValue(self.maxisochrones_maxoffroaddistance_setting)
+        
+        # Precision Meters
+        self.maxisochrones_precisionmeters_use_setting = int(s.value("otp_plugin/MaxIsochrones_PrecisionMeters_Use", 0))
+        self.dlg.MaxIsochrones_PrecisionMeters_Use.setChecked(self.maxisochrones_precisionmeters_use_setting)
+        self.maxisochrones_precisionmeters_setting = int(s.value("otp_plugin/MaxIsochrones_PrecisionMeters", 200))
+        self.dlg.MaxIsochrones_PrecisionMeters.setValue(self.maxisochrones_precisionmeters_setting)
+        
+        # Cutoff Sec
+        self.maxisochrones_interval = s.value("otp_plugin/MaxIsochrones_Interval", "300,600,900")
+        if isinstance(self.maxisochrones_interval, str): self.dlg.MaxIsochrones_Interval.setText(self.maxisochrones_interval)
+        
+        # Mode
+        self.maxisochrones_transportationmode = s.value("otp_plugin/MaxIsochrones_TransportationMode", "WALK,TRANSIT")
+        if isinstance(self.maxisochrones_transportationmode, str): self.dlg.MaxIsochrones_TransportationMode.setText(self.maxisochrones_transportationmode)
+        
+        # Additional Parameters
+        self.maxisochrones_additionalparameters = s.value("otp_plugin/MaxIsochrones_AdditionalParameters", "")
+        if isinstance(self.maxisochrones_additionalparameters, str): self.dlg.MaxIsochrones_AdditionalParameters.setText(self.maxisochrones_additionalparameters)
+        
+        # FromDateTime
+        self.maxisochrones_fromdatetime_setting = s.value("otp_plugin/MaxIsochrones_FromDateTime", QtCore.QDateTime.currentDateTime())
+        self.dlg.MaxIsochrones_FromDateTime.setDateTime(self.maxisochrones_fromdatetime_setting) # Standard value
+        
+        # ToDateTime
+        self.maxisochrones_todatetime_setting = s.value("otp_plugin/MaxIsochrones_ToDateTime", QtCore.QDateTime.currentDateTime().addSecs(1801) )
+        self.dlg.MaxIsochrones_ToDateTime.setDateTime(self.maxisochrones_todatetime_setting) # Standard value
+        
+        # Request-Interval
+        self.maxisochrones_requestinterval_setting = int(s.value("otp_plugin/MaxIsochrones_RequestInterval", 600))
+        self.dlg.MaxIsochrones_RequestInterval.setValue(self.maxisochrones_requestinterval_setting)
+
+
+    def restore_maxisochrone_variables(self):
+        s = QgsSettings()
+        #DefaultSettings
+        # Walk Speed
+        self.maxisochrones_walkspeed_use_setting = int(0)
+        self.dlg.MaxIsochrones_WalkSpeed_Use.setChecked(self.maxisochrones_walkspeed_use_setting)
+        self.maxisochrones_walkspeed_setting = float(4.828032)
+        self.dlg.MaxIsochrones_WalkSpeed.setValue(self.maxisochrones_walkspeed_setting)
+        
+        # Bike Speed
+        self.maxisochrones_bikespeed_use_setting = int(0)
+        self.dlg.MaxIsochrones_BikeSpeed_Use.setChecked(self.maxisochrones_bikespeed_use_setting)
+        self.maxisochrones_bikespeed_setting = float(17.7)
+        self.dlg.MaxIsochrones_BikeSpeed.setValue(self.maxisochrones_bikespeed_setting)
+        
+        # Arrive By
+        self.maxisochrones_arriveby_use_setting = int(0)
+        self.dlg.MaxIsochrones_ArriveBy_Use.setChecked(self.maxisochrones_arriveby_use_setting)
+        self.maxisochrones_arriveby_setting = int(0)
+        self.dlg.MaxIsochrones_ArriveBy.setChecked(self.maxisochrones_arriveby_setting)
+        
+        # Wheelchair
+        self.maxisochrones_wheelchair_use_setting = int(0)
+        self.dlg.MaxIsochrones_Wheelchair_Use.setChecked(self.maxisochrones_wheelchair_use_setting)
+        self.maxisochrones_wheelchair_setting = int(0)
+        self.dlg.MaxIsochrones_Wheelchair.setChecked(self.maxisochrones_wheelchair_setting)
+        
+        # Wait Reluctance
+        self.maxisochrones_waitreluctance_use_setting = int(0)
+        self.dlg.MaxIsochrones_WaitReluctance_Use.setChecked(self.maxisochrones_waitreluctance_use_setting)
+        self.maxisochrones_waitreluctance_setting = float(0.95)
+        self.dlg.MaxIsochrones_WaitReluctance.setValue(self.maxisochrones_waitreluctance_setting)
+        
+        # Max Transfers
+        self.maxisochrones_maxtransfers_use_setting = int(0)
+        self.dlg.MaxIsochrones_MaxTransfers_Use.setChecked(self.maxisochrones_maxtransfers_use_setting)
+        self.maxisochrones_maxtransfers_setting = int(5)
+        self.dlg.MaxIsochrones_MaxTransfers.setValue(self.maxisochrones_maxtransfers_setting)
+        
+        # Max WalkDistance
+        self.maxisochrones_maxwalkdistance_use_setting = int(0)
+        self.dlg.MaxIsochrones_MaxWalkDistance_Use.setChecked(self.maxisochrones_maxwalkdistance_use_setting)
+        self.maxisochrones_maxwalkdistance_setting = int(1000)
+        self.dlg.MaxIsochrones_MaxWalkDistance.setValue(self.maxisochrones_maxwalkdistance_setting)
+        
+        # Max OffRoadDistance
+        self.maxisochrones_maxoffroaddistance_use_setting = int(0)
+        self.dlg.MaxIsochrones_MaxOffroadDistance_Use.setChecked(self.maxisochrones_maxoffroaddistance_use_setting)
+        self.maxisochrones_maxoffroaddistance_setting = int(150)
+        self.dlg.MaxIsochrones_MaxOffroadDistance.setValue(self.maxisochrones_maxoffroaddistance_setting)
+        
+        # Precision Meters
+        self.maxisochrones_precisionmeters_use_setting = int(0)
+        self.dlg.MaxIsochrones_PrecisionMeters_Use.setChecked(self.maxisochrones_precisionmeters_use_setting)
+        self.maxisochrones_precisionmeters_setting = int(200)
+        self.dlg.MaxIsochrones_PrecisionMeters.setValue(self.maxisochrones_precisionmeters_setting)
+        
+        # Cutoff Sec
+        self.maxisochrones_interval = ""
+        if isinstance(self.maxisochrones_interval, str): self.dlg.MaxIsochrones_Interval.setText(self.maxisochrones_interval)
+        
+        # Mode
+        self.maxisochrones_transportationmode = ""
+        if isinstance(self.maxisochrones_transportationmode, str): self.dlg.MaxIsochrones_TransportationMode.setText(self.maxisochrones_transportationmode)
+        
+        # Additional Parameters
+        self.maxisochrones_additionalparameters = ""
+        if isinstance(self.maxisochrones_additionalparameters, str): self.dlg.MaxIsochrones_AdditionalParameters.setText(self.maxisochrones_additionalparameters)
+        
+        # FromDateTime
+        self.maxisochrones_fromdatetime_setting = QDateTime(QtCore.QDateTime.currentDateTime())
+        self.dlg.MaxIsochrones_FromDateTime.setDateTime(self.maxisochrones_fromdatetime_setting)
+        
+        # ToDateTime
+        self.maxisochrones_todatetime_setting = QDateTime(QtCore.QDateTime.currentDateTime().addSecs(1801))
+        self.dlg.MaxIsochrones_ToDateTime.setDateTime(self.maxisochrones_todatetime_setting)
+        
+        # Request-Interval
+        self.maxisochrones_requestinterval_setting = int(600)
+        self.dlg.MaxIsochrones_RequestInterval.setValue(self.maxisochrones_requestinterval_setting)
+        
+        self.iface.messageBar().pushMessage("Success", "Default maxisochrone settings restored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
+        QgsMessageLog.logMessage("Default maxisochrone settings restored!",MESSAGE_CATEGORY,Qgis.Info)
+        self.store_maxisochrone_variables()
+        
     def check_server_status(self):
         # Proxy not working properly.... maybe I'll implement this someday...
         #self.read_proxy_settings()
@@ -766,6 +1018,61 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.dlg.Isochrones_AdditionalParameters_Override.registerExpressionContextGenerator(self.isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
         self.dlg.Isochrones_AdditionalParameters_Override.init(0, QgsProperty(), QgsPropertyDefinition("AdditionalParameters", "Additional Parameters as String", QgsPropertyDefinition.String), self.isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
 
+
+    def maxisochrones_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
+        self.dlg.MaxIsochrones_SelectInputLayer.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
+        self.maxisochrones_selectedlayer = self.dlg.MaxIsochrones_SelectInputLayer.currentLayer() # Using the currently selected layer in QgsMapLayerComboBox as selectedLayer
+        if not self.maxisochrones_selectedlayer: # cancel if no pointlayer available
+            return
+        self.maxisochrones_inputlayer_fieldnames = [field.name() for field in self.maxisochrones_selectedlayer.fields()] # Receive MaxIsochrones_Inputlayer_Fieldnames from selected layer
+        
+        # Setting up QgsOverrideButtons (Reference: https://gis.stackexchange.com/a/350993/107424). Has to be done here, so they get updated when the layer selection has changed...
+        #WalkSpeed
+        self.dlg.MaxIsochrones_WalkSpeed_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_WalkSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("walkSpeed", "Walk Speed in km/h", QgsPropertyDefinition.DoublePositive), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #BikeSpeed
+        self.dlg.MaxIsochrones_BikeSpeed_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_BikeSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("bikeSpeed", "Bike Speed in km/h", QgsPropertyDefinition.DoublePositive), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #ArriveBy
+        self.dlg.MaxIsochrones_ArriveBy_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_ArriveBy_Override.init(0, QgsProperty(), QgsPropertyDefinition("ArriveBy", "ArriveBy as Boolean", QgsPropertyDefinition.Boolean), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #Wheelchair
+        self.dlg.MaxIsochrones_Wheelchair_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_Wheelchair_Override.init(0, QgsProperty(), QgsPropertyDefinition("Wheelchair", "Wheelchair as Boolean", QgsPropertyDefinition.Boolean), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #WaitReluctance
+        self.dlg.MaxIsochrones_WaitReluctance_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_WaitReluctance_Override.init(0, QgsProperty(), QgsPropertyDefinition("WaitReluctance", "Wait Reluctance Factor as Double", QgsPropertyDefinition.Double), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #MaxTransfers
+        self.dlg.MaxIsochrones_MaxTransfers_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_MaxTransfers_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxTransfers", "Maximum Transfers as Integer", QgsPropertyDefinition.IntegerPositive), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #MaxWalkDistance
+        self.dlg.MaxIsochrones_MaxWalkDistance_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_MaxWalkDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxWalkDistance", "Maximum Walk Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #MaxOffroadDistance
+        self.dlg.MaxIsochrones_MaxOffroadDistance_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_MaxOffroadDistance_Override.init(0, QgsProperty(), QgsPropertyDefinition("MaxOffroadDistance", "Maximum Offroad Distance in Meters", QgsPropertyDefinition.IntegerPositive), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #PrecisionMeters
+        self.dlg.MaxIsochrones_PrecisionMeters_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_PrecisionMeters_Override.init(0, QgsProperty(), QgsPropertyDefinition("PrecisionMeters", "Level of Detail in Meters", QgsPropertyDefinition.IntegerPositiveGreaterZero), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #Interval
+        self.dlg.MaxIsochrones_Interval_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_Interval_Override.init(0, QgsProperty(), QgsPropertyDefinition("Interval", "Isochrone Interval in Seconds as String using Integer Values separated by Comma", QgsPropertyDefinition.String), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #TransportationMode
+        self.dlg.MaxIsochrones_TransportationMode_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_TransportationMode_Override.init(0, QgsProperty(), QgsPropertyDefinition("TransportationMode", "TransportationMode as String separated by Comma", QgsPropertyDefinition.String), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #AdditionalParameters
+        self.dlg.MaxIsochrones_AdditionalParameters_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_AdditionalParameters_Override.init(0, QgsProperty(), QgsPropertyDefinition("AdditionalParameters", "Additional Parameters as String", QgsPropertyDefinition.String), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #FromDateTime
+        self.dlg.MaxIsochrones_FromDateTime_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_FromDateTime_Override.init(0, QgsProperty(), QgsPropertyDefinition("FromDateTime", "Datetime in yyyy-MM-dd HH:MM:SS", QgsPropertyDefinition.String), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #ToDateTime
+        self.dlg.MaxIsochrones_ToDateTime_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_ToDateTime_Override.init(0, QgsProperty(), QgsPropertyDefinition("ToDateTime", "Datetime in yyyy-MM-dd HH:MM:SS", QgsPropertyDefinition.String), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #RequestInterval
+        self.dlg.MaxIsochrones_RequestInterval_Override.registerExpressionContextGenerator(self.maxisochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.MaxIsochrones_RequestInterval_Override.init(0, QgsProperty(), QgsPropertyDefinition("RequestInterval", "Interval to request isochrones in seconds", QgsPropertyDefinition.IntegerPositiveGreaterZero), self.maxisochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        
         
     def routes_maplayerselection(self): # Outsourcing layerselection to this function to avoid repeading the same code everywhere (Reference: https://gis.stackexchange.com/a/225659/107424)
         self.dlg.Routes_SelectInputLayer_Source.setFilters(QgsMapLayerProxyModel.PointLayer) # Filter out all layers except Point layers
@@ -852,6 +1159,11 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         for widget in self.dlg.tab_run_isochrones.children():
             if not widget.objectName() in exceptionlist:
                 widget.setEnabled(False)
+    def disableMaxIsochronesGui(self):
+        exceptionlist = ['MaxIsochrones_ProgressBar','MaxIsochrones_Cancel']
+        for widget in self.dlg.tab_run_maxisochrones.children():
+            if not widget.objectName() in exceptionlist:
+                widget.setEnabled(False)
     def disableRoutesGui(self):
         exceptionlist = ['Routes_ProgressBar','Routes_Cancel']
         for widget in self.dlg.tab_run_routes.children():
@@ -865,6 +1177,11 @@ class OpenTripPlannerPluginGeneralFunctions(object):
     def enableIsochronesGui(self):
         exceptionlist = []
         for widget in self.dlg.tab_run_isochrones.children():
+            if not widget.objectName() in exceptionlist:
+                widget.setEnabled(True)
+    def enableMaxIsochronesGui(self):
+        exceptionlist = ['MaxIsochrones_WaitAtBeginning_Use','MaxIsochrones_ClampInitialWait_Use']
+        for widget in self.dlg.tab_run_maxisochrones.children():
             if not widget.objectName() in exceptionlist:
                 widget.setEnabled(True)
     def enableRoutesGui(self):

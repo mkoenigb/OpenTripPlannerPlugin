@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>751</width>
-    <height>573</height>
+    <height>597</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,8 +19,11 @@
      <x>10</x>
      <y>10</y>
      <width>731</width>
-     <height>551</height>
+     <height>581</height>
     </rect>
+   </property>
+   <property name="toolTip">
+    <string/>
    </property>
    <property name="currentIndex">
     <number>1</number>
@@ -32,13 +35,16 @@
     <attribute name="title">
      <string>Create Isochrones</string>
     </attribute>
+    <attribute name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create Isochrones by chosen settings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </attribute>
     <widget class="QProgressBar" name="Isochrones_ProgressBar">
      <property name="geometry">
       <rect>
        <x>10</x>
        <y>490</y>
        <width>561</width>
-       <height>31</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="value">
@@ -58,7 +64,7 @@
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>150</y>
+       <y>160</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -90,7 +96,7 @@
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>180</y>
+       <y>190</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -123,7 +129,7 @@
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>90</y>
+       <y>100</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -160,37 +166,11 @@
       <string>Request Isochrones</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label">
-     <property name="geometry">
-      <rect>
-       <x>410</x>
-       <y>190</y>
-       <width>201</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Transportation Mode</string>
-     </property>
-    </widget>
-    <widget class="QLabel" name="label_3">
-     <property name="geometry">
-      <rect>
-       <x>410</x>
-       <y>80</y>
-       <width>291</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Isochrone Intervals in Seconds</string>
-     </property>
-    </widget>
     <widget class="QSpinBox" name="Isochrones_MaxOffroadDistance">
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>360</y>
+       <y>370</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -212,7 +192,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>20</y>
+       <y>30</y>
        <width>381</width>
        <height>21</height>
       </rect>
@@ -225,7 +205,7 @@
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>300</y>
+       <y>310</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -244,7 +224,7 @@
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>330</y>
+       <y>340</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -266,9 +246,9 @@
      <property name="geometry">
       <rect>
        <x>380</x>
-       <y>70</y>
+       <y>80</y>
        <width>20</width>
-       <height>361</height>
+       <height>351</height>
       </rect>
      </property>
      <property name="orientation">
@@ -282,7 +262,7 @@
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>210</y>
+       <y>220</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -301,7 +281,7 @@
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>230</y>
+       <y>240</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -311,7 +291,7 @@
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>90</y>
+       <y>100</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -321,7 +301,7 @@
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>150</y>
+       <y>160</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -331,7 +311,7 @@
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>180</y>
+       <y>190</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -341,7 +321,7 @@
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>210</y>
+       <y>220</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -351,7 +331,7 @@
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>270</y>
+       <y>280</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -361,7 +341,7 @@
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>300</y>
+       <y>310</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -371,7 +351,7 @@
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>330</y>
+       <y>340</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -381,7 +361,7 @@
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>360</y>
+       <y>370</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -391,7 +371,7 @@
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>120</y>
+       <y>150</y>
        <width>261</width>
        <height>61</height>
       </rect>
@@ -416,7 +396,7 @@
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>120</y>
+       <y>150</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -429,7 +409,7 @@
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>230</y>
+       <y>240</y>
        <width>261</width>
        <height>61</height>
       </rect>
@@ -451,20 +431,20 @@
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>210</y>
+       <y>220</y>
        <width>291</width>
        <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>(String values separated by comma):</string>
+      <string>Transportation Mode (string values separated by comma):</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="Isochrones_AdditionalParameters">
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>320</y>
+       <y>330</y>
        <width>261</width>
        <height>91</height>
       </rect>
@@ -486,7 +466,7 @@
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>300</y>
+       <y>310</y>
        <width>201</width>
        <height>21</height>
       </rect>
@@ -499,7 +479,7 @@
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>320</y>
+       <y>330</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -509,7 +489,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>50</y>
        <width>381</width>
        <height>21</height>
       </rect>
@@ -525,7 +505,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>90</y>
+       <y>100</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -549,7 +529,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>70</y>
+       <y>80</y>
        <width>31</width>
        <height>21</height>
       </rect>
@@ -565,7 +545,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>150</y>
+       <y>160</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -589,7 +569,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>180</y>
+       <y>190</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -613,7 +593,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>210</y>
+       <y>220</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -640,7 +620,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>270</y>
+       <y>280</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -664,7 +644,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>300</y>
+       <y>310</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -688,7 +668,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>330</y>
+       <y>340</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -712,7 +692,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>360</y>
+       <y>370</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -733,7 +713,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>390</y>
+       <y>400</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -761,7 +741,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>390</y>
+       <y>400</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -782,7 +762,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>390</y>
+       <y>400</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -795,7 +775,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>240</y>
+       <y>250</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -814,7 +794,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>240</y>
+       <y>250</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -827,7 +807,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>240</y>
+       <y>250</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -851,7 +831,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>120</y>
+       <y>130</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -872,7 +852,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>120</y>
+       <y>130</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -897,7 +877,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>120</y>
+       <y>130</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -907,7 +887,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>270</y>
+       <y>280</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -931,8 +911,8 @@ Do not use an option if it is not compatible with the selected Mode. For example
     <widget class="QPushButton" name="Isochrones_RestoreDefaultSettings">
      <property name="geometry">
       <rect>
-       <x>570</x>
-       <y>0</y>
+       <x>130</x>
+       <y>10</y>
        <width>141</width>
        <height>21</height>
       </rect>
@@ -947,9 +927,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
     <widget class="QPushButton" name="Isochrones_SaveSettings">
      <property name="geometry">
       <rect>
-       <x>410</x>
-       <y>0</y>
-       <width>141</width>
+       <x>10</x>
+       <y>10</y>
+       <width>121</width>
        <height>21</height>
       </rect>
      </property>
@@ -966,7 +946,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <x>590</x>
        <y>491</y>
        <width>121</width>
-       <height>31</height>
+       <height>61</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -980,25 +960,1393 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>100</y>
-       <width>291</width>
+       <y>130</y>
+       <width>301</width>
        <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>(Integer values separated by comma):</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Isochrone Intervals in Sec's (int values separated by comma):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
+    <widget class="QLabel" name="Isochrones_StatusBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>520</y>
+       <width>561</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS UI Gothic</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+       <kerning>true</kerning>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Status Information:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::AutoText</enum>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+     </property>
+    </widget>
+   </widget>
+   <widget class="QWidget" name="tab_run_maxisochrones">
+    <attribute name="title">
+     <string>Aggregated Isochrones</string>
+    </attribute>
+    <attribute name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between different possible aggregated service areas in a time range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </attribute>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_MaxWalkDistance_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>340</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_WaitReluctance_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>280</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Wait Reluctance Factor:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_MaxOffroadDistance_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>370</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Maximum Offroad Distance in Meters:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="MaxIsochrones_RequestIsochrones">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>440</y>
+       <width>701</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Request maximum isochrones and store as polygon layer.</string>
+     </property>
+     <property name="text">
+      <string>Request Aggregated Isochrones</string>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_MaxOffroadDistance_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>370</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="MaxIsochrones_MaxOffroadDistance">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>370</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Distance in meters one can cover a distance off roads.</string>
+     </property>
+     <property name="maximum">
+      <number>99999999</number>
+     </property>
+     <property name="singleStep">
+      <number>10</number>
+     </property>
+     <property name="value">
+      <number>150</number>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_21">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>80</y>
+       <width>31</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Use</string>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="MaxIsochrones_Interval">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>190</y>
+       <width>261</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter isochrone intervals in seconds (Integer) separated by comma --&amp;gt; String.&lt;/p&gt;&lt;p&gt;For example:&lt;br/&gt;60 or 60,180,300&lt;/p&gt;&lt;p&gt;Also units &amp;quot;m&amp;quot; and &amp;quot;h&amp;quot; are allowed e.g. &amp;quot;60,2m&amp;quot; are 60sec. and 120sec.&lt;/p&gt;&lt;p&gt;Default if nothing is specified: 300,600,900&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="autoFormatting">
+      <set>QTextEdit::AutoNone</set>
+     </property>
+     <property name="tabStopWidth">
+      <number>80</number>
+     </property>
+     <property name="acceptRichText">
+      <bool>false</bool>
+     </property>
+     <property name="placeholderText">
+      <string>300,600,900</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_MaxTransfers_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>310</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Maximum Transfers:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="MaxIsochrones_BikeSpeed">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>130</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Speed in km/h one rides the bike. OTP-Default: 11mph.</string>
+     </property>
+     <property name="decimals">
+      <number>6</number>
+     </property>
+     <property name="maximum">
+      <double>99999.999999000006937</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
+     </property>
+     <property name="value">
+      <double>17.699999999999999</double>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="MaxIsochrones_AdditionalParameters">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>350</y>
+       <width>261</width>
+       <height>71</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start with leading &amp;quot;&amp;amp;&amp;quot;, followed by &amp;quot;parameter name&amp;quot;, followed by &amp;quot;=&amp;quot;, followed by &amp;quot;value&amp;quot;. Keep case sensitivity in mind! For example:&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;amp;waitReluctance=10.5&lt;/span&gt;&lt;/p&gt;&lt;p&gt;or&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-style:italic;&quot;&gt;&amp;amp;minTransferTime=50&amp;amp;bikeSpeed=12.5&amp;amp;bikeSwitchTime=5&amp;amp;bikeSwitchCost=3&lt;/span&gt;&lt;/p&gt;&lt;p&gt;Look up in OTP API Docs if you don't know how to write it...&lt;/p&gt;&lt;p&gt;Default if nothing is specified: None&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="tabStopWidth">
+      <number>80</number>
+     </property>
+     <property name="acceptRichText">
+      <bool>false</bool>
+     </property>
+     <property name="placeholderText">
+      <string>Type in anything OTP can understand... like for example: &amp;minTransferTime=50&amp;bikeSwitchCost=3</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_ArriveBy_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>220</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Arrive By:</string>
+     </property>
+     <property name="checkable">
+      <bool>true</bool>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_BikeSpeed_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>130</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_WalkSpeed_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>100</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_PrecisionMeters_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>400</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_Wheelchair_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>250</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_BikeSpeed_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>130</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Bike Speed in km/h:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="MaxIsochrones_MaxWalkDistance">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>340</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Maximum distance one can cover a distance on foot.</string>
+     </property>
+     <property name="maximum">
+      <number>99999999</number>
+     </property>
+     <property name="singleStep">
+      <number>10</number>
+     </property>
+     <property name="value">
+      <number>1000</number>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_Interval_Override">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>190</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter isochrone intervals in seconds (Integer) separated by comma --&amp;gt; String. All values need to be strings, so for a single interval 60 won't work, but '60' will work. Use to_string function if needed.&lt;/p&gt;&lt;p&gt;For example:&lt;br/&gt;'60' or '60,180,300' or '60'||','||'300'||','||'600'||&amp;quot;FieldnameOfInterval&amp;quot;||','||&amp;quot;FieldnameOfMaxInterval&amp;quot;&lt;/p&gt;&lt;p&gt;Default if nothing is specified: 60,120,180,240,300&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_AdditionalParameters_Override">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>350</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_ArriveBy">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>220</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;checked = yes --&amp;gt; &amp;amp;arriveBy=true --&amp;gt; specifies that the given time is when we plan to arrive rather than when we want to depart&lt;/p&gt;&lt;p&gt;unchecked = no --&amp;gt; &amp;amp;arriveBy=false --&amp;gt; specifies that the given time is when we plan to depart rather than when we want to arrive&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Yes</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QTextEdit" name="MaxIsochrones_TransportationMode">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>270</y>
+       <width>261</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter values which OTP can understand, separated by comma. Not all combinations do work. Look up in OTP API Docs if you are unsure. Possible values for example are:&lt;/p&gt;&lt;table border=&quot;0&quot; style=&quot; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px;&quot; cellspacing=&quot;2&quot; cellpadding=&quot;0&quot;&gt;&lt;tr&gt;&lt;td width=&quot;194&quot;&gt;&lt;p&gt;WALK&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;CAR &lt;span style=&quot; font-style:italic;&quot;&gt;(can not be combined with WALK)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;BICYCLE&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;TRANSIT&lt;span style=&quot; font-style:italic;&quot;&gt; (Used for combination of all supported public transportation types)&lt;/span&gt;&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;TRAM&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;BUS&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;RAIL&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;SUBWAY&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;GONDOLA&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;CABLE_CAR&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;FERRY&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;FUNICULAR&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;BICYCLE_RENT&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;BICYCLE_PARK&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;CAR_PARK&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;AIRPLANE&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td&gt;&lt;p&gt;LEG_SWITCH&lt;/p&gt;&lt;p&gt;Default if nothing is specified: WALK,TRANSIT&lt;/p&gt;&lt;/td&gt;&lt;/tr&gt;&lt;/table&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="tabStopWidth">
+      <number>80</number>
+     </property>
+     <property name="acceptRichText">
+      <bool>false</bool>
+     </property>
+     <property name="placeholderText">
+      <string>WALK,TRANSIT</string>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="MaxIsochrones_Cancel">
+     <property name="geometry">
+      <rect>
+       <x>590</x>
+       <y>491</y>
+       <width>121</width>
+       <height>61</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Cancel the execution of creating/requesting maximum isochrones</string>
+     </property>
+     <property name="text">
+      <string>Cancel</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="MaxIsochrones_WaitReluctance">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>280</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How much worse is waiting for a transit vehicle than being on a transit vehicle, as a multiplier. The default value treats wait and on-vehicle time as the same. It may be tempting to set this higher than walkReluctance (as studies often find this kind of preferences among riders) but the planner will take this literally and walk down a transit line to avoid waiting at a stop. This used to be set less than 1 (0.95) which would make waiting offboard preferable to waiting onboard in an interlined trip. That is also undesirable. If we only tried the shortest possible transfer at each stop to neighboring stop patterns, this problem could disappear.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="decimals">
+      <number>2</number>
+     </property>
+     <property name="maximum">
+      <double>100.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.050000000000000</double>
+     </property>
+     <property name="value">
+      <double>0.950000000000000</double>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="MaxIsochrones_MaxTransfers">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>310</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Maximum number of transfers between means of transport.</string>
+     </property>
+     <property name="minimum">
+      <number>0</number>
+     </property>
+     <property name="value">
+      <number>5</number>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_WaitReluctance_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>280</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QgsMapLayerComboBox" name="MaxIsochrones_SelectInputLayer">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>50</y>
+       <width>381</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Select a Point Layer you wish to use for calculation. Can be in any CRS which can be transformed to WGS 84 by QGIS.</string>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="MaxIsochrones_PrecisionMeters">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>400</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Lower value means more detailed isochrones.</string>
+     </property>
+     <property name="minimum">
+      <number>10</number>
+     </property>
+     <property name="maximum">
+      <number>1000</number>
+     </property>
+     <property name="singleStep">
+      <number>5</number>
+     </property>
+     <property name="value">
+      <number>200</number>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_MaxWalkDistance_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>340</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Maximum Walk Distance in Meters:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_PrecisionMeters_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>400</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Level of detail (Precision Meters):</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_Wheelchair_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>250</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Only Wheelchair accessible routes:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="MaxIsochrones_RestoreDefaultSettings">
+     <property name="geometry">
+      <rect>
+       <x>130</x>
+       <y>10</y>
+       <width>141</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Restores default settings for Isochrones choosen by author of the plugin andor developers of opentripplanner</string>
+     </property>
+     <property name="text">
+      <string>Restore Default Settings</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_23">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>330</y>
+       <width>201</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Additional Parameters as String:</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="MaxIsochrones_WalkSpeed">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>100</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Speed in km/h one walks on foot. OTP-Default: 3mph.</string>
+     </property>
+     <property name="decimals">
+      <number>6</number>
+     </property>
+     <property name="maximum">
+      <double>99999.999999000006937</double>
+     </property>
+     <property name="singleStep">
+      <double>0.100000000000000</double>
+     </property>
+     <property name="value">
+      <double>4.828032000000000</double>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="MaxIsochrones_SaveSettings">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>10</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Saves your settings for isochrones</string>
+     </property>
+     <property name="text">
+      <string>Save Settings</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_11">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>30</y>
+       <width>381</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Select Input Layer:</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_Wheelchair">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>250</y>
+       <width>91</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;checked --&amp;gt; use only wheelchair accessible routes&lt;/p&gt;&lt;p&gt;unchecked --&amp;gt; use all routes&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="text">
+      <string>Yes</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_ArriveBy_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>220</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_4">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>170</y>
+       <width>311</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Isochrone Intervals in Seconds (int values separated by comma):</string>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_WalkSpeed_Use">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>100</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="accessibleName">
+      <string/>
+     </property>
+     <property name="text">
+      <string>Walk Speed in km/h:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_MaxTransfers_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>310</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QProgressBar" name="MaxIsochrones_ProgressBar">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>490</y>
+       <width>561</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="value">
+      <number>0</number>
+     </property>
+     <property name="textVisible">
+      <bool>true</bool>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Horizontal</enum>
+     </property>
+     <property name="invertedAppearance">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QLabel" name="label_5">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>250</y>
+       <width>281</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Transportation Mode (string values separated by comma):</string>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_TransportationMode_Override">
+     <property name="geometry">
+      <rect>
+       <x>680</x>
+       <y>270</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="Line" name="line_5">
+     <property name="geometry">
+      <rect>
+       <x>380</x>
+       <y>80</y>
+       <width>20</width>
+       <height>351</height>
+      </rect>
+     </property>
+     <property name="orientation">
+      <enum>Qt::Vertical</enum>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_ClampInitialWait_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>190</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_ClampInitialWait_Use">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>190</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Clamp Initial Wait Factor:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="MaxIsochrones_WaitAtBeginning">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>160</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How much less bad is waiting at the beginning of the trip (replaces waitReluctance)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="decimals">
+      <number>2</number>
+     </property>
+     <property name="maximum">
+      <double>100.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.050000000000000</double>
+     </property>
+     <property name="value">
+      <double>1.000000000000000</double>
+     </property>
+    </widget>
+    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_WaitAtBeginning_Override">
+     <property name="geometry">
+      <rect>
+       <x>340</x>
+       <y>160</y>
+       <width>30</width>
+       <height>26</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QCheckBox" name="MaxIsochrones_WaitAtBeginning_Use">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>160</y>
+       <width>211</width>
+       <height>20</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>If checked, this option will be used.
+If not checked, the servers default setting will be used. Servers default is NULL when incompatible with selected Mode.
+Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
+     </property>
+     <property name="text">
+      <string>Wait at Beginning Factor:</string>
+     </property>
+     <property name="checked">
+      <bool>false</bool>
+     </property>
+    </widget>
+    <widget class="QSpinBox" name="MaxIsochrones_ClampInitialWait">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>190</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When subtracting initial wait time, do not subtract more than this value, to prevent overly optimistic trips. Reasoning is that it is reasonable to delay a trip start 15 minutes to make a better trip, but that it is not reasonable to delay a trip start 15 hours; if that is to be done, the time needs to be included in the trip time. This number depends on the transit system; for transit systems where trips are planned around the vehicles, this number can be much higher. For instance, it's perfectly reasonable to delay one's trip 12 hours if one is taking a cross-country Amtrak train from Emeryville to Chicago. Has no effect in stock OTP, only in Analyst. A value of 0 means that initial wait time will not be subtracted out (will be clamped to 0). A value of -1 (the default) means that clamping is disabled, so any amount of initial wait time will be subtracted out.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="minimum">
+      <number>-9999</number>
+     </property>
+     <property name="maximum">
+      <number>9999</number>
+     </property>
+     <property name="value">
+      <number>-1</number>
+     </property>
+     <property name="displayIntegerBase">
+      <number>10</number>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="geometry">
+      <rect>
+       <x>410</x>
+       <y>10</y>
+       <width>301</width>
+       <height>161</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Aggregation</string>
+     </property>
+     <widget class="QCheckBox" name="checkBox">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>20</y>
+        <width>61</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Max</string>
+      </property>
+      <property name="checked">
+       <bool>true</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_2">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>40</y>
+        <width>61</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Max V2</string>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_3">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>20</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Min</string>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_4">
+      <property name="geometry">
+       <rect>
+        <x>70</x>
+        <y>40</y>
+        <width>51</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Range</string>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_5">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>20</y>
+        <width>61</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Median</string>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_6">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>40</y>
+        <width>61</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Mean</string>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_7">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>20</y>
+        <width>61</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Sum</string>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_8">
+      <property name="geometry">
+       <rect>
+        <x>190</x>
+        <y>40</y>
+        <width>61</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Count</string>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_25">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>70</y>
+        <width>111</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>From (inclusive):</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_26">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>100</y>
+        <width>111</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>To (exclusive):</string>
+      </property>
+     </widget>
+     <widget class="QLabel" name="label_27">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>130</y>
+        <width>141</width>
+        <height>21</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Request-Interval in Seconds:</string>
+      </property>
+     </widget>
+     <widget class="QDateTimeEdit" name="MaxIsochrones_FromDateTime">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>70</y>
+        <width>131</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start DateTime (inclusive) you want to use for the accessibility analysis.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="dateTime">
+       <datetime>
+        <hour>14</hour>
+        <minute>0</minute>
+        <second>0</second>
+        <year>2020</year>
+        <month>1</month>
+        <day>1</day>
+       </datetime>
+      </property>
+      <property name="currentSection">
+       <enum>QDateTimeEdit::YearSection</enum>
+      </property>
+      <property name="displayFormat">
+       <string>yyyy-MM-dd HH:mm:ss</string>
+      </property>
+     </widget>
+     <widget class="QDateTimeEdit" name="MaxIsochrones_ToDateTime">
+      <property name="geometry">
+       <rect>
+        <x>130</x>
+        <y>100</y>
+        <width>131</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;End DateTime (exclusive) you want to use for the accessibility analysis.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="dateTime">
+       <datetime>
+        <hour>14</hour>
+        <minute>30</minute>
+        <second>1</second>
+        <year>2020</year>
+        <month>1</month>
+        <day>1</day>
+       </datetime>
+      </property>
+      <property name="time">
+       <time>
+        <hour>14</hour>
+        <minute>30</minute>
+        <second>1</second>
+       </time>
+      </property>
+      <property name="currentSection">
+       <enum>QDateTimeEdit::YearSection</enum>
+      </property>
+      <property name="displayFormat">
+       <string>yyyy-MM-dd HH:mm:ss</string>
+      </property>
+     </widget>
+     <widget class="QSpinBox" name="MaxIsochrones_RequestInterval">
+      <property name="geometry">
+       <rect>
+        <x>160</x>
+        <y>130</y>
+        <width>101</width>
+        <height>22</height>
+       </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Interval in Seconds that will be requested. Note: the lower the interval, the higher the number of requests and therefore the longer the calculation time.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
+      <property name="minimum">
+       <number>1</number>
+      </property>
+      <property name="maximum">
+       <number>999999999</number>
+      </property>
+      <property name="singleStep">
+       <number>60</number>
+      </property>
+      <property name="value">
+       <number>600</number>
+      </property>
+     </widget>
+     <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_RequestInterval_Override">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>130</y>
+        <width>30</width>
+        <height>26</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_ToDateTime_Override">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>100</y>
+        <width>30</width>
+        <height>26</height>
+       </rect>
+      </property>
+     </widget>
+     <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_FromDateTime_Override">
+      <property name="geometry">
+       <rect>
+        <x>270</x>
+        <y>70</y>
+        <width>30</width>
+        <height>26</height>
+       </rect>
+      </property>
+     </widget>
+    </widget>
+    <widget class="QLabel" name="MaxIsochrones_StatusBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>520</y>
+       <width>561</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS UI Gothic</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Status Information:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::AutoText</enum>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+     </property>
+    </widget>
+    <zorder>groupBox</zorder>
+    <zorder>MaxIsochrones_MaxWalkDistance_Override</zorder>
+    <zorder>MaxIsochrones_WaitReluctance_Use</zorder>
+    <zorder>MaxIsochrones_MaxOffroadDistance_Use</zorder>
+    <zorder>MaxIsochrones_RequestIsochrones</zorder>
+    <zorder>MaxIsochrones_MaxOffroadDistance_Override</zorder>
+    <zorder>MaxIsochrones_MaxOffroadDistance</zorder>
+    <zorder>label_21</zorder>
+    <zorder>MaxIsochrones_Interval</zorder>
+    <zorder>MaxIsochrones_MaxTransfers_Use</zorder>
+    <zorder>MaxIsochrones_BikeSpeed</zorder>
+    <zorder>MaxIsochrones_AdditionalParameters</zorder>
+    <zorder>MaxIsochrones_ArriveBy_Use</zorder>
+    <zorder>MaxIsochrones_BikeSpeed_Override</zorder>
+    <zorder>MaxIsochrones_WalkSpeed_Override</zorder>
+    <zorder>MaxIsochrones_PrecisionMeters_Override</zorder>
+    <zorder>MaxIsochrones_Wheelchair_Override</zorder>
+    <zorder>MaxIsochrones_BikeSpeed_Use</zorder>
+    <zorder>MaxIsochrones_MaxWalkDistance</zorder>
+    <zorder>MaxIsochrones_Interval_Override</zorder>
+    <zorder>MaxIsochrones_AdditionalParameters_Override</zorder>
+    <zorder>MaxIsochrones_ArriveBy</zorder>
+    <zorder>MaxIsochrones_TransportationMode</zorder>
+    <zorder>MaxIsochrones_Cancel</zorder>
+    <zorder>MaxIsochrones_WaitReluctance</zorder>
+    <zorder>MaxIsochrones_MaxTransfers</zorder>
+    <zorder>MaxIsochrones_WaitReluctance_Override</zorder>
+    <zorder>MaxIsochrones_SelectInputLayer</zorder>
+    <zorder>MaxIsochrones_PrecisionMeters</zorder>
+    <zorder>MaxIsochrones_MaxWalkDistance_Use</zorder>
+    <zorder>MaxIsochrones_PrecisionMeters_Use</zorder>
+    <zorder>MaxIsochrones_Wheelchair_Use</zorder>
+    <zorder>MaxIsochrones_RestoreDefaultSettings</zorder>
+    <zorder>label_23</zorder>
+    <zorder>MaxIsochrones_WalkSpeed</zorder>
+    <zorder>MaxIsochrones_SaveSettings</zorder>
+    <zorder>label_11</zorder>
+    <zorder>MaxIsochrones_Wheelchair</zorder>
+    <zorder>MaxIsochrones_ArriveBy_Override</zorder>
+    <zorder>label_4</zorder>
+    <zorder>MaxIsochrones_WalkSpeed_Use</zorder>
+    <zorder>MaxIsochrones_MaxTransfers_Override</zorder>
+    <zorder>MaxIsochrones_ProgressBar</zorder>
+    <zorder>label_5</zorder>
+    <zorder>MaxIsochrones_TransportationMode_Override</zorder>
+    <zorder>line_5</zorder>
+    <zorder>MaxIsochrones_ClampInitialWait_Override</zorder>
+    <zorder>MaxIsochrones_ClampInitialWait_Use</zorder>
+    <zorder>MaxIsochrones_WaitAtBeginning</zorder>
+    <zorder>MaxIsochrones_WaitAtBeginning_Override</zorder>
+    <zorder>MaxIsochrones_WaitAtBeginning_Use</zorder>
+    <zorder>MaxIsochrones_ClampInitialWait</zorder>
+    <zorder>MaxIsochrones_StatusBox</zorder>
    </widget>
    <widget class="QWidget" name="tab_run_routes">
     <attribute name="title">
      <string>Create Routes</string>
     </attribute>
+    <attribute name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Create routes or route matrices.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </attribute>
     <widget class="QLabel" name="label_7">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>20</y>
+       <y>30</y>
        <width>381</width>
        <height>21</height>
       </rect>
@@ -1010,8 +2358,8 @@ Do not use an option if it is not compatible with the selected Mode. For example
     <widget class="QPushButton" name="Routes_RestoreDefaultSettings">
      <property name="geometry">
       <rect>
-       <x>570</x>
-       <y>0</y>
+       <x>130</x>
+       <y>10</y>
        <width>141</width>
        <height>21</height>
       </rect>
@@ -1027,7 +2375,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>40</y>
+       <y>50</y>
        <width>381</width>
        <height>21</height>
       </rect>
@@ -1040,9 +2388,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>380</x>
-       <y>110</y>
+       <y>120</y>
        <width>20</width>
-       <height>321</height>
+       <height>311</height>
       </rect>
      </property>
      <property name="orientation">
@@ -1052,9 +2400,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
     <widget class="QPushButton" name="Routes_SaveSettings">
      <property name="geometry">
       <rect>
-       <x>410</x>
-       <y>0</y>
-       <width>141</width>
+       <x>10</x>
+       <y>10</y>
+       <width>121</width>
        <height>21</height>
       </rect>
      </property>
@@ -1069,7 +2417,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>60</y>
+       <y>70</y>
        <width>381</width>
        <height>21</height>
       </rect>
@@ -1082,7 +2430,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>80</y>
+       <y>90</y>
        <width>381</width>
        <height>21</height>
       </rect>
@@ -1097,7 +2445,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <x>10</x>
        <y>490</y>
        <width>561</width>
-       <height>31</height>
+       <height>21</height>
       </rect>
      </property>
      <property name="value">
@@ -1133,7 +2481,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>40</y>
+       <y>50</y>
        <width>301</width>
        <height>21</height>
       </rect>
@@ -1146,7 +2494,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>20</y>
+       <y>30</y>
        <width>301</width>
        <height>21</height>
       </rect>
@@ -1159,7 +2507,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>80</y>
+       <y>90</y>
        <width>301</width>
        <height>21</height>
       </rect>
@@ -1172,7 +2520,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>60</y>
+       <y>70</y>
        <width>301</width>
        <height>21</height>
       </rect>
@@ -1188,7 +2536,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>120</y>
+       <y>130</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1213,7 +2561,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>270</y>
+       <y>280</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1223,7 +2571,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>210</y>
+       <y>220</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1233,7 +2581,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>300</y>
+       <y>310</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1258,7 +2606,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>330</y>
+       <y>340</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1271,7 +2619,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>360</y>
+       <y>370</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1292,7 +2640,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>360</y>
+       <y>370</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1317,7 +2665,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>240</y>
+       <y>250</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -1336,7 +2684,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>360</y>
+       <y>370</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1346,7 +2694,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>390</y>
+       <y>400</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1371,7 +2719,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>270</y>
+       <y>280</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1392,7 +2740,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>300</y>
+       <y>310</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1405,7 +2753,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>150</y>
+       <y>160</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1426,7 +2774,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>330</y>
+       <y>340</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1448,7 +2796,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>330</y>
+       <y>340</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1469,7 +2817,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>390</y>
+       <y>400</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1479,7 +2827,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>210</y>
+       <y>220</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1515,7 +2863,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>240</y>
+       <y>250</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1539,7 +2887,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>150</y>
+       <y>160</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1552,7 +2900,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>300</y>
+       <y>310</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1573,7 +2921,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>180</y>
+       <y>190</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1586,7 +2934,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>120</y>
+       <y>130</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1613,7 +2961,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>180</y>
+       <y>190</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1637,7 +2985,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>390</y>
+       <y>400</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1661,7 +3009,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>270</y>
+       <y>280</y>
        <width>91</width>
        <height>20</height>
       </rect>
@@ -1680,7 +3028,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>180</y>
+       <y>190</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1712,7 +3060,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>240</y>
+       <y>250</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1725,7 +3073,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>210</y>
+       <y>220</y>
        <width>211</width>
        <height>20</height>
       </rect>
@@ -1746,7 +3094,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>240</x>
-       <y>150</y>
+       <y>160</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1771,7 +3119,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>340</x>
-       <y>120</y>
+       <y>130</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1781,7 +3129,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>230</y>
+       <y>240</y>
        <width>261</width>
        <height>61</height>
       </rect>
@@ -1803,20 +3151,20 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>210</y>
+       <y>220</y>
        <width>291</width>
        <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>(String values separated by comma):</string>
+      <string>Transportation Mode (string values separated by comma):</string>
      </property>
     </widget>
     <widget class="QTextEdit" name="Routes_AdditionalParameters">
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>320</y>
+       <y>330</y>
        <width>261</width>
        <height>91</height>
       </rect>
@@ -1834,24 +3182,11 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Type in anything OTP can understand... like for example: &amp;minTransferTime=50&amp;bikeSwitchCost=3</string>
      </property>
     </widget>
-    <widget class="QLabel" name="label_2">
-     <property name="geometry">
-      <rect>
-       <x>410</x>
-       <y>190</y>
-       <width>201</width>
-       <height>21</height>
-      </rect>
-     </property>
-     <property name="text">
-      <string>Transportation Mode</string>
-     </property>
-    </widget>
     <widget class="QgsPropertyOverrideButton" name="Routes_AdditionalParameters_Override">
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>320</y>
+       <y>330</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1861,7 +3196,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>300</y>
+       <y>310</y>
        <width>201</width>
        <height>21</height>
       </rect>
@@ -1874,7 +3209,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>230</y>
+       <y>240</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1884,7 +3219,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>580</x>
-       <y>140</y>
+       <y>150</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1903,7 +3238,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>140</y>
+       <y>150</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -1916,7 +3251,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>140</y>
+       <y>150</y>
        <width>131</width>
        <height>20</height>
       </rect>
@@ -1937,7 +3272,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>580</x>
-       <y>170</y>
+       <y>180</y>
        <width>91</width>
        <height>22</height>
       </rect>
@@ -1983,7 +3318,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>170</y>
+       <y>180</y>
        <width>131</width>
        <height>20</height>
       </rect>
@@ -2004,7 +3339,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>680</x>
-       <y>170</y>
+       <y>180</y>
        <width>30</width>
        <height>26</height>
       </rect>
@@ -2017,7 +3352,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>110</y>
+       <y>120</y>
        <width>301</width>
        <height>20</height>
       </rect>
@@ -2039,7 +3374,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>20</y>
+       <y>30</y>
        <width>231</width>
        <height>20</height>
       </rect>
@@ -2064,7 +3399,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>160</x>
-       <y>60</y>
+       <y>70</y>
        <width>231</width>
        <height>20</height>
       </rect>
@@ -2086,7 +3421,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>130</y>
+       <y>140</y>
        <width>301</width>
        <height>16</height>
       </rect>
@@ -2101,7 +3436,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <x>590</x>
        <y>490</y>
        <width>121</width>
-       <height>31</height>
+       <height>61</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -2109,6 +3444,51 @@ Do not use an option if it is not compatible with the selected Mode. For example
      </property>
      <property name="text">
       <string>Cancel</string>
+     </property>
+    </widget>
+    <widget class="QLabel" name="Routes_StatusBox">
+     <property name="geometry">
+      <rect>
+       <x>10</x>
+       <y>520</y>
+       <width>561</width>
+       <height>31</height>
+      </rect>
+     </property>
+     <property name="font">
+      <font>
+       <family>MS UI Gothic</family>
+       <pointsize>8</pointsize>
+       <weight>50</weight>
+       <bold>false</bold>
+      </font>
+     </property>
+     <property name="toolTip">
+      <string/>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::Box</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Sunken</enum>
+     </property>
+     <property name="midLineWidth">
+      <number>0</number>
+     </property>
+     <property name="text">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Status Information:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="textFormat">
+      <enum>Qt::AutoText</enum>
+     </property>
+     <property name="alignment">
+      <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop</set>
+     </property>
+     <property name="wordWrap">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
      </property>
     </widget>
    </widget>
@@ -2131,6 +3511,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
     <attribute name="title">
      <string>General Settings</string>
     </attribute>
+    <attribute name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Set the server to use and other general settings.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </attribute>
     <widget class="QLabel" name="label_13">
      <property name="geometry">
       <rect>
@@ -2143,12 +3526,15 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="text">
       <string>Server URL including path to OTP-Router ending with a slash (for example &quot;http://localhost:8080/otp/routers/default/&quot;:</string>
      </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+     </property>
     </widget>
     <widget class="QPushButton" name="GeneralSettings_Save">
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>470</y>
+       <y>500</y>
        <width>231</width>
        <height>41</height>
       </rect>
@@ -2236,6 +3622,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="wordWrap">
       <bool>true</bool>
      </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+     </property>
     </widget>
     <widget class="QCheckBox" name="GeneralSettings_CustomTempFolder_Use">
      <property name="geometry">
@@ -2293,7 +3682,7 @@ to save temporary isochrone files</string>
      <property name="geometry">
       <rect>
        <x>250</x>
-       <y>470</y>
+       <y>500</y>
        <width>231</width>
        <height>41</height>
       </rect>
@@ -2379,6 +3768,9 @@ to save temporary isochrone files</string>
     <attribute name="title">
      <string>About</string>
     </attribute>
+    <attribute name="toolTip">
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Learn more about this PlugIn.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+    </attribute>
     <widget class="QLabel" name="label_12">
      <property name="geometry">
       <rect>
@@ -2389,10 +3781,16 @@ to save temporary isochrone files</string>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 1.0&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;Please report bugs and issues on &lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 1.1&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;Please report bugs and issues on &lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
+     </property>
+     <property name="openExternalLinks">
+      <bool>true</bool>
+     </property>
+     <property name="textInteractionFlags">
+      <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
      </property>
     </widget>
    </widget>

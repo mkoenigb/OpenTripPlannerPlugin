@@ -500,7 +500,5 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         else:
             QgsMessageLog.logMessage("##### Isochrones job done in " + str(isochrones_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
-        QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
-        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
 
         self.isochrones_finished.emit(isochrones_memorylayer_vl, self.isochrones_state, str(unique_errors), str(isochrones_runtime))

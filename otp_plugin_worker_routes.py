@@ -936,7 +936,5 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         else:
             QgsMessageLog.logMessage("##### Routes job done in " + str(routes_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
-        QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)
-        QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
         self.routes_finished.emit(routes_memorylayer_vl, self.routes_state, str(unique_errors), str(routes_runtime))
         
