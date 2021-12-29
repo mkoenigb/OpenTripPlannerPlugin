@@ -818,7 +818,7 @@ If not checked, the servers default setting will be used. Servers default is NUL
 Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
      </property>
      <property name="text">
-      <string>Only Wheelchair accessible routes:</string>
+      <string>Only Wheelchair accessible Routes:</string>
      </property>
      <property name="checked">
       <bool>false</bool>
@@ -961,12 +961,12 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <rect>
        <x>410</x>
        <y>130</y>
-       <width>301</width>
+       <width>311</width>
        <height>21</height>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Isochrone Intervals in Sec's (int values separated by comma):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Isochrone Intervals in Seconds (int values separated by comma):&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
     <widget class="QLabel" name="Isochrones_StatusBox">
@@ -1589,7 +1589,7 @@ If not checked, the servers default setting will be used. Servers default is NUL
 Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
      </property>
      <property name="text">
-      <string>Only Wheelchair accessible routes:</string>
+      <string>Only Wheelchair accessible Routes:</string>
      </property>
      <property name="checked">
       <bool>false</bool>
@@ -1940,9 +1940,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>410</x>
-       <y>10</y>
+       <y>0</y>
        <width>301</width>
-       <height>161</height>
+       <height>171</height>
       </rect>
      </property>
      <property name="title">
@@ -1953,12 +1953,12 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <rect>
         <x>10</x>
         <y>20</y>
-        <width>61</width>
+        <width>281</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>Max</string>
+       <string>Maximum only (via Dissolve)</string>
       </property>
       <property name="checked">
        <bool>true</bool>
@@ -1972,108 +1972,18 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <rect>
         <x>10</x>
         <y>40</y>
-        <width>61</width>
+        <width>281</width>
         <height>17</height>
        </rect>
       </property>
       <property name="text">
-       <string>Max V2</string>
+       <string>All possible Aggregations (via Union; requires GRASS)</string>
       </property>
-      <property name="autoExclusive">
+      <property name="checkable">
        <bool>true</bool>
       </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBox_3">
-      <property name="geometry">
-       <rect>
-        <x>70</x>
-        <y>20</y>
-        <width>51</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Min</string>
-      </property>
-      <property name="autoExclusive">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBox_4">
-      <property name="geometry">
-       <rect>
-        <x>70</x>
-        <y>40</y>
-        <width>51</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Range</string>
-      </property>
-      <property name="autoExclusive">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBox_5">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>20</y>
-        <width>61</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Median</string>
-      </property>
-      <property name="autoExclusive">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBox_6">
-      <property name="geometry">
-       <rect>
-        <x>130</x>
-        <y>40</y>
-        <width>61</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Mean</string>
-      </property>
-      <property name="autoExclusive">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBox_7">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>20</y>
-        <width>61</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Sum</string>
-      </property>
-      <property name="autoExclusive">
-       <bool>true</bool>
-      </property>
-     </widget>
-     <widget class="QCheckBox" name="checkBox_8">
-      <property name="geometry">
-       <rect>
-        <x>190</x>
-        <y>40</y>
-        <width>61</width>
-        <height>17</height>
-       </rect>
-      </property>
-      <property name="text">
-       <string>Count</string>
+      <property name="checked">
+       <bool>false</bool>
       </property>
       <property name="autoExclusive">
        <bool>true</bool>
@@ -2083,7 +1993,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>70</y>
+        <y>80</y>
         <width>111</width>
         <height>21</height>
        </rect>
@@ -2096,7 +2006,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>100</y>
+        <y>110</y>
         <width>111</width>
         <height>21</height>
        </rect>
@@ -2109,7 +2019,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <property name="geometry">
        <rect>
         <x>10</x>
-        <y>130</y>
+        <y>140</y>
         <width>141</width>
         <height>21</height>
        </rect>
@@ -2122,7 +2032,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>70</y>
+        <y>80</y>
         <width>131</width>
         <height>22</height>
        </rect>
@@ -2151,7 +2061,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <property name="geometry">
        <rect>
         <x>130</x>
-        <y>100</y>
+        <y>110</y>
         <width>131</width>
         <height>22</height>
        </rect>
@@ -2187,7 +2097,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <property name="geometry">
        <rect>
         <x>160</x>
-        <y>130</y>
+        <y>140</y>
         <width>101</width>
         <height>22</height>
        </rect>
@@ -2212,7 +2122,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>130</y>
+        <y>140</y>
         <width>30</width>
         <height>26</height>
        </rect>
@@ -2222,7 +2132,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>100</y>
+        <y>110</y>
         <width>30</width>
         <height>26</height>
        </rect>
@@ -2232,10 +2142,29 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <property name="geometry">
        <rect>
         <x>270</x>
-        <y>70</y>
+        <y>80</y>
         <width>30</width>
         <height>26</height>
        </rect>
+      </property>
+     </widget>
+     <widget class="QCheckBox" name="checkBox_3">
+      <property name="geometry">
+       <rect>
+        <x>10</x>
+        <y>60</y>
+        <width>281</width>
+        <height>17</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>Raw Results (no Aggregation)</string>
+      </property>
+      <property name="checked">
+       <bool>false</bool>
+      </property>
+      <property name="autoExclusive">
+       <bool>true</bool>
       </property>
      </widget>
     </widget>
@@ -2730,7 +2659,7 @@ If not checked, the servers default setting will be used. Servers default is NUL
 Do not use an option if it is not compatible with the selected Mode. For example Travelmode &quot;CAR&quot; is not compatible with &quot;BikeSpeed&quot;. If you are unsure about compatibility, check OTP API Docs.</string>
      </property>
      <property name="text">
-      <string>Only Wheelchair accessible routes:</string>
+      <string>Only Wheelchair accessible Routes:</string>
      </property>
      <property name="checked">
       <bool>false</bool>
