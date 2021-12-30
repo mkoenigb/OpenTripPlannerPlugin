@@ -1013,14 +1013,14 @@ Do not use an option if it is not compatible with the selected Mode. For example
      </property>
     </widget>
    </widget>
-   <widget class="QWidget" name="tab_run_maxisochrones">
+   <widget class="QWidget" name="tab_run_aggregated_isochrones">
     <attribute name="title">
      <string>Aggregated Isochrones</string>
     </attribute>
     <attribute name="toolTip">
      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between different possible aggregated service areas in a time range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </attribute>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_MaxWalkDistance_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_MaxWalkDistance_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1030,7 +1030,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_WaitReluctance_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_WaitReluctance_Use">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1054,7 +1054,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_MaxOffroadDistance_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_MaxOffroadDistance_Use">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1078,7 +1078,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="MaxIsochrones_RequestIsochrones">
+    <widget class="QPushButton" name="AggregatedIsochrones_RequestIsochrones">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -1094,7 +1094,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Request Aggregated Isochrones</string>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_MaxOffroadDistance_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_MaxOffroadDistance_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1104,7 +1104,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QSpinBox" name="MaxIsochrones_MaxOffroadDistance">
+    <widget class="QSpinBox" name="AggregatedIsochrones_MaxOffroadDistance">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1139,7 +1139,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Use</string>
      </property>
     </widget>
-    <widget class="QTextEdit" name="MaxIsochrones_Interval">
+    <widget class="QTextEdit" name="AggregatedIsochrones_Interval">
      <property name="geometry">
       <rect>
        <x>410</x>
@@ -1164,7 +1164,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>300,600,900</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_MaxTransfers_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_MaxTransfers_Use">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1188,7 +1188,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="MaxIsochrones_BikeSpeed">
+    <widget class="QDoubleSpinBox" name="AggregatedIsochrones_BikeSpeed">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1213,7 +1213,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <double>17.699999999999999</double>
      </property>
     </widget>
-    <widget class="QTextEdit" name="MaxIsochrones_AdditionalParameters">
+    <widget class="QTextEdit" name="AggregatedIsochrones_AdditionalParameters">
      <property name="geometry">
       <rect>
        <x>410</x>
@@ -1235,7 +1235,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Type in anything OTP can understand... like for example: &amp;minTransferTime=50&amp;bikeSwitchCost=3</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_ArriveBy_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_ArriveBy_Use">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1262,7 +1262,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_BikeSpeed_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_BikeSpeed_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1272,7 +1272,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_WalkSpeed_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_WalkSpeed_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1282,7 +1282,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_PrecisionMeters_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_PrecisionMeters_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1292,7 +1292,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_Wheelchair_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_Wheelchair_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1302,7 +1302,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_BikeSpeed_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_BikeSpeed_Use">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1326,7 +1326,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QSpinBox" name="MaxIsochrones_MaxWalkDistance">
+    <widget class="QSpinBox" name="AggregatedIsochrones_MaxWalkDistance">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1348,7 +1348,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <number>1000</number>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_Interval_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_Interval_Override">
      <property name="geometry">
       <rect>
        <x>680</x>
@@ -1361,7 +1361,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Enter isochrone intervals in seconds (Integer) separated by comma --&amp;gt; String. All values need to be strings, so for a single interval 60 won't work, but '60' will work. Use to_string function if needed.&lt;/p&gt;&lt;p&gt;For example:&lt;br/&gt;'60' or '60,180,300' or '60'||','||'300'||','||'600'||&amp;quot;FieldnameOfInterval&amp;quot;||','||&amp;quot;FieldnameOfMaxInterval&amp;quot;&lt;/p&gt;&lt;p&gt;Default if nothing is specified: 60,120,180,240,300&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_AdditionalParameters_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_AdditionalParameters_Override">
      <property name="geometry">
       <rect>
        <x>680</x>
@@ -1371,7 +1371,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_ArriveBy">
+    <widget class="QCheckBox" name="AggregatedIsochrones_ArriveBy">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1393,7 +1393,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QTextEdit" name="MaxIsochrones_TransportationMode">
+    <widget class="QTextEdit" name="AggregatedIsochrones_TransportationMode">
      <property name="geometry">
       <rect>
        <x>410</x>
@@ -1415,7 +1415,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>WALK,TRANSIT</string>
      </property>
     </widget>
-    <widget class="QPushButton" name="MaxIsochrones_Cancel">
+    <widget class="QPushButton" name="AggregatedIsochrones_Cancel">
      <property name="geometry">
       <rect>
        <x>590</x>
@@ -1431,7 +1431,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Cancel</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="MaxIsochrones_WaitReluctance">
+    <widget class="QDoubleSpinBox" name="AggregatedIsochrones_WaitReluctance">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1456,7 +1456,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <double>0.950000000000000</double>
      </property>
     </widget>
-    <widget class="QSpinBox" name="MaxIsochrones_MaxTransfers">
+    <widget class="QSpinBox" name="AggregatedIsochrones_MaxTransfers">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1475,7 +1475,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <number>5</number>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_WaitReluctance_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_WaitReluctance_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1485,7 +1485,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QgsMapLayerComboBox" name="MaxIsochrones_SelectInputLayer">
+    <widget class="QgsMapLayerComboBox" name="AggregatedIsochrones_SelectInputLayer">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -1498,7 +1498,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Select a Point Layer you wish to use for calculation. Can be in any CRS which can be transformed to WGS 84 by QGIS.</string>
      </property>
     </widget>
-    <widget class="QSpinBox" name="MaxIsochrones_PrecisionMeters">
+    <widget class="QSpinBox" name="AggregatedIsochrones_PrecisionMeters">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1523,7 +1523,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <number>200</number>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_MaxWalkDistance_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_MaxWalkDistance_Use">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1547,7 +1547,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_PrecisionMeters_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_PrecisionMeters_Use">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1571,7 +1571,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_Wheelchair_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_Wheelchair_Use">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1595,7 +1595,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QPushButton" name="MaxIsochrones_RestoreDefaultSettings">
+    <widget class="QPushButton" name="AggregatedIsochrones_RestoreDefaultSettings">
      <property name="geometry">
       <rect>
        <x>130</x>
@@ -1624,7 +1624,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Additional Parameters as String:</string>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="MaxIsochrones_WalkSpeed">
+    <widget class="QDoubleSpinBox" name="AggregatedIsochrones_WalkSpeed">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1649,7 +1649,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <double>4.828032000000000</double>
      </property>
     </widget>
-    <widget class="QPushButton" name="MaxIsochrones_SaveSettings">
+    <widget class="QPushButton" name="AggregatedIsochrones_SaveSettings">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -1678,7 +1678,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Select Input Layer:</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_Wheelchair">
+    <widget class="QCheckBox" name="AggregatedIsochrones_Wheelchair">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1700,7 +1700,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_ArriveBy_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_ArriveBy_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1723,7 +1723,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Isochrone Intervals in Seconds (int values separated by comma):</string>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_WalkSpeed_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_WalkSpeed_Use">
      <property name="enabled">
       <bool>true</bool>
      </property>
@@ -1750,7 +1750,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_MaxTransfers_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_MaxTransfers_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1760,7 +1760,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QProgressBar" name="MaxIsochrones_ProgressBar">
+    <widget class="QProgressBar" name="AggregatedIsochrones_ProgressBar">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -1795,7 +1795,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <string>Transportation Mode (string values separated by comma):</string>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_TransportationMode_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_TransportationMode_Override">
      <property name="geometry">
       <rect>
        <x>680</x>
@@ -1818,7 +1818,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <enum>Qt::Vertical</enum>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_ClampInitialWait_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_ClampInitialWait_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1828,7 +1828,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_ClampInitialWait_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_ClampInitialWait_Use">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -1852,7 +1852,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QDoubleSpinBox" name="MaxIsochrones_WaitAtBeginning">
+    <widget class="QDoubleSpinBox" name="AggregatedIsochrones_WaitAtBeginning">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1877,7 +1877,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <double>1.000000000000000</double>
      </property>
     </widget>
-    <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_WaitAtBeginning_Override">
+    <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_WaitAtBeginning_Override">
      <property name="geometry">
       <rect>
        <x>340</x>
@@ -1887,7 +1887,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
     </widget>
-    <widget class="QCheckBox" name="MaxIsochrones_WaitAtBeginning_Use">
+    <widget class="QCheckBox" name="AggregatedIsochrones_WaitAtBeginning_Use">
      <property name="enabled">
       <bool>false</bool>
      </property>
@@ -1911,7 +1911,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <bool>false</bool>
      </property>
     </widget>
-    <widget class="QSpinBox" name="MaxIsochrones_ClampInitialWait">
+    <widget class="QSpinBox" name="AggregatedIsochrones_ClampInitialWait">
      <property name="geometry">
       <rect>
        <x>240</x>
@@ -1948,7 +1948,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="title">
       <string>Aggregation</string>
      </property>
-     <widget class="QCheckBox" name="checkBox">
+     <widget class="QCheckBox" name="AggregatedIsochrones_MaxDissolve_Use">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -1967,7 +1967,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <bool>true</bool>
       </property>
      </widget>
-     <widget class="QCheckBox" name="checkBox_2">
+     <widget class="QCheckBox" name="AggregatedIsochrones_AllUnion_Use">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -2028,7 +2028,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <string>Request-Interval in Seconds:</string>
       </property>
      </widget>
-     <widget class="QDateTimeEdit" name="MaxIsochrones_FromDateTime">
+     <widget class="QDateTimeEdit" name="AggregatedIsochrones_FromDateTime">
       <property name="geometry">
        <rect>
         <x>130</x>
@@ -2057,7 +2057,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <string>yyyy-MM-dd HH:mm:ss</string>
       </property>
      </widget>
-     <widget class="QDateTimeEdit" name="MaxIsochrones_ToDateTime">
+     <widget class="QDateTimeEdit" name="AggregatedIsochrones_ToDateTime">
       <property name="geometry">
        <rect>
         <x>130</x>
@@ -2093,7 +2093,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <string>yyyy-MM-dd HH:mm:ss</string>
       </property>
      </widget>
-     <widget class="QSpinBox" name="MaxIsochrones_RequestInterval">
+     <widget class="QSpinBox" name="AggregatedIsochrones_RequestInterval">
       <property name="geometry">
        <rect>
         <x>160</x>
@@ -2118,7 +2118,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <number>600</number>
       </property>
      </widget>
-     <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_RequestInterval_Override">
+     <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_RequestInterval_Override">
       <property name="geometry">
        <rect>
         <x>270</x>
@@ -2128,7 +2128,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        </rect>
       </property>
      </widget>
-     <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_ToDateTime_Override">
+     <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_ToDateTime_Override">
       <property name="geometry">
        <rect>
         <x>270</x>
@@ -2138,7 +2138,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        </rect>
       </property>
      </widget>
-     <widget class="QgsPropertyOverrideButton" name="MaxIsochrones_FromDateTime_Override">
+     <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_FromDateTime_Override">
       <property name="geometry">
        <rect>
         <x>270</x>
@@ -2148,7 +2148,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        </rect>
       </property>
      </widget>
-     <widget class="QCheckBox" name="checkBox_3">
+     <widget class="QCheckBox" name="AggregatedIsochrones_NoAggRaw_Use">
       <property name="geometry">
        <rect>
         <x>10</x>
@@ -2168,7 +2168,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </property>
      </widget>
     </widget>
-    <widget class="QLabel" name="MaxIsochrones_StatusBox">
+    <widget class="QLabel" name="AggregatedIsochrones_StatusBox">
      <property name="geometry">
       <rect>
        <x>10</x>
@@ -2211,58 +2211,58 @@ Do not use an option if it is not compatible with the selected Mode. For example
      </property>
     </widget>
     <zorder>groupBox</zorder>
-    <zorder>MaxIsochrones_MaxWalkDistance_Override</zorder>
-    <zorder>MaxIsochrones_WaitReluctance_Use</zorder>
-    <zorder>MaxIsochrones_MaxOffroadDistance_Use</zorder>
-    <zorder>MaxIsochrones_RequestIsochrones</zorder>
-    <zorder>MaxIsochrones_MaxOffroadDistance_Override</zorder>
-    <zorder>MaxIsochrones_MaxOffroadDistance</zorder>
+    <zorder>AggregatedIsochrones_MaxWalkDistance_Override</zorder>
+    <zorder>AggregatedIsochrones_WaitReluctance_Use</zorder>
+    <zorder>AggregatedIsochrones_MaxOffroadDistance_Use</zorder>
+    <zorder>AggregatedIsochrones_RequestIsochrones</zorder>
+    <zorder>AggregatedIsochrones_MaxOffroadDistance_Override</zorder>
+    <zorder>AggregatedIsochrones_MaxOffroadDistance</zorder>
     <zorder>label_21</zorder>
-    <zorder>MaxIsochrones_Interval</zorder>
-    <zorder>MaxIsochrones_MaxTransfers_Use</zorder>
-    <zorder>MaxIsochrones_BikeSpeed</zorder>
-    <zorder>MaxIsochrones_AdditionalParameters</zorder>
-    <zorder>MaxIsochrones_ArriveBy_Use</zorder>
-    <zorder>MaxIsochrones_BikeSpeed_Override</zorder>
-    <zorder>MaxIsochrones_WalkSpeed_Override</zorder>
-    <zorder>MaxIsochrones_PrecisionMeters_Override</zorder>
-    <zorder>MaxIsochrones_Wheelchair_Override</zorder>
-    <zorder>MaxIsochrones_BikeSpeed_Use</zorder>
-    <zorder>MaxIsochrones_MaxWalkDistance</zorder>
-    <zorder>MaxIsochrones_Interval_Override</zorder>
-    <zorder>MaxIsochrones_AdditionalParameters_Override</zorder>
-    <zorder>MaxIsochrones_ArriveBy</zorder>
-    <zorder>MaxIsochrones_TransportationMode</zorder>
-    <zorder>MaxIsochrones_Cancel</zorder>
-    <zorder>MaxIsochrones_WaitReluctance</zorder>
-    <zorder>MaxIsochrones_MaxTransfers</zorder>
-    <zorder>MaxIsochrones_WaitReluctance_Override</zorder>
-    <zorder>MaxIsochrones_SelectInputLayer</zorder>
-    <zorder>MaxIsochrones_PrecisionMeters</zorder>
-    <zorder>MaxIsochrones_MaxWalkDistance_Use</zorder>
-    <zorder>MaxIsochrones_PrecisionMeters_Use</zorder>
-    <zorder>MaxIsochrones_Wheelchair_Use</zorder>
-    <zorder>MaxIsochrones_RestoreDefaultSettings</zorder>
+    <zorder>AggregatedIsochrones_Interval</zorder>
+    <zorder>AggregatedIsochrones_MaxTransfers_Use</zorder>
+    <zorder>AggregatedIsochrones_BikeSpeed</zorder>
+    <zorder>AggregatedIsochrones_AdditionalParameters</zorder>
+    <zorder>AggregatedIsochrones_ArriveBy_Use</zorder>
+    <zorder>AggregatedIsochrones_BikeSpeed_Override</zorder>
+    <zorder>AggregatedIsochrones_WalkSpeed_Override</zorder>
+    <zorder>AggregatedIsochrones_PrecisionMeters_Override</zorder>
+    <zorder>AggregatedIsochrones_Wheelchair_Override</zorder>
+    <zorder>AggregatedIsochrones_BikeSpeed_Use</zorder>
+    <zorder>AggregatedIsochrones_MaxWalkDistance</zorder>
+    <zorder>AggregatedIsochrones_Interval_Override</zorder>
+    <zorder>AggregatedIsochrones_AdditionalParameters_Override</zorder>
+    <zorder>AggregatedIsochrones_ArriveBy</zorder>
+    <zorder>AggregatedIsochrones_TransportationMode</zorder>
+    <zorder>AggregatedIsochrones_Cancel</zorder>
+    <zorder>AggregatedIsochrones_WaitReluctance</zorder>
+    <zorder>AggregatedIsochrones_MaxTransfers</zorder>
+    <zorder>AggregatedIsochrones_WaitReluctance_Override</zorder>
+    <zorder>AggregatedIsochrones_SelectInputLayer</zorder>
+    <zorder>AggregatedIsochrones_PrecisionMeters</zorder>
+    <zorder>AggregatedIsochrones_MaxWalkDistance_Use</zorder>
+    <zorder>AggregatedIsochrones_PrecisionMeters_Use</zorder>
+    <zorder>AggregatedIsochrones_Wheelchair_Use</zorder>
+    <zorder>AggregatedIsochrones_RestoreDefaultSettings</zorder>
     <zorder>label_23</zorder>
-    <zorder>MaxIsochrones_WalkSpeed</zorder>
-    <zorder>MaxIsochrones_SaveSettings</zorder>
+    <zorder>AggregatedIsochrones_WalkSpeed</zorder>
+    <zorder>AggregatedIsochrones_SaveSettings</zorder>
     <zorder>label_11</zorder>
-    <zorder>MaxIsochrones_Wheelchair</zorder>
-    <zorder>MaxIsochrones_ArriveBy_Override</zorder>
+    <zorder>AggregatedIsochrones_Wheelchair</zorder>
+    <zorder>AggregatedIsochrones_ArriveBy_Override</zorder>
     <zorder>label_4</zorder>
-    <zorder>MaxIsochrones_WalkSpeed_Use</zorder>
-    <zorder>MaxIsochrones_MaxTransfers_Override</zorder>
-    <zorder>MaxIsochrones_ProgressBar</zorder>
+    <zorder>AggregatedIsochrones_WalkSpeed_Use</zorder>
+    <zorder>AggregatedIsochrones_MaxTransfers_Override</zorder>
+    <zorder>AggregatedIsochrones_ProgressBar</zorder>
     <zorder>label_5</zorder>
-    <zorder>MaxIsochrones_TransportationMode_Override</zorder>
+    <zorder>AggregatedIsochrones_TransportationMode_Override</zorder>
     <zorder>line_5</zorder>
-    <zorder>MaxIsochrones_ClampInitialWait_Override</zorder>
-    <zorder>MaxIsochrones_ClampInitialWait_Use</zorder>
-    <zorder>MaxIsochrones_WaitAtBeginning</zorder>
-    <zorder>MaxIsochrones_WaitAtBeginning_Override</zorder>
-    <zorder>MaxIsochrones_WaitAtBeginning_Use</zorder>
-    <zorder>MaxIsochrones_ClampInitialWait</zorder>
-    <zorder>MaxIsochrones_StatusBox</zorder>
+    <zorder>AggregatedIsochrones_ClampInitialWait_Override</zorder>
+    <zorder>AggregatedIsochrones_ClampInitialWait_Use</zorder>
+    <zorder>AggregatedIsochrones_WaitAtBeginning</zorder>
+    <zorder>AggregatedIsochrones_WaitAtBeginning_Override</zorder>
+    <zorder>AggregatedIsochrones_WaitAtBeginning_Use</zorder>
+    <zorder>AggregatedIsochrones_ClampInitialWait</zorder>
+    <zorder>AggregatedIsochrones_StatusBox</zorder>
    </widget>
    <widget class="QWidget" name="tab_run_routes">
     <attribute name="title">
@@ -3710,7 +3710,7 @@ to save temporary isochrone files</string>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 1.1&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;Please report bugs and issues on &lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 1.0.1 (experimental)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;Please report bugs and issues on &lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
