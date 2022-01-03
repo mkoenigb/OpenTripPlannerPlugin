@@ -305,8 +305,9 @@ class OpenTripPlannerPlugin():
         except:
             pass
        
-    def aggregated_isochronesReportProgress(self, n): # method to report the progress to gui
-        self.dlg.AggregatedIsochrones_ProgressBar.setValue(n) # set the current progress in progress bar
+    def aggregated_isochronesReportProgress(self, progress, status): # method to report the progress to gui
+        self.dlg.AggregatedIsochrones_ProgressBar.setValue(progress) # set the current progress in progress bar
+        self.dlg.AggregatedIsochrones_StatusBox.setText(status)
 
     def aggregated_isochronesFinished(self, aggregated_isochrones_resultlayer, aggregated_isochrones_state, unique_errors="", runtime="00:00:00 (unknown)"): # method to interact with gui when thread is finished or canceled
         QgsProject.instance().addMapLayer(aggregated_isochrones_resultlayer) # Show resultlayer in project

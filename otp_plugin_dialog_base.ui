@@ -42,7 +42,7 @@
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>490</y>
+       <y>480</y>
        <width>561</width>
        <height>21</height>
       </rect>
@@ -156,7 +156,7 @@
        <x>10</x>
        <y>440</y>
        <width>701</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -944,9 +944,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>590</x>
-       <y>491</y>
+       <y>481</y>
        <width>121</width>
-       <height>61</height>
+       <height>71</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -973,9 +973,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>520</y>
+       <y>510</y>
        <width>561</width>
-       <height>31</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -1084,7 +1084,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <x>10</x>
        <y>440</y>
        <width>701</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -1419,9 +1419,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>590</x>
-       <y>491</y>
+       <y>481</y>
        <width>121</width>
-       <height>61</height>
+       <height>71</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -1764,7 +1764,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>490</y>
+       <y>480</y>
        <width>561</width>
        <height>21</height>
       </rect>
@@ -2172,9 +2172,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>520</y>
+       <y>510</y>
        <width>561</width>
-       <height>31</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -2372,7 +2372,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>490</y>
+       <y>480</y>
        <width>561</width>
        <height>21</height>
       </rect>
@@ -2396,7 +2396,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
        <x>10</x>
        <y>440</y>
        <width>701</width>
-       <height>41</height>
+       <height>31</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -3363,9 +3363,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>590</x>
-       <y>490</y>
+       <y>480</y>
        <width>121</width>
-       <height>61</height>
+       <height>71</height>
       </rect>
      </property>
      <property name="toolTip">
@@ -3379,9 +3379,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <property name="geometry">
       <rect>
        <x>10</x>
-       <y>520</y>
+       <y>510</y>
        <width>561</width>
-       <height>31</height>
+       <height>41</height>
       </rect>
      </property>
      <property name="font">
@@ -3710,7 +3710,7 @@ to save temporary isochrone files</string>
       </rect>
      </property>
      <property name="text">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 1.0.1 (experimental)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;Please report bugs and issues on &lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;OpenTripPlanner Plugin for QGIS 3&lt;br/&gt;Version 1.0.1 (experimental)&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;This plugin lets you access functionalities of OpenTripPlanner from within QGIS&lt;br/&gt;and provides different aggregation methods for isochrones by timerange.&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;© Mario Königbauer 2019 - Today&lt;/p&gt;&lt;p&gt;GNU Lesser General Public License v3.0&lt;/p&gt;&lt;p&gt;&lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;Contributions, tips &amp;amp; tricks as well as pull requests &lt;br/&gt;for code improvements and new features are always appreciated!&lt;/p&gt;&lt;p&gt;Please report bugs and issues on &lt;a href=&quot;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&quot;&gt;&lt;span style=&quot; text-decoration: underline; color:#0000ff;&quot;&gt;https://github.com/mkoenigb/OpenTripPlannerPlugin/issues&lt;/span&gt;&lt;/a&gt;&lt;/p&gt;&lt;p&gt;&lt;br/&gt;&lt;/p&gt;&lt;p&gt;Thanks to everyone providing help, free software, tools and tutorials!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="alignment">
       <set>Qt::AlignCenter</set>
