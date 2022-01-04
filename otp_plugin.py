@@ -325,6 +325,8 @@ class OpenTripPlannerPlugin():
             self.iface.messageBar().pushMessage("Warning", " No Isochrones to create - Check your settings and retry.", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6) 
         elif aggregated_isochrones_state == 4:
             self.iface.messageBar().pushMessage("Warning", " There is something wrong with your DateTime-Settings, check them and try again.", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6) 
+        elif aggregated_isochrones_state == 99:
+            self.iface.messageBar().pushMessage("Debugging", " Just having some debugging fun :)", MESSAGE_CATEGORY, level=Qgis.Info, duration=6) 
         else:
             self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
             

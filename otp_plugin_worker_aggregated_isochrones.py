@@ -138,7 +138,7 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                 aggregated_isochrone_statusinformation = ('No Isochrones to create. Inputlayer is empty. Cancelling execution.')
                 self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(aggregated_isochrone_statusinformation))
                 
-            for inputlayer_feature in self.gf.aggregated_isochrones_selectedlayer.getFeatures():
+            for inputlayer_iteration, inputlayer_feature in enumerate(self.gf.aggregated_isochrones_selectedlayer.getFeatures()):
                 if self.stopaggregated_isochronesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
                     self.aggregated_isochrones_state = 2
                     break
@@ -489,134 +489,67 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                         tmp_aggregated_isochrones_vl.updateFields()
                         tmp_aggregated_isochrones_vl.updateExtents()
                         
-                        #self.aggregated_isochrones_finished.emit(isochrone_responseLayer, 6, str('bla'), str('blubb'))
-                        #self.aggregated_isochrones_finished.emit(tmp_aggregated_isochrones_vl, 6, str('bla'), str('blubb'))
+                        #self.aggregated_isochrones_finished.emit(isochrone_responseLayer, 99, str('bla'), str('blubb'))
+                        #self.aggregated_isochrones_finished.emit(tmp_aggregated_isochrones_vl, 99, str('bla'), str('blubb'))
                         #break
                                                 
-                        
-                    # END OF EDIT TEMP LAYER
+                    # END OF TIME ITERATION    
                 
-                # END OF TIME ITERATION
+                    aggregated_isochrone_statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + 
+                                                              '\nPostprocessing Merged Iterations...'
+                                                             )
+                    self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(aggregated_isochrone_statusinformation)) 
+                    
+                    if self.dlg.AggregatedIsochrones_MaxDissolve_Use.isChecked(): # Dissolve
+                        # returns fields: time 
+                        # returns n features: n intervals
+                        #try:
+                        tmp_aggregated_isochrones_vl = self.dissolve_processing_per_inputfeature(tmp_aggregated_isochrones_vl)
+                        #except Exception as e:
+                        #    aggregated_isochrone_error = f'Postprocessing failed (Exception {e})'
+                        #    aggregated_isochrone_errors.append(aggregated_isochrone_error)
+                    elif self.dlg.AggregatedIsochrones_AllUnion_Use.isChecked(): # Union
+                        # returns fields: time, time_count, time_unique, time_min, time_max, time_range, time_sum, time_mean, time_median, time_stddev, time_minority, time_majority, time_q1, time_q3, time_iqr
+                        # returns n features: n 
+                        #try:
+                        tmp_aggregated_isochrones_vl = self.union_processing_per_inputfeature(tmp_aggregated_isochrones_vl)
+                        #except Exception as e:
+                        #    aggregated_isochrone_error = f'Postprocessing failed (Exception {e})'
+                        #    aggregated_isochrone_errors.append(aggregated_isochrone_error)
+                    elif self.dlg.AggregatedIsochrones_NoAggRaw_Use.isChecked(): # Raw
+                        # returns fields: time
+                        # returns n features: n intervals * n iterations
+                        pass
+                    else:
+                        # returns fields: time
+                        # returns n features: n intervals * n iterations
+                        pass
+                    
+                    aggregated_isochrone_statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + 
+                                                              '\nPostprocessing Done... Checking for Errors and Assigning Attributes...'
+                                                             )
+                    self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(aggregated_isochrone_statusinformation))
+                    
+                    # Postprocess Fieldnames:
+                    with edit(tmp_aggregated_isochrones_vl): # Hat wohl vergessen dass er eigentlich noch im edit modus ist...
+                        for field in tmp_aggregated_isochrones_vl.fields():
+                            idx = tmp_aggregated_isochrones_vl.fields().indexFromName(field.name())
+                            tmp_aggregated_isochrones_vl.renameAttribute(idx, 'AggIsochrone_' + str(field.name().capitalize()))
+                        tmp_aggregated_isochrones_vl.updateFields()
+                        tmp_aggregated_isochrones_vl.updateExtents()
+                    # END OF EDIT tmp_aggregated_isochrones_vl LAYER (zum ersten.....)
+                    
+                    self.aggregated_isochrones_finished.emit(tmp_aggregated_isochrones_vl, 99, str('bla'), str('blubb'))
+                    
+                    # Append Fields on first iteration depending on the chosen mode to output
+                    if inputlayer_iteration == 0:
+                        for field in tmp_aggregated_isochrones_vl.fields():
+                            aggregated_isochrones_memorylayer_pr.addAttributes([QgsField(str(field.name()), field.type())])
+                        aggregated_isochrones_memorylayer_vl.updateFields()
+                    
+                # END OF EDIT tmp_aggregated_isochrones_vl LAYER (zum eigentlichen...)
                 
-                #self.aggregated_isochrones_finished.emit(tmp_aggregated_isochrones_vl, 6, str('bla'), str('blubb'))
-                
-                # assign to a new var so we can work with it in if
-                tmp_aggregated_dissolveprocessing = tmp_aggregated_isochrones_vl
-                tmp_aggregated_unionprocessing = tmp_aggregated_isochrones_vl 
-                tmp_aggregated_rawnoaggprocessing = tmp_aggregated_isochrones_vl
-                
-                #self.aggregated_isochrones_finished.emit(tmp_aggregated_unionprocessing, 6, str('bla'), str('blubb'))
-                
-                aggregated_isochrone_statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + 
-                                                                 '\nStart Postprocessing Result')
-                self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(aggregated_isochrone_statusinformation))
-                                
-                if self.dlg.AggregatedIsochrones_MaxDissolve_Use.isChecked(): # Dissolve the temp-layer
-                    try: # dissolve
-                        dissolve_params = {'FIELD':['time'], 
-                                           'INPUT':tmp_aggregated_dissolveprocessing, 
-                                           'OUTPUT':'TEMPORARY_OUTPUT'
-                                          }
-                        tmp_aggregated_dissolveprocessing = processing.run("native:dissolve", dissolve_params)
-                        tmp_aggregated_dissolveprocessing = tmp_aggregated_dissolveprocessing['OUTPUT']
-                    except Exception as e:
-                        aggregated_isochrone_error = f'Error: Execution of Dissolve failed (Exception {str(e)})'
-                        aggregated_isochrone_errors.append(aggregated_isochrone_error)
-                
-                if self.dlg.AggregatedIsochrones_AllUnion_Use.isChecked():
-                    try: # multipart to singlepart
-                        multiparttosinglepart_params = {'INPUT' : tmp_aggregated_unionprocessing, 
-                                                        'OUTPUT' : 'TEMPORARY_OUTPUT'
-                                                       }
-                        tmp_aggregated_unionprocessing = processing.run('native:multiparttosingleparts',multiparttosinglepart_params)
-                        tmp_aggregated_unionprocessing = tmp_aggregated_unionprocessing['OUTPUT']
-                    except Exception as e:
-                        aggregated_isochrone_error = f'Error: Execution of Multipart to Singleparts failed (Exception {str(e)})'
-                        aggregated_isochrone_errors.append(aggregated_isochrone_error)
-                        
-                    try: # v.clean
-                        vclean_params = {'-b' : False, 
-                                         '-c' : False, 
-                                         'GRASS_MIN_AREA_PARAMETER' : 0.0001, 
-                                         'GRASS_OUTPUT_TYPE_PARAMETER' : 0, 
-                                         'GRASS_REGION_PARAMETER' : None, 
-                                         'GRASS_SNAP_TOLERANCE_PARAMETER' : -1, 
-                                         'GRASS_VECTOR_DSCO' : '', 
-                                         'GRASS_VECTOR_EXPORT_NOCAT' : False, 
-                                         'GRASS_VECTOR_LCO' : '', 
-                                         'error' : 'TEMPORARY_OUTPUT', 
-                                         'input' : tmp_aggregated_unionprocessing, 
-                                         'output' : 'TEMPORARY_OUTPUT', 
-                                         'threshold' : '', 
-                                         'tool' : [0], 
-                                         'type' : [0,1,2,3,4,5,6] 
-                                         }
-                        tmp_aggregated_unionprocessing = processing.run('grass7:v.clean',vclean_params)
-                        tmp_aggregated_unionprocessing = tmp_aggregated_unionprocessing['output']
-                    except Exception as e:
-                        aggregated_isochrone_error = f'Error: Execution of v.clean failed (Exception {str(e)})'
-                        aggregated_isochrone_errors.append(aggregated_isochrone_error)
-                        
-                    try: # fix geometries
-                        fixgeometries_params = {'INPUT' : tmp_aggregated_unionprocessing, 
-                                                'OUTPUT' : 'TEMPORARY_OUTPUT' 
-                                               }
-                        tmp_aggregated_unionprocessing = processing.run('native:fixgeometries',fixgeometries_params)
-                        tmp_aggregated_unionprocessing = tmp_aggregated_unionprocessing['OUTPUT']
-                    except Exception as e:
-                        aggregated_isochrone_error = f'Error: Execution of Fix Geometries failed (Exception {str(e)})'
-                        aggregated_isochrone_errors.append(aggregated_isochrone_error)
-                        
-                    try: # union
-                        union_params = {'INPUT' : tmp_aggregated_unionprocessing, 
-                                        'OUTPUT' : 'TEMPORARY_OUTPUT', 
-                                        'OVERLAY' : None, 
-                                        'OVERLAY_FIELDS_PREFIX' : '' 
-                                       }
-                        tmp_aggregated_unionprocessing = processing.run('native:union',union_params)
-                        tmp_aggregated_unionprocessing_union = tmp_aggregated_unionprocessing['OUTPUT']
-                    except Exception as e:
-                        aggregated_isochrone_error = f'Error: Execution of Union failed (Exception {str(e)})'
-                        aggregated_isochrone_errors.append(aggregated_isochrone_error)
-                        
-                    try: # delete duplicate geometries
-                        deleteduplicategometries_params = {'INPUT' : tmp_aggregated_unionprocessing_union, 
-                                                                   'OUTPUT' : 'TEMPORARY_OUTPUT' 
-                                                                  }
-                        tmp_aggregated_unionprocessing = processing.run('native:deleteduplicategeometries',deleteduplicategometries_params)
-                        tmp_aggregated_unionprocessing_dupldelete = tmp_aggregated_unionprocessing['OUTPUT']
-                    except Exception as e:
-                        aggregated_isochrone_error = f'Error: Execution of Delete Duplicate Geometries failed (Exception {str(e)})'
-                        aggregated_isochrone_errors.append(aggregated_isochrone_error)
-                        
-                    try: # join by location summary
-                        joinbylocationsummary_params = {'DISCARD_NONMATCHING' : False, 
-                                                        'INPUT' : tmp_aggregated_unionprocessing_dupldelete, 
-                                                        'JOIN' : tmp_aggregated_unionprocessing_union, 
-                                                        'JOIN_FIELDS' : ['time_min'], 
-                                                        'OUTPUT' : 'TEMPORARY_OUTPUT', 
-                                                        'PREDICATE' : [2], 
-                                                        'SUMMARIES' : [] 
-                                                       }
-                        tmp_aggregated_unionprocessing = processing.run('qgis:joinbylocationsummary',joinbylocationsummary_params)
-                        tmp_aggregated_unionprocessing = tmp_aggregated_unionprocessing['OUTPUT']
-                    except Exception as e:
-                        aggregated_isochrone_error = f'Error: Execution of Join By Location Summary failed (Exception {str(e)})'
-                        aggregated_isochrone_errors.append(aggregated_isochrone_error)
-                
-                # End of If Union
-                
-                # assign different layers back to only one var
-                if self.dlg.AggregatedIsochrones_MaxDissolve_Use.isChecked():
-                    tmp_aggregated_isochrones_vl = tmp_aggregated_dissolveprocessing
-                elif self.dlg.AggregatedIsochrones_AllUnion_Use.isChecked():
-                    tmp_aggregated_isochrones_vl = tmp_aggregated_unionprocessing
-                elif self.dlg.AggregatedIsochrones_NoAggRaw_Use.isChecked():
-                    tmp_aggregated_isochrones_vl = tmp_aggregated_rawnoaggprocessing
-                else: 
-                    tmp_aggregated_isochrones_vl = tmp_aggregated_rawnoaggprocessing
-                
-                
+                """
                 # Throw back final status on this one
                 if aggregated_isochrone_errors:
                     aggregated_isochrone_unique_errors = set(aggregated_isochrone_errors)
@@ -684,7 +617,7 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                             nullgeom = QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))") # create pseudopolygon
                             #nullgeom = QgsGeometry.fromWkt('') #causes issues with layer. Just stick to pseudopolygon
                             aggregated_isochrones_memorylayer_pr.changeGeometryValues({ aggregated_isochrone_feature.id() : nullgeom }) # set geometry of feature to null on error 
-
+                """
                 aggregated_isochrones_memorylayer_vl.updateFields()
                 aggregated_isochrones_memorylayer_vl.updateExtents()
                 
@@ -702,6 +635,8 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
             # Isochrones Memory VectorLayer
             aggregated_isochrones_memorylayer_vl.updateFields()
             aggregated_isochrones_memorylayer_vl.updateExtents()
+            
+        # END OF EDIT aggregated_isochrones_memorylayer_vl LAYER
 
         unique_errors = set(unique_errors)
         unique_errors = list(unique_errors)
@@ -720,6 +655,89 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
         self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(aggregated_isochrone_statusinformation))
         self.aggregated_isochrones_finished.emit(aggregated_isochrones_memorylayer_vl, self.aggregated_isochrones_state, str(unique_errors_string), str(aggregated_isochrones_runtime))
         
+    def dissolve_processing_per_inputfeature(self, vectorlayer):
+        # dissolve
+        dissolve_params = {'FIELD':['time'], 
+                           'INPUT': vectorlayer, 
+                           'OUTPUT':'TEMPORARY_OUTPUT'
+                          }
+        vectorlayer = processing.run("native:dissolve", dissolve_params)
+        vectorlayer = vectorlayer['OUTPUT']
+        
+        return vectorlayer
+
+    def union_processing_per_inputfeature(self, vectorlayer):
+        # multipart to singlepart
+        multiparttosinglepart_params = {'INPUT' : vectorlayer, 
+                                        'OUTPUT' : 'TEMPORARY_OUTPUT'
+                                       }
+        vectorlayer = processing.run('native:multiparttosingleparts',multiparttosinglepart_params)
+        vectorlayer = vectorlayer['OUTPUT']
+
+        # v.clean
+        vclean_params = {'-b' : False, 
+                         '-c' : False, 
+                         'GRASS_MIN_AREA_PARAMETER' : 0.0001, 
+                         'GRASS_OUTPUT_TYPE_PARAMETER' : 0, 
+                         'GRASS_REGION_PARAMETER' : None, 
+                         'GRASS_SNAP_TOLERANCE_PARAMETER' : -1, 
+                         'GRASS_VECTOR_DSCO' : '', 
+                         'GRASS_VECTOR_EXPORT_NOCAT' : False, 
+                         'GRASS_VECTOR_LCO' : '', 
+                         'error' : 'TEMPORARY_OUTPUT', 
+                         'input' : vectorlayer, 
+                         'output' : 'TEMPORARY_OUTPUT', 
+                         'threshold' : '', 
+                         'tool' : [0], 
+                         'type' : [0,1,2,3,4,5,6] 
+                        }
+        vectorlayer = processing.run('grass7:v.clean',vclean_params)
+        vectorlayer = vectorlayer['output']
+
+        # fix geometries
+        fixgeometries_params = {'INPUT' : vectorlayer, 
+                                 'OUTPUT' : 'TEMPORARY_OUTPUT' 
+                                }
+        vectorlayer = processing.run('native:fixgeometries',fixgeometries_params)
+        vectorlayer = vectorlayer['OUTPUT']
+
+        # union
+        union_params = {'INPUT' : vectorlayer, 
+                        'OUTPUT' : 'TEMPORARY_OUTPUT', 
+                        'OVERLAY' : None, 
+                        'OVERLAY_FIELDS_PREFIX' : ''
+                       }
+        vectorlayer_union = processing.run('native:union',union_params)
+        vectorlayer_union = vectorlayer_union['OUTPUT']
+
+        # delete duplicate geometries
+        deleteduplicategometries_params = {'INPUT' : vectorlayer_union, 
+                                           'OUTPUT' : 'TEMPORARY_OUTPUT' 
+                                          }
+        vectorlayer_dupldelete = processing.run('native:deleteduplicategeometries',deleteduplicategometries_params)
+        vectorlayer_dupldelete = vectorlayer_dupldelete['OUTPUT']
+
+        # join by location summary
+        joinbylocationsummary_params = {'DISCARD_NONMATCHING' : False, 
+                                        'INPUT' : vectorlayer_dupldelete, 
+                                        'JOIN' : vectorlayer_union, 
+                                        'JOIN_FIELDS' : ['time'],
+                                        'OUTPUT' : 'TEMPORARY_OUTPUT', 
+                                        'PREDICATE' : [2],
+                                        'SUMMARIES' : []
+                                       }
+        vectorlayer = processing.run('qgis:joinbylocationsummary',joinbylocationsummary_params)
+        vectorlayer = vectorlayer['OUTPUT']
+        
+        # delete all fields except time*
+        fieldstodelete = []
+        for i, field in enumerate(vectorlayer.fields()):
+            if 'time_' not in field.name():
+                fieldstodelete.append(i)
+        vectorlayer.dataProvider().deleteAttributes(fieldstodelete)
+        vectorlayer.updateFields()
+        
+        return vectorlayer
         
     def union_processing_per_datetime_response(self, vectorlayer):
         QgsMessageLog.logMessage('featurecount start processing: ' + str(vectorlayer.featureCount()),MESSAGE_CATEGORY,Qgis.Info)
