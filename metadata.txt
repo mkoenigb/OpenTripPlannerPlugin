@@ -2,7 +2,7 @@
 name=OpenTripPlanner Plugin
 qgisMinimumVersion=3.6
 description=This plugin makes OpenTripPlanner functionalities accessible from within QGIS
-version=1.0
+version=1.0.1
 author=Mario Koenigbauer
 email=mkoenigb@gmx.de
 
@@ -16,7 +16,8 @@ repository=https://github.com/mkoenigb/OpenTripPlannerPlugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=1.0 Improved error handling, Added Timeout option, minor improvements and fixes
+changelog=1.0.1 Added experimental ability for aggregated isochrones, added status information textbox to improve user communication.
+    1.0 Improved error handling, Added Timeout option, minor improvements and fixes
     0.5.1 Merged Pull Request by Florian Schueller: Linux compatibility and error messages (Support for Linux Filepaths, Support for Minute and Hour in Isochrones-Interval-GUI, Improved Error Messages for Isochrones)
     0.5 Bugfixing and codeimprovements, added ability to choose a custom folder to store isochrone tempfiles at in case users do not have write permissions on plugin folder location, disable/enable gui elements while threads are running to prevent accidential changes of settings
     0.4 Implemented QThreads to keep GUI responsive on heavy load, added ability to cancel the process, complete restructure of code, minor other improvements
@@ -31,7 +32,7 @@ homepage=https://github.com/mkoenigb
 category=Plugins
 icon=icon.png
 # experimental flag
-experimental=False
+experimental=True
 
 # deprecated flag (applies to the whole plugin, not just a single version)
 deprecated=False

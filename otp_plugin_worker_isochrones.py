@@ -47,7 +47,7 @@ MESSAGE_CATEGORY = 'OpenTripPlanner PlugIn'
 
 class OpenTripPlannerPluginIsochronesWorker(QThread):
     isochrones_finished = pyqtSignal(object, int, str, str)
-    isochrones_progress = pyqtSignal(int)
+    isochrones_progress = pyqtSignal(int, str)
 
     def __init__(self, dialog, iface, otpgf, resultlayer):
         super(QThread, self).__init__()
@@ -74,6 +74,8 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         r = None
         inputlayer_outfeat = None
         debug_info = None
+        statusinformation = ''
+        progressbar_percent = 0
         isochrone_uid_counter = 0
         isochrone_id_counter = 0
         isochrones_memorylayer_vl = self.isochrones_memorylayer_vl
@@ -120,12 +122,12 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
             progressbar_featurecount = self.gf.isochrones_selectedlayer.featureCount()
             progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
             progressbar_counter = 0
-            self.isochrones_progress.emit(int(progressbar_percent))
+            self.isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
             
             if progressbar_featurecount == 0:
                 self.isochrones_state = 3
                 QgsMessageLog.logMessage("Warning! No Isochrones to create. Inputlayer is empty.",MESSAGE_CATEGORY,Qgis.Warning)
-                self.isochrones_progress.emit(int(0))
+                self.isochrones_progress.emit(int(0),str(statusinformation))
                 
             for inputlayer_feature in inputlayer_features:
                 if self.stopisochronesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
@@ -476,7 +478,7 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                 
                 # Update Progressbar
                 progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
-                self.isochrones_progress.emit(int(progressbar_percent))
+                self.isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
                 
                 QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
                 QgsMessageLog.logMessage("-----",MESSAGE_CATEGORY,Qgis.Info)

@@ -238,10 +238,12 @@ class OpenTripPlannerPlugin():
                 self.isochrones_thread.quit() # Tells the thread’s event loop to exit with return code 0 (success). Equivalent to calling exit (0).
                 self.isochrones_thread.wait() # Blocks the thread until https://doc.qt.io/qtforpython/PySide6/QtCore/QThread.html#PySide6.QtCore.PySide6.QtCore.QThread.wait
         except:
-            pass
+            self.dlg.Isochrones_ProgressBar.setValue(0)
+            self.dlg.Isochrones_StatusBox.setText('')
        
-    def isochronesReportProgress(self, n): # method to report the progress to gui
-        self.dlg.Isochrones_ProgressBar.setValue(n) # set the current progress in progress bar
+    def isochronesReportProgress(self, progress, status): # method to report the progress to gui
+        self.dlg.Isochrones_ProgressBar.setValue(progress) # set the current progress in progress bar
+        self.dlg.Isochrones_StatusBox.setText(status)
 
     def isochronesFinished(self, isochrones_resultlayer, isochrones_state, unique_errors="", runtime="00:00:00 (unknown)"): # method to interact with gui when thread is finished or canceled
         QgsProject.instance().addMapLayer(isochrones_resultlayer) # Show resultlayer in project
@@ -256,7 +258,9 @@ class OpenTripPlannerPlugin():
         elif isochrones_state == 2:
             self.iface.messageBar().pushMessage("Done!", " Isochrones job canceled after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=6)
         elif isochrones_state == 3:
-            self.iface.messageBar().pushMessage("Warning", " No Isochrones to create - Check your settings and retry.", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)  
+            self.iface.messageBar().pushMessage("Warning", " No Isochrones to create - Check your settings and retry.", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6) 
+        elif isochrones_state == 99:
+            self.iface.messageBar().pushMessage("Debugging", " Just having some debugging fun :)", MESSAGE_CATEGORY, level=Qgis.Info, duration=6)             
         else:
             self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
 
@@ -303,7 +307,8 @@ class OpenTripPlannerPlugin():
                 self.aggregated_isochrones_thread.quit() # Tells the thread’s event loop to exit with return code 0 (success). Equivalent to calling exit (0).
                 self.aggregated_isochrones_thread.wait() # Blocks the thread until https://doc.qt.io/qtforpython/PySide6/QtCore/QThread.html#PySide6.QtCore.PySide6.QtCore.QThread.wait
         except:
-            pass
+            self.dlg.AggregatedIsochrones_ProgressBar.setValue(0)
+            self.dlg.AggregatedIsochrones_StatusBox.setText('')
        
     def aggregated_isochronesReportProgress(self, progress, status): # method to report the progress to gui
         self.dlg.AggregatedIsochrones_ProgressBar.setValue(progress) # set the current progress in progress bar
@@ -376,10 +381,12 @@ class OpenTripPlannerPlugin():
                 self.routes_thread.quit() # Tells the thread’s event loop to exit with return code 0 (success). Equivalent to calling exit (0).
                 self.routes_thread.wait() # Blocks the thread until https://doc.qt.io/qtforpython/PySide6/QtCore/QThread.html#PySide6.QtCore.PySide6.QtCore.QThread.wait
         except:
-            pass
+            self.dlg.Routes_ProgressBar.setValue(0)
+            self.dlg.Routes_StatusBox.setText('')
        
-    def routesReportProgress(self, n): # method to report the progress to gui
-        self.dlg.Routes_ProgressBar.setValue(n) # set the current progress in progress bar
+    def routesReportProgress(self, progress, status): # method to report the progress to gui
+        self.dlg.Routes_ProgressBar.setValue(progress) # set the current progress in progress bar
+        self.dlg.Routes_StatusBox.setText(status)
 
     def routesFinished(self, routes_resultlayer, routes_state, unique_errors="", runtime="00:00:00 (unknown)"): # method to interact with gui when thread is finished or canceled
         QgsProject.instance().addMapLayer(routes_resultlayer) # Show resultlayer in project
@@ -395,6 +402,8 @@ class OpenTripPlannerPlugin():
             self.iface.messageBar().pushMessage("Done!", " Routes job canceled after " + runtime, MESSAGE_CATEGORY, level=Qgis.Success, duration=6) 
         elif routes_state == 3:
             self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes - Check your settings and retry.", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6)
+        elif routes_state == 99:
+            self.iface.messageBar().pushMessage("Debugging", " Just having some debugging fun :)", MESSAGE_CATEGORY, level=Qgis.Info, duration=6) 
         else:
             self.iface.messageBar().pushMessage("Warning", " Unknown error occurred during execution.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         

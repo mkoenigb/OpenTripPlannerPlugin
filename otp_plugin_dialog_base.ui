@@ -1018,7 +1018,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
      <string>Aggregated Isochrones</string>
     </attribute>
     <attribute name="toolTip">
-     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between different possible aggregated service areas in a time range.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Choose between different possible aggregated service areas in a time range.&lt;/p&gt;&lt;p&gt;Please note that this function is highly experimental. Expect a Python error when you run it or a crash in the worst case!&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
     </attribute>
     <widget class="QgsPropertyOverrideButton" name="AggregatedIsochrones_MaxWalkDistance_Override">
      <property name="geometry">
@@ -1957,6 +1957,15 @@ Do not use an option if it is not compatible with the selected Mode. For example
         <height>17</height>
        </rect>
       </property>
+      <property name="toolTip">
+       <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
+&lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
+p, li { white-space: pre-wrap; }
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'MS Shell Dlg 2'; font-size:8pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;You can interpret this as the most optimistic service area, reachable somewhen during the given timerange. Basically keeping the most optimistic result of each time step.&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;What it does:&lt;br /&gt;1. For each feature a temporary layer is created&lt;br /&gt;2. For each datetime iteration of a feature the isochrones will be stored in that temporary layer&lt;br /&gt;3. If all datetime iterations are done, the temporary layer gets dissolved by time field&lt;br /&gt;4. The dissolved layer's features are added to the output layer&lt;/p&gt;
+&lt;p style=&quot; margin-top:12px; margin-bottom:12px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      </property>
       <property name="text">
        <string>Maximum only (via Dissolve)</string>
       </property>
@@ -1975,6 +1984,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
         <width>281</width>
         <height>17</height>
        </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;You can interpret the results the following:&lt;br/&gt;- count: the area is reachable x times during the given time range, note how many requests you have done for that range to give this value a meaning&lt;br/&gt;- unique: if greater 1 there are differences in the time needed to reach the area during the given time range&lt;br/&gt;- min: most optimistic service area&lt;br/&gt;- max: most pessimistic service area&lt;br/&gt;- range: if greater 0 or not NULL there are differences in the time needed to reach the area at different times during the given time range by telling how big the greatest difference is (most optimistic to most pessimistic)&lt;br/&gt;- sum: doesnt say anything meaningful at all, better delete it unless you have a great idea what you could do with it&lt;br/&gt;- mean: average reachability of the area within the given time range&lt;br/&gt;- median: median reachability of the area within the given time range&lt;/p&gt;&lt;p&gt;What it does:&lt;br/&gt;1. For each feature a temporary layer is created&lt;br/&gt;2. For each datetime iteration the response isochrones are processed with the following algorithms:&lt;br/&gt;a) Fix geometries&lt;br/&gt;b) Union &lt;br/&gt;c) Join attributes by location (summary): Keeping the minimum time attribute of the overlapping union-parts&lt;br/&gt;d) Delete duplicate geometries&lt;br/&gt;3. The result of this processing is added to a temporary layer for each datetime iteration&lt;br/&gt;4. If all datetime iterations are done for a feature, the temporary layer is processed the following:&lt;br/&gt;a) Multipart to Singleparts&lt;br/&gt;b) v.clean (needed, otherwise Union will most likely fail)&lt;br/&gt;c) Fix geometries&lt;br/&gt;d) Union&lt;br/&gt;e) Delete duplicate geometries&lt;br/&gt;f) Join attributes by location (summary): Adding all statistical summarys of the Union-result to the Delete-Duplicates-result&lt;br/&gt;g) Delete all fields except the statistical summarys&lt;br/&gt;5. Add the processed temporary layer's features to the outputlayer&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string>All possible Aggregations (via Union; requires GRASS)</string>
@@ -2156,6 +2168,9 @@ Do not use an option if it is not compatible with the selected Mode. For example
         <width>281</width>
         <height>17</height>
        </rect>
+      </property>
+      <property name="toolTip">
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;The Plugin does return the raw results for each requested datetime for each feature. &lt;/p&gt;&lt;p&gt;This can be a mess, but you are free to do whatever you want. It is also useful to debug the results from &amp;quot;Maximum only (via Dissolve)&amp;quot; and &amp;quot;All possible Aggregations (via Union)&amp;quot;.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
       <property name="text">
        <string>Raw Results (no Aggregation)</string>

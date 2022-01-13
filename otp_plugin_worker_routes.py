@@ -47,7 +47,7 @@ MESSAGE_CATEGORY = 'OpenTripPlanner PlugIn'
 
 class OpenTripPlannerPluginRoutesWorker(QThread):   
     routes_finished = pyqtSignal(object, int, str, str)
-    routes_progress = pyqtSignal(int)
+    routes_progress = pyqtSignal(int, str)
 
     def __init__(self, dialog, iface, otpgf, resultlayer):
         super(QThread, self).__init__()
@@ -108,6 +108,8 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         route_errors = []
         unique_errors = []
         self.routes_state = 1
+        statusinformation = ''
+        progressbar_percent = 0
         r = None
         inputlayer_outfeat = None
         debug_info = None
@@ -273,12 +275,13 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
             progressbar_featurecount = n_totalrelations
             progressbar_percent = 1 # Use 1 on start to show users that something is running if the first one takes a while
             progressbar_counter = 0
-            self.routes_progress.emit(int(progressbar_percent))
+            self.routes_progress.emit(int(progressbar_percent),str(statusinformation))
+            
             
             if n_totalrelations == 0:
                 #self.iface.messageBar().pushMessage("Warning", " No Routes to create / no matching attributes", MESSAGE_CATEGORY, level=Qgis.Warning, duration=6) # calling from thread crashes QGIS. Instead use route_state in signal to decide in MainClass which message to show
                 QgsMessageLog.logMessage("Warning! No Routes to create. Probably due to no matching attributes found or empty layer(s).",MESSAGE_CATEGORY,Qgis.Warning)
-                self.routes_progress.emit(int(0))
+                self.routes_progress.emit(int(0),str(statusinformation))
                 self.routes_state = 3
             
             # General Settings
@@ -917,7 +920,7 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                     
                     # Update Progressbar
                     progressbar_percent = progressbar_counter / float(progressbar_featurecount) * 100
-                    self.routes_progress.emit(int(progressbar_percent))
+                    self.routes_progress.emit(int(progressbar_percent),str(statusinformation))
                     # END OF LOOP through list of current value in matching dictionary
                 
             # Finalizing resultlayer

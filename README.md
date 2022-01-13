@@ -24,5 +24,45 @@ You can also easily setup your own local OTP instance by following this short tu
 
 ![example](https://github.com/mkoenigb/OpenTripPlannerPlugin/blob/master/example.jpg)
 
+# What does the "Aggregated Isochrones" function do and how can I interpret the results?
+Please note that this function is highly experimental. Expect a Python error when you run it or a crash in the worst case!
+
+If you choose "Raw", no aggregation is done at all and the Plugin does return the raw results for each requested datetime for each feature. 
+This can be a mess, but you are free to do whatever you want. It is also useful to debug the results from "Maximum only (via Dissolve)" and "All possible Aggregations (via Union)".
+
+If you choose "Maximum only (via Dissolve)":
+1. For each feature a temporary layer is created
+2. For each datetime iteration of a feature the isochrones will be stored in that temporary layer
+3. If all datetime iterations are done, the temporary layer gets dissolved by time field
+4. The dissolved layer's features are added to the output layer
+You can interpret this as the most optimistic service area, reachable somewhen during the given timerange. Basically keeping the most optimistic result of each time step.
+
+If you choose "All possible Aggregations (via Union)":
+1. For each feature a temporary layer is created
+2. For each datetime iteration the response isochrones are processed with the following algorithms: 
+   a) Fix geometries
+   b) Union 
+   c) Join attributes by location (summary): Keeping the minimum time attribute of the overlapping union-parts
+   d) Delete duplicate geometries
+3. The result of this processing is added to a temporary layer for each datetime iteration
+4. If all datetime iterations are done for a feature, the temporary layer is processed the following:
+   a) Multipart to Singleparts
+   b) v.clean (needed, otherwise Union will most likely fail)
+   c) Fix geometries
+   d) Union
+   e) Delete duplicate geometries
+   f) Join attributes by location (summary): Adding all statistical summarys of the Union-result to the Delete-Duplicates-result
+   g) Delete all fields except the statistical summarys
+5. Add the processed temporary layer's features to the outputlayer
+You can interpret the results the following:
+- count: the area is reachable x times during the given time range, note how many requests you have done for that range to give this value a meaning
+- unique: if greater 1 there are differences in the time needed to reach the area during the given time range
+- min: most optimistic service area
+- max: most pessimistic service area
+- range: if greater 0 or not NULL there are differences in the time needed to reach the area at different times during the given time range by telling how big the greatest difference is (most optimistic to most pessimistic)
+- sum: doesnt say anything meaningful at all, better delete it unless you have a great idea what you could do with it
+- mean: average reachability of the area within the given time range
+- median: median reachability of the area within the given time range
+
 # License
 OpenTripPlanner Plug-In for QGIS: © by Mario Königbauer 2019 - Today under GNU General Public License v3.0
