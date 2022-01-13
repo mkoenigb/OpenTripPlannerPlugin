@@ -27,17 +27,23 @@ You can also easily setup your own local OTP instance by following this short tu
 # What does the "Aggregated Isochrones" function do and how can I interpret the results?
 Please note that this function is highly experimental. Expect a Python error when you run it or a crash in the worst case!
 
+
 If you choose "Raw", no aggregation is done at all and the Plugin does return the raw results for each requested datetime for each feature. 
 This can be a mess, but you are free to do whatever you want. It is also useful to debug the results from "Maximum only (via Dissolve)" and "All possible Aggregations (via Union)".
 
+
 If you choose "Maximum only (via Dissolve)":
+
 1. For each feature a temporary layer is created
 2. For each datetime iteration of a feature the isochrones will be stored in that temporary layer
 3. If all datetime iterations are done, the temporary layer gets dissolved by time field
 4. The dissolved layer's features are added to the output layer
+
 You can interpret this as the most optimistic service area, reachable somewhen during the given timerange. Basically keeping the most optimistic result of each time step.
 
+
 If you choose "All possible Aggregations (via Union)":
+
 1. For each feature a temporary layer is created
 2. For each datetime iteration the response isochrones are processed with the following algorithms: 
    a) Fix geometries
@@ -54,7 +60,9 @@ If you choose "All possible Aggregations (via Union)":
    f) Join attributes by location (summary): Adding all statistical summarys of the Union-result to the Delete-Duplicates-result
    g) Delete all fields except the statistical summarys
 5. Add the processed temporary layer's features to the outputlayer
+
 You can interpret the results the following:
+
 - count: the area is reachable x times during the given time range, note how many requests you have done for that range to give this value a meaning
 - unique: if greater 1 there are differences in the time needed to reach the area during the given time range
 - min: most optimistic service area
