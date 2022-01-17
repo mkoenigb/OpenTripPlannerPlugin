@@ -43,6 +43,7 @@ import os
 import urllib
 import zipfile
 import json
+import math
 
 MESSAGE_CATEGORY = 'OpenTripPlanner PlugIn'
 
@@ -350,11 +351,6 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                 else:
                     aggregated_isochrones_requestinterval_value = self.dlg.AggregatedIsochrones_RequestInterval.value() # Receiving Value from GUI: QSpinBox
                 
-                QgsMessageLog.logMessage('aggregated_isochrones_requestinterval_value: ' + str(aggregated_isochrones_requestinterval_value) + 
-                                         " aggregated_isochrones_requestinterval_value: " + str(aggregated_isochrones_requestinterval_value) + 
-                                         " aggregated_isochrones_todatetime_value: " + str(aggregated_isochrones_todatetime_value) + 
-                                         " aggregated_isochrones_fromdatetime_value: " + str(aggregated_isochrones_fromdatetime_value)
-                                         ,MESSAGE_CATEGORY,Qgis.Warning)
                 
                 #Cancel execution if....:
                 if (not aggregated_isochrones_requestinterval_value or aggregated_isochrones_requestinterval_value < 1 or aggregated_isochrones_todatetime_value < aggregated_isochrones_fromdatetime_value):
@@ -364,6 +360,7 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                 
                 # Iterating over the datetimes
                 intervalseconds = (aggregated_isochrones_todatetime_value - aggregated_isochrones_fromdatetime_value).seconds
+                required_iterations = math.ceil(intervalseconds / aggregated_isochrones_requestinterval_value) 
                 intervaliteration = 0
                 isochrones_times = []
                 isochrones_dates = []
@@ -373,7 +370,6 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                     tmp_aggregated_isochrones_pr.addAttributes([QgsField("time",QVariant.Int)])
                     tmp_aggregated_isochrones_vl.updateFields()
                 
-                    QgsMessageLog.logMessage('Intervalseconds: ' + str(intervalseconds) + " Requestintervalvalue: " + str(aggregated_isochrones_requestinterval_value),MESSAGE_CATEGORY,Qgis.Warning)
                     for currentsecond in range(0,intervalseconds,aggregated_isochrones_requestinterval_value):
                         intervaliteration += 1
                         if self.stopaggregated_isochronesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
@@ -388,6 +384,10 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                         aggregated_isochrones_currenttime_urlstring = '&time=' + str(aggregated_isochrones_currenttime_string)
                         isochrones_dates.append(aggregated_isochrones_currentdate_string)
                         isochrones_times.append(aggregated_isochrones_currenttime_string)
+                        
+                        statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + ' (#' + str(inputlayer_iteration+1) + ' of ' + str(progressbar_featurecount) + ' total features)\n'
+                                            + 'Processing iteration '  + str(intervaliteration) + ' of ' + str(required_iterations) + ' total iterations. Requesting Isochrone for DateTime: ' + str(aggregated_isochrones_currentdatetime_string))
+                        self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
                         
                         #Working example: https://api.digitransit.fi/routing/v1/routers/hsl/isochrone?fromPlace=60.169,24.938&mode=WALK,TRANSIT&date=2019-11-01&time=08:00:00&maxWalkDistance=500&cutoffSec=1800&cutoffSec=3600
                         #Concat URL and convert to string
@@ -423,13 +423,8 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                                         aggregated_isochrones_additionalparameters_urlstring + # Additional Parameters entered as OTP-Readable string -> User responsibility
                                         "&cutoffSec=" + str(aggregated_isochrones_interval_urlstring) # Interval-Integers are taken as comma separated string, then split into list and then joined to string with leading "&cutoffSec=". The first interval therefore has no leading "&cutoffSec=" thats why we add it here
                                         )
-                        QgsMessageLog.logMessage('Intervaliteration: ' + str(intervaliteration) + " of Feature ID: " + str(inputlayer_feature.id()) + ' at DateTime: ' + str(aggregated_isochrones_currentdatetime_string) + '\nwith URL: ' + str(isochrone_url),MESSAGE_CATEGORY,Qgis.Info)
+                        QgsMessageLog.logMessage('Intervaliteration: ' + str(intervaliteration) + " of " + str(required_iterations) + ' total iterations. Requesting Isochrone for DateTime: ' + str(aggregated_isochrones_currentdatetime_string) + '\nwith URL: ' + str(isochrone_url),MESSAGE_CATEGORY,Qgis.Info)
                         debug_info = "Feature ID: " + str(inputlayer_feature.id()) + ' at iteration: ' + str(intervaliteration) + ' with URL: ' + str(isochrone_url) + '\n'
-                        
-                        statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + ' (#' + str(inputlayer_iteration+1) + ' of ' + str(progressbar_featurecount) + ' total features)')
-                        statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + ' at iteration ' + str(intervaliteration) + ' for datetime ' + str(aggregated_isochrones_currentdatetime_string) + 
-                                                                 '\nRequesting URL: ' + isochrone_url)
-                        self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
                         
                         #request and download file
                         isochrone_responseLayer = None
@@ -480,38 +475,32 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                         if isochrone_errors:
                             continue
                         
-                        statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + ' at iteration ' + str(intervaliteration) + ' for datetime ' + str(aggregated_isochrones_currentdatetime_string) + 
-                                                                 '\nStart processing result')
+                        statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + ' (#' + str(inputlayer_iteration+1) + ' of ' + str(progressbar_featurecount) + ' total features)\n'
+                                            + 'Processing iteration '  + str(intervaliteration) + ' of ' + str(required_iterations) + ' total iterations. Postprocessing response isochrone.')
                         self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
                         
-                        QgsMessageLog.logMessage('featurecount after response: ' + str(isochrone_responseLayer.featureCount()),MESSAGE_CATEGORY,Qgis.Info)
                         
                         # Process the response if Union is chosen
                         if self.dlg.AggregatedIsochrones_AllUnion_Use.isChecked():
-                            statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + 
-                                                                      ' at iteration ' + str(intervaliteration) + 
-                                                                      ' for datetime ' + str(aggregated_isochrones_currentdatetime_string) + 
-                                                                      '\nPostprocessing Iteration-Result...'
-                                                                     )
-                            self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
                             isochrone_responseLayer = self.union_processing_per_datetime_response(isochrone_responseLayer)
                             
                         #iterate trough response
-                        for isochrone_feature in isochrone_responseLayer.getFeatures():
-                            tmp_aggregated_isochrones_pr.addFeature(isochrone_feature) # copy features of responselayer including geometry and attributes
-                        tmp_aggregated_isochrones_vl.updateFields()
-                        tmp_aggregated_isochrones_vl.updateExtents()
+                        try:
+                            for isochrone_feature in isochrone_responseLayer.getFeatures():
+                                tmp_aggregated_isochrones_pr.addFeature(isochrone_feature) # copy features of responselayer including geometry and attributes
+                            tmp_aggregated_isochrones_vl.updateFields()
+                            tmp_aggregated_isochrones_vl.updateExtents()
+                        except:
+                            isochrone_error = f'Error: could not copy response to temporary result'
+                            isochrone_errors.append(isochrone_error)
                         
-                        #self.aggregated_isochrones_finished.emit(isochrone_responseLayer, 99, str('bla'), str('blubb'))
-                        #self.aggregated_isochrones_finished.emit(tmp_aggregated_isochrones_vl, 99, str('bla'), str('blubb'))
-                        #break
                                                 
                     # END OF TIME ITERATION    
                 
-                    statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + 
-                                                              '\nPostprocessing Merged Iterations...'
-                                                             )
+                    statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + ' (#' + str(inputlayer_iteration+1) + ' of ' + str(progressbar_featurecount) + ' total features)\n'
+                                            + 'Postprocessing received isochrones for all requested datetimes.')
                     self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation)) 
+                    
                     
                     if self.dlg.AggregatedIsochrones_MaxDissolve_Use.isChecked(): # Dissolve
                         # returns fields: time 
@@ -538,41 +527,53 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                         # returns n features: n intervals * n iterations
                         pass
                     
-                    statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + 
-                                                              '\nPostprocessing Done... Checking for Errors and Assigning Attributes...'
-                                                             )
-                    self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
-                    
                     
                 # END OF EDIT tmp_aggregated_isochrones_vl LAYER
                 
-
+                
                 # Check Validity
+                fatal_isochrone_error = False
                 try:
                     if not tmp_aggregated_isochrones_vl:
                         isochrone_error = 'Error: aggregated layer does not exist'
                         isochrone_errors.append(isochrone_error)
-                    elif (not tmp_aggregated_isochrones_vl.isValid()) or (tmp_aggregated_isochrones_vl.extent().yMaximum() == 0.0) or (tmp_aggregated_isochrones_vl.extent().xMaximum() == 0.0) or (tmp_aggregated_isochrones_vl.extent().yMinimum() == 0.0) or (tmp_aggregated_isochrones_vl.extent().xMinimum() == 0.0):
+                        fatal_isochrone_error = True
+                    if (not tmp_aggregated_isochrones_vl.isValid()) or (tmp_aggregated_isochrones_vl.extent().yMaximum() == 0.0) or (tmp_aggregated_isochrones_vl.extent().xMaximum() == 0.0) or (tmp_aggregated_isochrones_vl.extent().yMinimum() == 0.0) or (tmp_aggregated_isochrones_vl.extent().xMinimum() == 0.0):
                         isochrone_error = 'Error: aggregated layer is not valid'
                         isochrone_errors.append(isochrone_error)
+                        fatal_isochrone_error = True
+                    if tmp_aggregated_isochrones_vl.featureCount() == 0:
+                        isochrone_error = 'Error: aggregated layer is empty'
+                        isochrone_errors.append(isochrone_error)
+                        fatal_isochrone_error = True
                 except Exception as e:
                     isochrone_error = f'Error: aggregated layer is not valid (Exception {str(e)})'
                     isochrone_errors.append(isochrone_error)
+                    fatal_isochrone_error = True
                 
-                # Create Dummylayer on Error to prevent errors in code or broken result layer
+                # Throw back final status on this one
                 if isochrone_errors:
-                    tmp_aggregated_isochrones_vl = QgsVectorLayer("MultiPolygon?crs=epsg:4326","Errorlayer","memory")
-                    tmp_aggregated_isochrones_vl_pr = tmp_aggregated_isochrones_vl.dataProvider()
-                    tmp_aggregated_isochrones_vl.startEditing()
-                    error_feature = QgsFeature()
-                    error_feature.setGeometry(QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))"))
-                    for j in interval_list:
-                        tmp_aggregated_isochrones_vl_pr.addFeature(error_feature)
-                    tmp_aggregated_isochrones_vl.commitChanges()
-                    tmp_aggregated_isochrones_vl.updateExtents()
+                    if fatal_isochrone_error == True:
+                        isochrone_error = ('Error: Could not receive a single valid response for Feature ID ' + str(inputlayer_feature.id()) + ' - feature skipped!')
+                        isochrone_errors.append(isochrone_error)
+                    isochrone_unique_errors = set(isochrone_errors)
+                    isochrone_unique_errors = list(isochrone_unique_errors)
+                    unique_errors.extend(isochrone_unique_errors)
+                    QgsMessageLog.logMessage('Isochrone Errors: ' + str("; ".join(isochrone_unique_errors)),MESSAGE_CATEGORY,Qgis.Warning)
+                    # "Fatal" errors occur if not one single response is generated for a request.
+                    # Because adding a dummy feature with geometry at 0,0 requires to know the used fields in advance we will skip it, it would be for information purposes only anyway
+                    # If this would be implemented without knowing which fields would be needed there are two issues:
+                    # 1. if the very first feature produces this error, the layer wont be able to add valid results anymore
+                    # 2. if the very first feature is valid, the layer wont be able to add errors anymore
+                    # --> Decision made to skip errors at all - feel free to make a pull request if you really want to implement the error feature handling
+                    if fatal_isochrone_error == True:
+                        statusinformation = ('Feature ID: ' + str(inputlayer_feature.id()) + ' failed with ' + str(len(isochrone_unique_errors)) if isochrone_errors else str(0) + ' errors - feature skipped\n' +
+                                             'Errors occured: ' + ";".join(isochrone_unique_errors))
+                        self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
+                        continue
                     
                 # Postprocess Fieldnames:
-                with edit(tmp_aggregated_isochrones_vl): # Hat wohl vergessen dass er eigentlich noch im edit modus ist...
+                with edit(tmp_aggregated_isochrones_vl):
                     for field in tmp_aggregated_isochrones_vl.fields():
                         idx = tmp_aggregated_isochrones_vl.fields().indexFromName(field.name())
                         tmp_aggregated_isochrones_vl.renameAttribute(idx, 'AggIsochrone_' + str(field.name().capitalize()))
@@ -587,13 +588,6 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                         aggregated_isochrones_memorylayer_pr.addAttributes([QgsField(str(field.name()), field.type())])
                     aggregated_isochrones_memorylayer_vl.updateFields()
                     
-                # Throw back final status on this one
-                if isochrone_errors:
-                    isochrone_unique_errors = set(isochrone_errors)
-                    isochrone_unique_errors = list(isochrone_unique_errors)
-                    unique_errors.extend(isochrone_unique_errors)
-                    QgsMessageLog.logMessage('Isochrone Errors: ' + str("; ".join(isochrone_unique_errors)),MESSAGE_CATEGORY,Qgis.Warning)
-                        
                 #iterate trough isochrones
                 aggregated_isochrone_id_counter = aggregated_isochrone_id_counter + 1
                 unique_isochrones_dates = set(isochrones_dates)

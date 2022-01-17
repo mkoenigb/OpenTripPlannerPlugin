@@ -744,11 +744,11 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         s.setValue("otp_plugin/AggregatedIsochrones_AdditionalParameters", self.aggregated_isochrones_additionalparameters_setting)
         
         # FromDateTime
-        self.aggregated_isochrones_fromdatetime_setting = self.dlg.AggregatedIsochrones_FromDateTime.datetime()
+        self.aggregated_isochrones_fromdatetime_setting = self.dlg.AggregatedIsochrones_FromDateTime.dateTime()
         s.setValue("otp_plugin/AggregatedIsochrones_FromDateTime", self.aggregated_isochrones_fromdatetime_setting)
         
         # ToDateTime
-        self.aggregated_isochrones_todatetime_setting = self.dlg.AggregatedIsochrones_ToDateTime.datetime()
+        self.aggregated_isochrones_todatetime_setting = self.dlg.AggregatedIsochrones_ToDateTime.dateTime()
         s.setValue("otp_plugin/AggregatedIsochrones_ToDateTime", self.aggregated_isochrones_todatetime_setting)
         
         # Request-Interval

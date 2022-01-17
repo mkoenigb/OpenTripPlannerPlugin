@@ -337,6 +337,9 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
                     progressbar_counter = progressbar_counter + 1
                     route_relationid += 1 
                     
+                    statusinformation = ('Processing Relation: #' + str(route_relationid) + ' of ' + str(progressbar_featurecount) + ' total relations')
+                    self.routes_progress.emit(int(progressbar_percent),str(statusinformation))
+                    
                     # reset error vars for current route
                     route_error = None
                     route_errors = []
@@ -931,13 +934,17 @@ class OpenTripPlannerPluginRoutesWorker(QThread):
         #self.iface.messageBar().pushMessage("Done!", " Routes job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3) # Will crash QGIS when doing from thread. Just do it on the MainThread's routeFinished method
         unique_errors = set(unique_errors)
         unique_errors = list(unique_errors)
-        unique_errors = '; '.join(unique_errors)
+        unique_errors_string = '; '.join(unique_errors)
         routes_endtime = datetime.now()
         routes_runtime = routes_endtime - routes_starttime
         if self.stoproutesworker == True:
             QgsMessageLog.logMessage("##### Routes job canceled by user after " + str(routes_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
+            statusinformation = ('Routes Job Canceled after ' + str(routes_runtime) + ' with ' + str(len(unique_errors)) + ' errors' + '\nErrors occured: ' + str(unique_errors_string))
         else:
             QgsMessageLog.logMessage("##### Routes job done in " + str(routes_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
+            statusinformation = ('Routes Job Done after ' + str(routes_runtime) + ' with ' + str(len(unique_errors)) + ' errors' + '\nErrors occured: ' + str(unique_errors_string))
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
-        self.routes_finished.emit(routes_memorylayer_vl, self.routes_state, str(unique_errors), str(routes_runtime))
+        
+        self.routes_progress.emit(int(progressbar_percent),str(statusinformation))
+        self.routes_finished.emit(routes_memorylayer_vl, self.routes_state, str(unique_errors_string), str(routes_runtime))
         

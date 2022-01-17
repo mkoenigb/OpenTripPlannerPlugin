@@ -129,7 +129,7 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                 QgsMessageLog.logMessage("Warning! No Isochrones to create. Inputlayer is empty.",MESSAGE_CATEGORY,Qgis.Warning)
                 self.isochrones_progress.emit(int(0),str(statusinformation))
                 
-            for inputlayer_feature in inputlayer_features:
+            for inputlayer_iteration, inputlayer_feature in enumerate(inputlayer_features):
                 if self.stopisochronesworker == True: # if cancel button has been clicked this var has been set to True to break the loop so the thread can be quit
                     self.isochrones_state = 2
                     break
@@ -140,6 +140,8 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
                 isochrone_unique_errors = []
                 
                 progressbar_counter = progressbar_counter + 1
+                statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + ' (# ' + str(inputlayer_iteration+1) + ' of ' + str(progressbar_featurecount) + ' total features)')
+                self.isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
                     
                 # retrieve every feature with its geometry and attributes
                 QgsMessageLog.logMessage("Feature ID: " + str(inputlayer_feature.id()),MESSAGE_CATEGORY,Qgis.Info)
@@ -494,13 +496,16 @@ class OpenTripPlannerPluginIsochronesWorker(QThread):
         #self.iface.messageBar().pushMessage("Done!", " Isochrones job finished", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         unique_errors = set(unique_errors)
         unique_errors = list(unique_errors)
-        unique_errors = '; '.join(unique_errors)
+        unique_errors_string = '; '.join(unique_errors)
         isochrones_endtime = datetime.now()
         isochrones_runtime = isochrones_endtime - isochrones_starttime
         if self.stopisochronesworker == True:
             QgsMessageLog.logMessage("##### Isochrones job canceled by user after " + str(isochrones_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
+            statusinformation = ('Isochrones Job Canceled after ' + str(isochrones_runtime) + ' with ' + str(len(unique_errors)) + ' errors' + '\nErrors occured: ' + str(unique_errors_string))
         else:
             QgsMessageLog.logMessage("##### Isochrones job done in " + str(isochrones_runtime) + " @ " + str(datetime.now().strftime("%Y-%m-%d %H:%M:%S.%f")) + " #####",MESSAGE_CATEGORY,Qgis.Info)
+            statusinformation = ('Isochrones Job Done after ' + str(isochrones_runtime) + ' with ' + str(len(unique_errors)) + ' errors' + '\nErrors occured: ' + str(unique_errors_string))
         QgsMessageLog.logMessage("",MESSAGE_CATEGORY,Qgis.Info)
 
+        self.isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
         self.isochrones_finished.emit(isochrones_memorylayer_vl, self.isochrones_state, str(unique_errors), str(isochrones_runtime))

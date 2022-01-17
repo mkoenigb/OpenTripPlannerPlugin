@@ -318,8 +318,8 @@ class OpenTripPlannerPlugin():
         QgsProject.instance().addMapLayer(aggregated_isochrones_resultlayer) # Show resultlayer in project
         # aggregated_isochrones_state is indicating different states of the thread/result as integer
         if unique_errors:
-            self.iface.messageBar().pushMessage("Warning", " Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors + " - Created dummy geometries at coordinate 0,0 on error features", MESSAGE_CATEGORY, level=Qgis.Warning, duration=12)
-            QgsMessageLog.logMessage("Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors + " - Created dummy geometries at coordinate 0,0 on error features",MESSAGE_CATEGORY,Qgis.Warning)
+            self.iface.messageBar().pushMessage("Warning", " Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors, MESSAGE_CATEGORY, level=Qgis.Warning, duration=12)
+            QgsMessageLog.logMessage("Errors occurred. Check the resultlayer for details. The errors were: " + unique_errors,MESSAGE_CATEGORY,Qgis.Warning)
         if aggregated_isochrones_state == 0:
             self.iface.messageBar().pushMessage("Warning", " Run-Method was never executed.", MESSAGE_CATEGORY, level=Qgis.Critical, duration=6)
         elif aggregated_isochrones_state == 1:
