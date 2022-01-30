@@ -119,7 +119,33 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                                   QgsField("AggIsochrone_Times", QVariant.String) # Requested Times
                                   #QgsField("AggIsochrone_Time",QVariant.Int) # Only for Raw and Dissolve
                                   ]
+            if self.dlg.AggregatedIsochrones_MaxDissolve_Use.isChecked():
+                new_generic_mode_fields = [QgsField("AggIsochrone_time",QVariant.Int)]
+            elif self.dlg.AggregatedIsochrones_AllUnion_Use.isChecked():
+                # returns fields: time_count, time_unique, time_min, time_max, time_range, time_sum, time_mean, time_median, time_stddev, time_minority, time_majority, time_q1, time_q3, time_iqr
+                new_generic_mode_fields = [
+                                           QgsField("AggIsochrone_time_count",QVariant.Int),
+                                           QgsField("AggIsochrone_time_unique",QVariant.Int),
+                                           QgsField("AggIsochrone_time_min",QVariant.Double),
+                                           QgsField("AggIsochrone_time_max",QVariant.Double),
+                                           QgsField("AggIsochrone_time_range",QVariant.Double),
+                                           QgsField("AggIsochrone_time_sum",QVariant.Double),
+                                           QgsField("AggIsochrone_time_mean",QVariant.Double),
+                                           QgsField("AggIsochrone_time_median",QVariant.Double),
+                                           QgsField("AggIsochrone_time_stddev",QVariant.Double),
+                                           QgsField("AggIsochrone_time_minority",QVariant.Double),
+                                           QgsField("AggIsochrone_time_majority",QVariant.Double),
+                                           QgsField("AggIsochrone_time_q1",QVariant.Double),
+                                           QgsField("AggIsochrone_time_q3",QVariant.Double),
+                                           QgsField("AggIsochrone_time_iqr",QVariant.Double)
+                                          ]
+            elif self.dlg.AggregatedIsochrones_NoAggRaw_Use.isChecked():
+                new_generic_mode_fields = [QgsField("AggIsochrone_time",QVariant.Int),QgsField("AggIsochrone_reqdt",QVariant.String)]
+            else:
+                new_generic_mode_fields = [QgsField("AggIsochrone_time",QVariant.Int)]
+            
             aggregated_isochrones_memorylayer_pr.addAttributes(new_generic_fields)
+            aggregated_isochrones_memorylayer_pr.addAttributes(new_generic_mode_fields)
             inputlayer_numberoffields = self.gf.aggregated_isochrones_selectedlayer.fields().count() # count number of fields in inputlayer
             
             # Savelocation
@@ -155,9 +181,6 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                 progressbar_counter = progressbar_counter + 1
                 statusinformation = ('Processing Feature ID: ' + str(inputlayer_feature.id()) + ' (#' + str(inputlayer_iteration+1) + ' of ' + str(progressbar_featurecount) + ' total features)')
                 self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
-                    
-                # retrieve every feature with its geometry and attributes
-                QgsMessageLog.logMessage("Feature ID: " + str(inputlayer_feature.id()),MESSAGE_CATEGORY,Qgis.Info)
                 
                 # Override Button Feature
                 ctx.setFeature(inputlayer_feature) #Setting context to current feature
@@ -168,6 +191,7 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                 pointgeom = geom.asPoint() #Read Point geometry
                 x = round(pointgeom.x(),8) #Read X-Value
                 y = round(pointgeom.y(),8) #Read Y-Value
+                QgsMessageLog.logMessage("Feature ID: " + str(inputlayer_feature.id()),MESSAGE_CATEGORY,Qgis.Info)
                 QgsMessageLog.logMessage("PointX: " + str(x) + " | PointY: " + str(y),MESSAGE_CATEGORY,Qgis.Info)
                 
                 
@@ -368,6 +392,8 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                 tmp_aggregated_isochrones_pr = tmp_aggregated_isochrones_vl.dataProvider()
                 with edit(tmp_aggregated_isochrones_vl):
                     tmp_aggregated_isochrones_pr.addAttributes([QgsField("time",QVariant.Int)])
+                    if self.dlg.AggregatedIsochrones_NoAggRaw_Use.isChecked():
+                        tmp_aggregated_isochrones_pr.addAttributes([QgsField("reqdt",QVariant.String)])
                     tmp_aggregated_isochrones_vl.updateFields()
                 
                     for currentsecond in range(0,intervalseconds,aggregated_isochrones_requestinterval_value):
@@ -479,8 +505,15 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                                             + 'Processing iteration '  + str(intervaliteration) + ' of ' + str(required_iterations) + ' total iterations. Postprocessing response isochrone.')
                         self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
                         
+                        if self.dlg.AggregatedIsochrones_NoAggRaw_Use.isChecked():
+                            isochrone_responseLayer.dataProvider().addAttributes([QgsField("reqdt",QVariant.String)])
+                            isochrone_responseLayer.updateFields()
+                            with edit(isochrone_responseLayer):
+                                for feat in isochrone_responseLayer.getFeatures():
+                                    feat['reqdt'] = str(aggregated_isochrones_currentdate_string + ' ' + aggregated_isochrones_currenttime_string)
+                                    isochrone_responseLayer.updateFeature(feat)
                         
-                        # Process the response if Union is chosen
+                        # Process the response
                         if self.dlg.AggregatedIsochrones_AllUnion_Use.isChecked():
                             isochrone_responseLayer = self.union_processing_per_datetime_response(isochrone_responseLayer)
                             
@@ -519,7 +552,7 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                         #    isochrone_error = f'Postprocessing failed (Exception {e})'
                         #    isochrone_errors.append(isochrone_error)
                     elif self.dlg.AggregatedIsochrones_NoAggRaw_Use.isChecked(): # Raw
-                        # returns fields: time
+                        # returns fields: time, reqdt
                         # returns n features: n intervals * n iterations
                         pass
                     else:
@@ -550,50 +583,49 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                     isochrone_error = f'Error: aggregated layer is not valid (Exception {str(e)})'
                     isochrone_errors.append(isochrone_error)
                     fatal_isochrone_error = True
-                
-                # Throw back final status on this one
-                if isochrone_errors:
-                    if fatal_isochrone_error == True:
-                        isochrone_error = ('Error: Could not receive a single valid response for Feature ID ' + str(inputlayer_feature.id()) + ' - feature skipped!')
-                        isochrone_errors.append(isochrone_error)
-                    isochrone_unique_errors = set(isochrone_errors)
-                    isochrone_unique_errors = list(isochrone_unique_errors)
-                    unique_errors.extend(isochrone_unique_errors)
-                    QgsMessageLog.logMessage('Isochrone Errors: ' + str("; ".join(isochrone_unique_errors)),MESSAGE_CATEGORY,Qgis.Warning)
-                    # "Fatal" errors occur if not one single response is generated for a request.
-                    # Because adding a dummy feature with geometry at 0,0 requires to know the used fields in advance we will skip it, it would be for information purposes only anyway
-                    # If this would be implemented without knowing which fields would be needed there are two issues:
-                    # 1. if the very first feature produces this error, the layer wont be able to add valid results anymore
-                    # 2. if the very first feature is valid, the layer wont be able to add errors anymore
-                    # --> Decision made to skip errors at all - feel free to make a pull request if you really want to implement the error feature handling
-                    if fatal_isochrone_error == True:
-                        statusinformation = ('Feature ID: ' + str(inputlayer_feature.id()) + ' failed with ' + str(len(isochrone_unique_errors)) if isochrone_errors else str(0) + ' errors - feature skipped\n' +
-                                             'Errors occured: ' + ";".join(isochrone_unique_errors))
-                        self.aggregated_isochrones_progress.emit(int(progressbar_percent),str(statusinformation))
-                        continue
                     
                 # Postprocess Fieldnames:
                 with edit(tmp_aggregated_isochrones_vl):
                     for field in tmp_aggregated_isochrones_vl.fields():
                         idx = tmp_aggregated_isochrones_vl.fields().indexFromName(field.name())
-                        tmp_aggregated_isochrones_vl.renameAttribute(idx, 'AggIsochrone_' + str(field.name().capitalize()))
+                        tmp_aggregated_isochrones_vl.renameAttribute(idx, 'AggIsochrone_' + str(field.name()))
                     tmp_aggregated_isochrones_vl.updateFields()
-                    tmp_aggregated_isochrones_vl.updateExtents()
+                    tmp_aggregated_isochrones_vl.updateExtents()  
+                    
+                # Create a dummy feature on error
+                if isochrone_errors:
+                    if fatal_isochrone_error == True:
+                        isochrone_error = ('Error: Could not receive a single valid response for Feature ID ' + str(inputlayer_feature.id()))
+                        isochrone_errors.append(isochrone_error)
+                        tmp_aggregated_isochrones_vl = QgsVectorLayer("MultiPolygon?crs=epsg:4326", "TmpAggregatedIsochrones", "memory")
+                        tmp_aggregated_isochrones_pr = tmp_aggregated_isochrones_vl.dataProvider()
+                        with edit(tmp_aggregated_isochrones_vl):
+                            error_feature = QgsFeature()
+                            error_feature.setGeometry(QgsGeometry.fromWkt("Polygon ((-0.1 -0.1, -0.1 0.1, 0.1 0.1, 0.1 -0.1, -0.1 -0.1))"))
+                            tmp_aggregated_isochrones_pr.addAttributes(new_generic_mode_fields)
+                            tmp_aggregated_isochrones_pr.addFeature(error_feature)
+                        tmp_aggregated_isochrones_vl.updateExtents()
+                    isochrone_unique_errors = set(isochrone_errors)
+                    isochrone_unique_errors = list(isochrone_unique_errors)
+                    unique_errors.extend(isochrone_unique_errors)
+                    QgsMessageLog.logMessage('Isochrone Errors: ' + str("; ".join(isochrone_unique_errors)),MESSAGE_CATEGORY,Qgis.Warning)
                     
                 #self.aggregated_isochrones_finished.emit(tmp_aggregated_isochrones_vl, 99, str('bla'), str('blubb'))
                     
                 # Append Fields on first iteration depending on the chosen mode to output
                 if inputlayer_iteration == 0:
-                    for field in tmp_aggregated_isochrones_vl.fields():
+                   for field in tmp_aggregated_isochrones_vl.fields():
                         aggregated_isochrones_memorylayer_pr.addAttributes([QgsField(str(field.name()), field.type())])
-                    aggregated_isochrones_memorylayer_vl.updateFields()
+                   aggregated_isochrones_memorylayer_vl.updateFields()
                     
                 #iterate trough isochrones
                 aggregated_isochrone_id_counter = aggregated_isochrone_id_counter + 1
                 unique_isochrones_dates = set(isochrones_dates)
                 unique_isochrones_dates = list(unique_isochrones_dates)
+                unique_isochrones_dates.sort()
                 unique_isochrones_times = set(isochrones_times)
                 unique_isochrones_times = list(unique_isochrones_times)
+                unique_isochrones_times.sort()
                 
                 for aggregated_isochrone_feature in tmp_aggregated_isochrones_vl.getFeatures():
                     aggregated_isochrone_uid_counter = aggregated_isochrone_uid_counter + 1
@@ -602,7 +634,7 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                         new_fields.append(field)
                     for field in new_generic_fields:
                         new_fields.append(field)
-                    for field in tmp_aggregated_isochrones_vl.fields():
+                    for field in new_generic_mode_fields:
                         new_fields.append(field)
                     new_feat = QgsFeature(new_fields)
                     new_attrs = {}
@@ -700,7 +732,7 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                         }
         vectorlayer = processing.run('grass7:v.clean',vclean_params)
         vectorlayer = vectorlayer['output']
-
+        
         # fix geometries
         fixgeometries_params = {'INPUT' : vectorlayer, 
                                  'OUTPUT' : 'TEMPORARY_OUTPUT' 
@@ -721,7 +753,10 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
         deleteduplicategometries_params = {'INPUT' : vectorlayer_union, 
                                            'OUTPUT' : 'TEMPORARY_OUTPUT' 
                                           }
-        vectorlayer_dupldelete = processing.run('native:deleteduplicategeometries',deleteduplicategometries_params)
+        try:
+            vectorlayer_dupldelete = processing.run('native:deleteduplicategeometries',deleteduplicategometries_params)
+        except:
+            vectorlayer_dupldelete = processing.run('qgis:deleteduplicategeometries',deleteduplicategometries_params)
         vectorlayer_dupldelete = vectorlayer_dupldelete['OUTPUT']
 
         # join by location summary
@@ -747,7 +782,7 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
         return vectorlayer
         
     def union_processing_per_datetime_response(self, vectorlayer):
-        QgsMessageLog.logMessage('featurecount start processing: ' + str(vectorlayer.featureCount()),MESSAGE_CATEGORY,Qgis.Info)
+        #QgsMessageLog.logMessage('featurecount start processing: ' + str(vectorlayer.featureCount()),MESSAGE_CATEGORY,Qgis.Info)
         # v.clean <- should work without it for each response
         """
         vclean_params = {'-b' : False, 
@@ -801,10 +836,13 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
         deleteduplicategometries_params = {'INPUT' : vectorlayer, 
                                            'OUTPUT' : 'TEMPORARY_OUTPUT' 
                                           }
-        vectorlayer = processing.run('native:deleteduplicategeometries',deleteduplicategometries_params)
-        vectorlayer = vectorlayer['OUTPUT']
+        try:
+            vectorlayer_dupldelete = processing.run('native:deleteduplicategeometries',deleteduplicategometries_params)
+        except:
+            vectorlayer_dupldelete = processing.run('qgis:deleteduplicategeometries',deleteduplicategometries_params)
+        vectorlayer = vectorlayer_dupldelete['OUTPUT']
         
-        QgsMessageLog.logMessage('featurecount end processing: ' + str(vectorlayer.featureCount()),MESSAGE_CATEGORY,Qgis.Info)
+        #QgsMessageLog.logMessage('featurecount end processing: ' + str(vectorlayer.featureCount()),MESSAGE_CATEGORY,Qgis.Info)
         
         # copy time_min to time and delete all fields except time
         with edit(vectorlayer):
