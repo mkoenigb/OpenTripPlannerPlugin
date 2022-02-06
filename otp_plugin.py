@@ -433,10 +433,13 @@ class OpenTripPlannerPlugin():
             self.dlg.GeneralSettings_Restore.clicked.connect(self.gf.restore_general_variables)
             self.dlg.Isochrones_SaveSettings.clicked.connect(self.gf.store_isochrone_variables)
             self.dlg.Isochrones_RestoreDefaultSettings.clicked.connect(self.gf.restore_isochrone_variables)
+            self.dlg.Isochrones_Now.clicked.connect(self.gf.set_datetime_now_isochrone)
             self.dlg.AggregatedIsochrones_SaveSettings.clicked.connect(self.gf.store_aggregated_isochrone_variables)
             self.dlg.AggregatedIsochrones_RestoreDefaultSettings.clicked.connect(self.gf.restore_aggregated_isochrone_variables)
+            self.dlg.AggregatedIsochrones_Now.clicked.connect(self.gf.set_datetime_now_aggregated_isochrone)
             self.dlg.Routes_SaveSettings.clicked.connect(self.gf.store_route_variables)
             self.dlg.Routes_RestoreDefaultSettings.clicked.connect(self.gf.restore_route_variables)
+            self.dlg.Routes_Now.clicked.connect(self.gf.set_datetime_now_route)
             
             # Calling Functions to update layer stuff when layerselection has changed
             self.dlg.Isochrones_SelectInputLayer.currentIndexChanged.connect(self.gf.isochrones_maplayerselection) # Call function isochrones_maplayerselection to update all selection related stuff when selection has been changed

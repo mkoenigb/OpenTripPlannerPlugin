@@ -689,6 +689,18 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.aggregated_isochrones_bikespeed_setting = float(self.dlg.AggregatedIsochrones_BikeSpeed.value())
         s.setValue("otp_plugin/AggregatedIsochrones_BikeSpeed", self.aggregated_isochrones_bikespeed_setting)
         
+        # Wait at beginning
+        self.aggregated_isochrones_waitatbeginning_use_setting = int(self.dlg.AggregatedIsochrones_WaitAtBeginning_Use.isChecked())
+        s.setValue("otp_plugin/AggregatedIsochrones_WaitAtBeginning_Use", self.aggregated_isochrones_waitatbeginning_use_setting)
+        self.aggregated_isochrones_waitatbeginning_setting = float(self.dlg.AggregatedIsochrones_WaitAtBeginning.value())
+        s.setValue("otp_plugin/AggregatedIsochrones_WaitAtBeginning", self.aggregated_isochrones_waitatbeginning_setting)
+        
+        # Clamp initial wait
+        self.aggregated_isochrones_clampinitialwait_use_setting = int(self.dlg.AggregatedIsochrones_ClampInitialWait_Use.isChecked())
+        s.setValue("otp_plugin/AggregatedIsochrones_ClampInitialWait_Use", self.aggregated_isochrones_clampinitialwait_use_setting)
+        self.aggregated_isochrones_clampinitialwait_setting = float(self.dlg.AggregatedIsochrones_ClampInitialWait.value())
+        s.setValue("otp_plugin/AggregatedIsochrones_ClampInitialWait", self.aggregated_isochrones_clampinitialwait_setting)
+        
         # ArriveBy
         self.aggregated_isochrones_arriveby_use_setting = int(self.dlg.AggregatedIsochrones_ArriveBy_Use.isChecked())
         s.setValue("otp_plugin/AggregatedIsochrones_ArriveBy_Use", self.aggregated_isochrones_arriveby_use_setting)
@@ -773,6 +785,18 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.aggregated_isochrones_bikespeed_setting = float(s.value("otp_plugin/AggregatedIsochrones_BikeSpeed", 17.7))
         self.dlg.AggregatedIsochrones_BikeSpeed.setValue(self.aggregated_isochrones_bikespeed_setting)
         
+        # Wait at beginning
+        self.aggregated_isochrones_waitatbeginning_use_setting = int(s.value("otp_plugin/AggregatedIsochrones_WaitAtBeginning_Use", 0))
+        self.dlg.AggregatedIsochrones_WaitAtBeginning_Use.setChecked(self.aggregated_isochrones_waitatbeginning_use_setting)
+        self.aggregated_isochrones_waitatbeginning_setting = float(s.value("otp_plugin/AggregatedIsochrones_WaitAtBeginning", 1.0))
+        self.dlg.AggregatedIsochrones_WaitAtBeginning.setValue(self.aggregated_isochrones_waitatbeginning_setting)
+        
+        # Clamp initial wait
+        self.aggregated_isochrones_clampinitialwait_use_setting = int(s.value("otp_plugin/AggregatedIsochrones_ClampInitialWait_Use", 0))
+        self.dlg.AggregatedIsochrones_ClampInitialWait_Use.setChecked(self.aggregated_isochrones_clampinitialwait_use_setting)
+        self.aggregated_isochrones_clampinitialwait_setting = float(s.value("otp_plugin/AggregatedIsochrones_ClampInitialWait", -1.0))
+        self.dlg.AggregatedIsochrones_ClampInitialWait.setValue(self.aggregated_isochrones_clampinitialwait_setting)
+        
         # Arrive By
         self.aggregated_isochrones_arriveby_use_setting = int(s.value("otp_plugin/AggregatedIsochrones_ArriveBy_Use", 0))
         self.dlg.AggregatedIsochrones_ArriveBy_Use.setChecked(self.aggregated_isochrones_arriveby_use_setting)
@@ -855,6 +879,18 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.aggregated_isochrones_bikespeed_setting = float(17.7)
         self.dlg.AggregatedIsochrones_BikeSpeed.setValue(self.aggregated_isochrones_bikespeed_setting)
         
+        # Wait at beginning
+        self.aggregated_isochrones_waitatbeginning_use_setting = int(0)
+        self.dlg.AggregatedIsochrones_WaitAtBeginning_Use.setChecked(self.aggregated_isochrones_waitatbeginning_use_setting)
+        self.aggregated_isochrones_waitatbeginning_setting = float(1.0)
+        self.dlg.AggregatedIsochrones_WaitAtBeginning.setValue(self.aggregated_isochrones_waitatbeginning_setting)
+        
+        # Clamp initial wait
+        self.aggregated_isochrones_clampinitialwait_use_setting = int(0)
+        self.dlg.AggregatedIsochrones_ClampInitialWait_Use.setChecked(self.aggregated_isochrones_clampinitialwait_use_setting)
+        self.aggregated_isochrones_clampinitialwait_setting = float(-1.0)
+        self.dlg.AggregatedIsochrones_ClampInitialWait.setValue(self.aggregated_isochrones_clampinitialwait_setting)
+        
         # Arrive By
         self.aggregated_isochrones_arriveby_use_setting = int(0)
         self.dlg.AggregatedIsochrones_ArriveBy_Use.setChecked(self.aggregated_isochrones_arriveby_use_setting)
@@ -924,6 +960,28 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         self.iface.messageBar().pushMessage("Success", "Default aggregated_isochrone settings restored!", MESSAGE_CATEGORY, level=Qgis.Success, duration=3)
         QgsMessageLog.logMessage("Default aggregated_isochrone settings restored!",MESSAGE_CATEGORY,Qgis.Info)
         self.store_aggregated_isochrone_variables()
+        
+    def set_datetime_now_isochrone(self):
+        # Date
+        self.isochrones_date_setting = QDateTime(QtCore.QDateTime.currentDateTime())
+        self.dlg.Isochrones_Date.setDateTime(self.isochrones_date_setting)
+        # Time
+        self.isochrones_time_setting = QTime(QtCore.QTime.currentTime())
+        self.dlg.Isochrones_Time.setTime(self.isochrones_time_setting)
+    def set_datetime_now_aggregated_isochrone(self):
+        # FromDateTime
+        self.aggregated_isochrones_fromdatetime_setting = QDateTime(QtCore.QDateTime.currentDateTime())
+        self.dlg.AggregatedIsochrones_FromDateTime.setDateTime(self.aggregated_isochrones_fromdatetime_setting)
+        # ToDateTime
+        self.aggregated_isochrones_todatetime_setting = QDateTime(QtCore.QDateTime.currentDateTime().addSecs(1801))
+        self.dlg.AggregatedIsochrones_ToDateTime.setDateTime(self.aggregated_isochrones_todatetime_setting)
+    def set_datetime_now_route(self):
+        # Date
+        self.routes_date_setting = QDateTime(QtCore.QDateTime.currentDateTime())
+        self.dlg.Routes_Date.setDateTime(self.routes_date_setting)
+        # Time
+        self.routes_time_setting = QTime(QtCore.QTime.currentTime())
+        self.dlg.Routes_Time.setTime(self.routes_time_setting)
         
     def check_server_status(self):
         # Proxy not working properly.... maybe I'll implement this someday...
@@ -1033,6 +1091,12 @@ class OpenTripPlannerPluginGeneralFunctions(object):
         #BikeSpeed
         self.dlg.AggregatedIsochrones_BikeSpeed_Override.registerExpressionContextGenerator(self.aggregated_isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
         self.dlg.AggregatedIsochrones_BikeSpeed_Override.init(0, QgsProperty(), QgsPropertyDefinition("bikeSpeed", "Bike Speed in km/h", QgsPropertyDefinition.DoublePositive), self.aggregated_isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #Wait at Beginning
+        self.dlg.AggregatedIsochrones_WaitAtBeginning_Override.registerExpressionContextGenerator(self.aggregated_isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.AggregatedIsochrones_WaitAtBeginning_Override.init(0, QgsProperty(), QgsPropertyDefinition("waitAtBeginning", "Wait at beginning factor", QgsPropertyDefinition.DoublePositive), self.aggregated_isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
+        #Clamp initial wait
+        self.dlg.AggregatedIsochrones_ClampInitialWait_Override.registerExpressionContextGenerator(self.aggregated_isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
+        self.dlg.AggregatedIsochrones_ClampInitialWait_Override.init(0, QgsProperty(), QgsPropertyDefinition("clampInitialWait", "Clamp initial wait factor", QgsPropertyDefinition.DoublePositive), self.aggregated_isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
         #ArriveBy
         self.dlg.AggregatedIsochrones_ArriveBy_Override.registerExpressionContextGenerator(self.aggregated_isochrones_selectedlayer) # will allow the use of global, project, and layer variables.
         self.dlg.AggregatedIsochrones_ArriveBy_Override.init(0, QgsProperty(), QgsPropertyDefinition("ArriveBy", "ArriveBy as Boolean", QgsPropertyDefinition.Boolean), self.aggregated_isochrones_selectedlayer, False) # Need to tell the button which kind of property it expects. This is done by calling the init function of the button. This function expects a QgsPropertyDefinition
@@ -1180,7 +1244,7 @@ class OpenTripPlannerPluginGeneralFunctions(object):
             if not widget.objectName() in exceptionlist:
                 widget.setEnabled(True)
     def enableAggregatedIsochronesGui(self):
-        exceptionlist = ['AggregatedIsochrones_WaitAtBeginning_Use','AggregatedIsochrones_ClampInitialWait_Use']
+        exceptionlist = []
         for widget in self.dlg.tab_run_aggregated_isochrones.children():
             if not widget.objectName() in exceptionlist:
                 widget.setEnabled(True)

@@ -115,9 +115,9 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                                   QgsField("AggIsochrone_From", QVariant.String), # From Datetime
                                   QgsField("AggIsochrone_To", QVariant.String), # To Datetime
                                   QgsField("AggIsochrone_ReqIntervalSec", QVariant.Int), # Request-Interval in Seconds
-                                  QgsField("AggIsochrone_Dates", QVariant.String), # Requested Dates
-                                  QgsField("AggIsochrone_Times", QVariant.String) # Requested Times
-                                  #QgsField("AggIsochrone_Time",QVariant.Int) # Only for Raw and Dissolve
+                                  QgsField("AggIsochrone_ReqDates", QVariant.String), # Requested Dates
+                                  QgsField("AggIsochrone_ReqTimes", QVariant.String), # Requested Times
+                                  QgsField("AggIsochrone_TotalRequests",QVariant.Int) # Only for Raw and Dissolve
                                   ]
             if self.dlg.AggregatedIsochrones_MaxDissolve_Use.isChecked():
                 new_generic_mode_fields = [QgsField("AggIsochrone_time",QVariant.Int)]
@@ -223,6 +223,34 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                         aggregated_isochrones_bikespeed_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
                 else:
                     aggregated_isochrones_bikespeed_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                    
+                #Wait at Beginning
+                if self.dlg.AggregatedIsochrones_WaitAtBeginning_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.AggregatedIsochrones_WaitAtBeginning_Override.isActive() == True: # Check if override button shall be used
+                        aggregated_isochrones_waitatbeginning_value, irrelevantsuccessstorage = self.dlg.AggregatedIsochrones_WaitAtBeginning_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        aggregated_isochrones_waitatbeginning_value = self.dlg.AggregatedIsochrones_WaitAtBeginning.value() # Receiving Value from GUI: QDoubleSpinBox
+                    if aggregated_isochrones_waitatbeginning_value is not None: # Check if received value is NULL
+                        aggregated_isochrones_waitatbeginning_float = round(float(aggregated_isochrones_waitatbeginning_value),2)
+                        aggregated_isochrones_waitatbeginning_urlstring = '&waitAtBeginningFactor=' + str(aggregated_isochrones_waitatbeginning_float) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        aggregated_isochrones_waitatbeginning_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    aggregated_isochrones_waitatbeginning_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
+                
+                #Clamp initial Wait
+                if self.dlg.AggregatedIsochrones_ClampInitialWait_Use.isChecked() == True: # Check if option shall be used                
+                    if self.dlg.AggregatedIsochrones_ClampInitialWait_Override.isActive() == True: # Check if override button shall be used
+                        aggregated_isochrones_clampinitialwait_value, irrelevantsuccessstorage = self.dlg.AggregatedIsochrones_ClampInitialWait_Override.toProperty().value(ctx) #Receiving Value from Layer or GUI: DataDefinedOverride (Reference: https://gis.stackexchange.com/a/350279/107424 and https://gis.stackexchange.com/a/350993/107424)
+                    else:
+                        aggregated_isochrones_clampinitialwait_value = self.dlg.AggregatedIsochrones_ClampInitialWait.value() # Receiving Value from GUI: QDoubleSpinBox
+                    if aggregated_isochrones_clampinitialwait_value is not None: # Check if received value is NULL
+                        aggregated_isochrones_clampinitialwait_float = round(float(aggregated_isochrones_clampinitialwait_value),2)
+                        aggregated_isochrones_clampinitialwait_urlstring = '&clampInitialWait=' + str(aggregated_isochrones_clampinitialwait_float) # Concatenate to URL string if option is used and value is not NULL
+                    else:
+                        aggregated_isochrones_clampinitialwait_urlstring = '' # Leave URL string empty if value is NULL (Empty, not NULL!!)
+                else:
+                    aggregated_isochrones_clampinitialwait_urlstring = '' # Leave URL string empty if option is not used (Empty, not NULL!!)
                     
                 #ArriveBy
                 if self.dlg.AggregatedIsochrones_ArriveBy_Use.isChecked() == True: # Check if option shall be used                
@@ -422,6 +450,8 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                                         aggregated_isochrones_transportationmode_urlstring + #
                                         aggregated_isochrones_walkspeed_urlstring + #
                                         aggregated_isochrones_bikespeed_urlstring + #
+                                        aggregated_isochrones_waitatbeginning_urlstring + #
+                                        aggregated_isochrones_clampinitialwait_urlstring + #
                                         aggregated_isochrones_arriveby_urlstring + #
                                         aggregated_isochrones_wheelchair_urlstring + #
                                         aggregated_isochrones_waitreluctance_urlstring + #
@@ -437,6 +467,8 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                                         aggregated_isochrones_transportationmode_urlstring + #
                                         aggregated_isochrones_walkspeed_urlstring + #
                                         aggregated_isochrones_bikespeed_urlstring + #
+                                        aggregated_isochrones_waitatbeginning_urlstring + #
+                                        aggregated_isochrones_clampinitialwait_urlstring + #
                                         aggregated_isochrones_currentdate_urlstring + #
                                         aggregated_isochrones_currenttime_urlstring + #
                                         aggregated_isochrones_arriveby_urlstring + #
@@ -649,8 +681,9 @@ class OpenTripPlannerPluginAggregatedIsochronesWorker(QThread):
                     new_attrs[inputlayer_numberoffields + 6] = aggregated_isochrones_requestinterval_value
                     new_attrs[inputlayer_numberoffields + 7] = str(";".join(unique_isochrones_dates))
                     new_attrs[inputlayer_numberoffields + 8] = str(";".join(unique_isochrones_times))
+                    new_attrs[inputlayer_numberoffields + 9] = int(required_iterations)
                     for i in range(0, tmp_aggregated_isochrones_vl.fields().count()):
-                        new_attrs[inputlayer_numberoffields + 9 + i] = aggregated_isochrone_feature[i]
+                        new_attrs[inputlayer_numberoffields + 10 + i] = aggregated_isochrone_feature[i]
                     for idx, attr in new_attrs.items():
                         new_feat.setAttribute(idx, attr)
                     new_feat.setGeometry(aggregated_isochrone_feature.geometry())

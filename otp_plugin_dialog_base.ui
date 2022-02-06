@@ -26,7 +26,7 @@
     <string/>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>2</number>
    </property>
    <widget class="QWidget" name="tab_run_isochrones">
     <property name="accessibleName">
@@ -83,7 +83,7 @@
       </datetime>
      </property>
      <property name="currentSection">
-      <enum>QDateTimeEdit::YearSection</enum>
+      <enum>QDateTimeEdit::MonthSection</enum>
      </property>
      <property name="displayFormat">
       <string>yyyy-MM-dd</string>
@@ -1012,6 +1012,22 @@ Do not use an option if it is not compatible with the selected Mode. For example
       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="Isochrones_Now">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>10</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Saves your settings for isochrones</string>
+     </property>
+     <property name="text">
+      <string>Date/Time: Now</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QWidget" name="tab_run_aggregated_isochrones">
     <attribute name="title">
@@ -1830,7 +1846,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
     </widget>
     <widget class="QCheckBox" name="AggregatedIsochrones_ClampInitialWait_Use">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -1889,7 +1905,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
     </widget>
     <widget class="QCheckBox" name="AggregatedIsochrones_WaitAtBeginning_Use">
      <property name="enabled">
-      <bool>false</bool>
+      <bool>true</bool>
      </property>
      <property name="geometry">
       <rect>
@@ -1909,31 +1925,6 @@ Do not use an option if it is not compatible with the selected Mode. For example
      </property>
      <property name="checked">
       <bool>false</bool>
-     </property>
-    </widget>
-    <widget class="QSpinBox" name="AggregatedIsochrones_ClampInitialWait">
-     <property name="geometry">
-      <rect>
-       <x>240</x>
-       <y>190</y>
-       <width>91</width>
-       <height>22</height>
-      </rect>
-     </property>
-     <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When subtracting initial wait time, do not subtract more than this value, to prevent overly optimistic trips. Reasoning is that it is reasonable to delay a trip start 15 minutes to make a better trip, but that it is not reasonable to delay a trip start 15 hours; if that is to be done, the time needs to be included in the trip time. This number depends on the transit system; for transit systems where trips are planned around the vehicles, this number can be much higher. For instance, it's perfectly reasonable to delay one's trip 12 hours if one is taking a cross-country Amtrak train from Emeryville to Chicago. Has no effect in stock OTP, only in Analyst. A value of 0 means that initial wait time will not be subtracted out (will be clamped to 0). A value of -1 (the default) means that clamping is disabled, so any amount of initial wait time will be subtracted out.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-     </property>
-     <property name="minimum">
-      <number>-9999</number>
-     </property>
-     <property name="maximum">
-      <number>9999</number>
-     </property>
-     <property name="value">
-      <number>-1</number>
-     </property>
-     <property name="displayIntegerBase">
-      <number>10</number>
      </property>
     </widget>
     <widget class="QGroupBox" name="groupBox">
@@ -2063,7 +2054,7 @@ p, li { white-space: pre-wrap; }
        </datetime>
       </property>
       <property name="currentSection">
-       <enum>QDateTimeEdit::YearSection</enum>
+       <enum>QDateTimeEdit::HourSection</enum>
       </property>
       <property name="displayFormat">
        <string>yyyy-MM-dd HH:mm:ss</string>
@@ -2099,7 +2090,7 @@ p, li { white-space: pre-wrap; }
        </time>
       </property>
       <property name="currentSection">
-       <enum>QDateTimeEdit::YearSection</enum>
+       <enum>QDateTimeEdit::HourSection</enum>
       </property>
       <property name="displayFormat">
        <string>yyyy-MM-dd HH:mm:ss</string>
@@ -2225,6 +2216,50 @@ p, li { white-space: pre-wrap; }
       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
      </property>
     </widget>
+    <widget class="QPushButton" name="AggregatedIsochrones_Now">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>10</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Saves your settings for isochrones</string>
+     </property>
+     <property name="text">
+      <string>Date/Time: Now</string>
+     </property>
+    </widget>
+    <widget class="QDoubleSpinBox" name="AggregatedIsochrones_ClampInitialWait">
+     <property name="geometry">
+      <rect>
+       <x>240</x>
+       <y>190</y>
+       <width>91</width>
+       <height>22</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How much less bad is waiting at the beginning of the trip (replaces waitReluctance)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+     </property>
+     <property name="decimals">
+      <number>2</number>
+     </property>
+     <property name="minimum">
+      <double>-100.000000000000000</double>
+     </property>
+     <property name="maximum">
+      <double>100.000000000000000</double>
+     </property>
+     <property name="singleStep">
+      <double>0.050000000000000</double>
+     </property>
+     <property name="value">
+      <double>-1.000000000000000</double>
+     </property>
+    </widget>
     <zorder>groupBox</zorder>
     <zorder>AggregatedIsochrones_MaxWalkDistance_Override</zorder>
     <zorder>AggregatedIsochrones_WaitReluctance_Use</zorder>
@@ -2276,8 +2311,9 @@ p, li { white-space: pre-wrap; }
     <zorder>AggregatedIsochrones_WaitAtBeginning</zorder>
     <zorder>AggregatedIsochrones_WaitAtBeginning_Override</zorder>
     <zorder>AggregatedIsochrones_WaitAtBeginning_Use</zorder>
-    <zorder>AggregatedIsochrones_ClampInitialWait</zorder>
     <zorder>AggregatedIsochrones_StatusBox</zorder>
+    <zorder>AggregatedIsochrones_Now</zorder>
+    <zorder>AggregatedIsochrones_ClampInitialWait</zorder>
    </widget>
    <widget class="QWidget" name="tab_run_routes">
     <attribute name="title">
@@ -2991,7 +3027,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </datetime>
      </property>
      <property name="currentSection">
-      <enum>QDateTimeEdit::YearSection</enum>
+      <enum>QDateTimeEdit::MonthSection</enum>
      </property>
      <property name="displayFormat">
       <string>yyyy-MM-dd</string>
@@ -3433,6 +3469,22 @@ Do not use an option if it is not compatible with the selected Mode. For example
      </property>
      <property name="textInteractionFlags">
       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="Routes_Now">
+     <property name="geometry">
+      <rect>
+       <x>270</x>
+       <y>10</y>
+       <width>121</width>
+       <height>21</height>
+      </rect>
+     </property>
+     <property name="toolTip">
+      <string>Saves your settings for isochrones</string>
+     </property>
+     <property name="text">
+      <string>Date/Time: Now</string>
      </property>
     </widget>
    </widget>

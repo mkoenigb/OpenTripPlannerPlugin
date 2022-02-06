@@ -16,7 +16,7 @@ repository=https://github.com/mkoenigb/OpenTripPlannerPlugin/
 
 hasProcessingProvider=no
 # Uncomment the following line and add your changelog:
-changelog=1.0.1 Added experimental ability for aggregated isochrones, added status information textbox to improve user communication.
+changelog=1.0.1 Added experimental ability for aggregated isochrones, added status information textbox for user communication, added set datetime to now function.
     1.0 Improved error handling, Added Timeout option, minor improvements and fixes
     0.5.1 Merged Pull Request by Florian Schueller: Linux compatibility and error messages (Support for Linux Filepaths, Support for Minute and Hour in Isochrones-Interval-GUI, Improved Error Messages for Isochrones)
     0.5 Bugfixing and codeimprovements, added ability to choose a custom folder to store isochrone tempfiles at in case users do not have write permissions on plugin folder location, disable/enable gui elements while threads are running to prevent accidential changes of settings
