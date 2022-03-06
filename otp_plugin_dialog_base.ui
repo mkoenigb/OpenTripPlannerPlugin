@@ -83,7 +83,7 @@
       </datetime>
      </property>
      <property name="currentSection">
-      <enum>QDateTimeEdit::MonthSection</enum>
+      <enum>QDateTimeEdit::YearSection</enum>
      </property>
      <property name="displayFormat">
       <string>yyyy-MM-dd</string>
@@ -1104,7 +1104,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </rect>
      </property>
      <property name="toolTip">
-      <string>Request maximum isochrones and store as polygon layer.</string>
+      <string>Request aggregated isochrones and store as polygon layer.</string>
      </property>
      <property name="text">
       <string>Request Aggregated Isochrones</string>
@@ -2054,7 +2054,7 @@ p, li { white-space: pre-wrap; }
        </datetime>
       </property>
       <property name="currentSection">
-       <enum>QDateTimeEdit::HourSection</enum>
+       <enum>QDateTimeEdit::YearSection</enum>
       </property>
       <property name="displayFormat">
        <string>yyyy-MM-dd HH:mm:ss</string>
@@ -2090,7 +2090,7 @@ p, li { white-space: pre-wrap; }
        </time>
       </property>
       <property name="currentSection">
-       <enum>QDateTimeEdit::HourSection</enum>
+       <enum>QDateTimeEdit::YearSection</enum>
       </property>
       <property name="displayFormat">
        <string>yyyy-MM-dd HH:mm:ss</string>
@@ -2242,7 +2242,7 @@ p, li { white-space: pre-wrap; }
       </rect>
      </property>
      <property name="toolTip">
-      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;How much less bad is waiting at the beginning of the trip (replaces waitReluctance)&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+      <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;When subtracting initial wait time, do not subtract more than this value, to prevent overly optimistic trips. Reasoning is that it is reasonable to delay a trip start 15 minutes to make a better trip, but that it is not reasonable to delay a trip start 15 hours; if that is to be done, the time needs to be included in the trip time. This number depends on the transit system; for transit systems where trips are planned around the vehicles, this number can be much higher. For instance, it's perfectly reasonable to delay one's trip 12 hours if one is taking a cross-country Amtrak train from Emeryville to Chicago. Has no effect in stock OTP, only in Analyst. A value of 0 means that initial wait time will not be subtracted out (will be clamped to 0). A value of -1 (the default) means that clamping is disabled, so any amount of initial wait time will be subtracted out.&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
      </property>
      <property name="decimals">
       <number>2</number>
@@ -3027,7 +3027,7 @@ Do not use an option if it is not compatible with the selected Mode. For example
       </datetime>
      </property>
      <property name="currentSection">
-      <enum>QDateTimeEdit::MonthSection</enum>
+      <enum>QDateTimeEdit::YearSection</enum>
      </property>
      <property name="displayFormat">
       <string>yyyy-MM-dd</string>
