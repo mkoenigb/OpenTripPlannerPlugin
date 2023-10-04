@@ -1,6 +1,10 @@
 # OpenTripPlannerPlugin
 OpenTripPlanner Plug-In for QGIS lets you access OTP functionalities from within QGIS.
 
+# Important Note:
+This Plug-In was designed for OpenTripPlanner V1.0 to V1.5.
+Since now OpenTripPlanner V2 is available, I stopped working on this Plug-In. Eventually I will do a (new) Plug-In for OTP V2, in case there will be an isochrone api someday.
+
 # How To
 1. Install the Plug-In
 2. Go to "General Settings" Tab and enter a Server URL including the path to the OTP router, which can be accessed without Proxy or Authentification
