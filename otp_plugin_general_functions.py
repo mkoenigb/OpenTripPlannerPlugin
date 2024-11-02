@@ -41,7 +41,7 @@ from .otp_plugin_dialog import OpenTripPlannerPluginDialog
 from osgeo import ogr
 from datetime import *
 import os
-import urllib
+import urllib.request
 import zipfile
 import json
 
